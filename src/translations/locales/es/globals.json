@@ -76,7 +76,7 @@
   "DETAIL_FAILED_TRANSACTION": "Ocurrió un error al enviar la transferencia, los fondos han sido reintegrados.",
   "PENDING_INBOUND_TRANSACTION": "Deposito pendiente",
   "PENDING_OUTBOUND_TRANSACTION": "Retiro pendiente",
-  "INVALID_NONCE": "Necesitas un código de activación",
+  "INVALID_NONCE": "Necesitas un código de activación válido para crear una cuenta",
   "ERROR_ON_CREATE_ACCOUNT": "Ocurrió un error al crear la cuenta",
   "EMPTY_TRANSACTIONS_TITLE": "Bitcoin es dinero digital.",
   "EMPTY_TRANSACTIONS_DESC": "Proba moviendo tus primeros SATs.",
@@ -86,5 +86,6 @@
   "SHARE_INVOICE_TITLE": "LaWallet - Factura de pago",
   "INVALID_SENDABLE_AMOUNT": "La billetera de destino solo permite enviar entre {{ minSendable }} y {{ maxSendable }} {{ currency }}",
   "SENDABLE_AMOUNT": "Puedes enviar entre {{ minSendable }} y {{ maxSendable }} SATs",
-  "TRANSACTION_RECEIVED": "Recibiste una transferencia de {{ sats }} sat"
+  "TRANSACTION_RECEIVED": "Recibiste una transferencia de {{ sats }} sat",
+  "BACK_TO_HOME": "Regresar al inicio"
 }

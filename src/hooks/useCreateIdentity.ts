@@ -11,7 +11,12 @@ import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter } from 'next/navigation'
 import { useContext, useState } from 'react'
 import useErrors, { IUseErrors } from './useErrors'
-import { AccountProps } from '@/app/[lng]/start/page'
+
+export interface AccountProps {
+  nonce: string
+  card: string
+  name: string
+}
 
 export type CreateIdentityReturns = {
   success: boolean

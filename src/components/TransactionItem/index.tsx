@@ -14,6 +14,7 @@ import { useContext, useMemo } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/hooks/useTranslations'
 import { dateFormatter, formatToPreference } from '@/lib/formatter'
+import { defaultCurrency } from '@/types/config'
 
 interface ComponentProps {
   transaction: Transaction
@@ -43,7 +44,11 @@ export default function Component({ transaction }: ComponentProps) {
 
   const convertedFiatAmount = useMemo(
     () =>
-      convertCurrency(satsAmount, 'SAT', currency === 'SAT' ? 'USD' : currency),
+      convertCurrency(
+        satsAmount,
+        'SAT',
+        currency === 'SAT' ? defaultCurrency : currency
+      ),
     [pricesData, currency]
   )
 
@@ -76,12 +81,14 @@ export default function Component({ transaction }: ComponentProps) {
             <Flex direction="column" align="end">
               <Text
                 color={
-                  transaction.status === TransactionStatus.ERROR ||
-                  transaction.status === TransactionStatus.REVERTED
+                  hideBalance
+                    ? theme.colors.text
+                    : transaction.status === TransactionStatus.ERROR ||
+                      transaction.status === TransactionStatus.REVERTED
                     ? theme.colors.error
                     : transaction.status === TransactionStatus.PENDING
                     ? theme.colors.warning
-                    : isFromMe || hideBalance
+                    : isFromMe
                     ? theme.colors.text
                     : theme.colors.success
                 }
@@ -101,11 +108,11 @@ export default function Component({ transaction }: ComponentProps) {
                 {hideBalance
                   ? '*****'
                   : `$${formatToPreference(
-                      currency === 'SAT' ? 'USD' : currency,
+                      currency === 'SAT' ? defaultCurrency : currency,
                       convertedFiatAmount,
                       lng,
                       true
-                    )} ${currency === 'SAT' ? 'USD' : currency}`}
+                    )} ${currency === 'SAT' ? defaultCurrency : currency}`}
               </Text>
             </Flex>
           </Flex>

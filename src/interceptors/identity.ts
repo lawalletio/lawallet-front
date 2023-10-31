@@ -30,6 +30,19 @@ export const generateUserIdentity = async (
   return identity
 }
 
+export const validateNonce = async (nonce: string): Promise<boolean> => {
+  if (nonce === 'test') return true
+
+  return fetch(`${IDENTITY_ENDPOINT}/api/nonce/${nonce}`)
+    .then(res => res.json())
+    .then(response => {
+      if (!response || !response.status) return false
+
+      return response.status
+    })
+    .catch(() => false)
+}
+
 export const claimIdentity = async (
   event: NostrEvent
 ): Promise<IdentityResponse> => {

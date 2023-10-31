@@ -40,6 +40,7 @@ import keys from '@/constants/keys'
 import { requestInvoice } from '@/interceptors/transaction'
 import { zapRequestEvent } from '@/lib/events'
 import theme from '@/styles/theme'
+import { useRouter } from 'next/navigation'
 
 type InvoiceProps = {
   bolt11: string
@@ -61,6 +62,7 @@ export default function Page() {
     'only screen and (min-width : 769px) and (max-width : 992px)'
   )
 
+  const router = useRouter()
   const [showSheet, setShowSeet] = useState<boolean>(false)
   const [sheetStep, setSheetStep] = useState<SheetTypes>('amount')
 
@@ -106,9 +108,13 @@ export default function Page() {
   }
 
   const handleCloseSheet = () => {
-    setShowSeet(false)
-    setSheetStep('amount')
-    setInvoice({ bolt11: '', created_at: 0, loading: false })
+    if (sheetStep === 'finished') {
+      router.push('/dashboard')
+    } else {
+      setShowSeet(false)
+      setSheetStep('amount')
+      setInvoice({ bolt11: '', created_at: 0, loading: false })
+    }
   }
 
   const handleShareInvoice = () => {
@@ -149,7 +155,7 @@ export default function Page() {
       </Navbar>
 
       <QRCode
-        size={300}
+        size={325}
         value={
           'lightning://' +
           lnurl.encode(
@@ -258,7 +264,7 @@ export default function Page() {
 
         {sheetStep === 'qr' && (
           <>
-            <QRCode size={200} value={invoice.bolt11} />
+            <QRCode size={325} value={`lightning://${invoice.bolt11}`} />
             <Divider y={24} />
             <Container size="small">
               <Flex
