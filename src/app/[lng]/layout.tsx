@@ -22,7 +22,7 @@ interface ProviderProps {
 
 // Metadata
 const APP_NAME = 'LaWallet'
-const APP_DESCRIPTION = 'Testeando ando.'
+const APP_DESCRIPTION = 'https://lawallet.ar/'
 
 const Providers = (props: ProviderProps) => {
   const { children, params } = props
@@ -53,7 +53,7 @@ const Providers = (props: ProviderProps) => {
           sizes="180x180"
           href="/icons/icon-192x192.png"
         />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="./manifest.json" />
         <link rel="shortcut icon" href="./favicon.ico" />
 
         <Script
