@@ -4,10 +4,10 @@ import Navbar from '@/components/Layout/Navbar'
 import { Flex, Heading } from '@/components/UI'
 import QrScanner from '@/components/UI/Scanner/Scanner'
 import { useTranslation } from '@/hooks/useTranslations'
-import { TransferInformation } from '@/interceptors/transaction'
-import { formatTransferData } from '@/lib/utils'
+import { detectTransferType, removeLightningStandard } from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -16,19 +16,22 @@ export default function Page() {
   const handleScan = (result: any) => {
     if (!result || !result.data) return
 
-    formatTransferData(result.data).then(
-      (formattedTransfer: TransferInformation) => {
-        if (!formattedTransfer.data) return
+    const cleanScan: string = removeLightningStandard(result.data)
+    const scanType: boolean | string = detectTransferType(cleanScan)
+    if (!scanType) return
 
-        if (formattedTransfer.type === TransferTypes.INVOICE) {
-          router.push(`/transfer/summary?data=${formattedTransfer.data}`)
-          return
-        }
+    if (scanType === TransferTypes.INVOICE) {
+      router.push(`/transfer/summary?data=${result.data.toLowerCase()}`)
+      return
+    }
 
-        router.push(`/transfer/amount?data=${formattedTransfer.data}`)
-      }
-    )
+    router.push(`/transfer/amount?data=${result.data.toLowerCase()}`)
   }
+
+  useEffect(() => {
+    router.prefetch('/transfer/summary')
+    router.prefetch('/transfer/amount')
+  }, [])
 
   return (
     <>

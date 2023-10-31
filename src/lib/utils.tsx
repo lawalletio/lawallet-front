@@ -134,18 +134,22 @@ const parseINTERNALInfo = async (data: string) => {
   return transfer
 }
 
+export const removeLightningStandard = (str: string) => {
+  const lowStr: string = str.toLowerCase()
+
+  return lowStr.startsWith('lightning://')
+    ? lowStr.replace('lightning://', '')
+    : lowStr.startsWith('lightning:')
+    ? lowStr.replace('lightning:', '')
+    : lowStr
+}
+
 export const formatTransferData = async (
   data: string
 ): Promise<TransferInformation> => {
   if (!data.length) return defaultTransfer
 
-  const lowStr: string = data.toLowerCase()
-  const cleanStr: string = lowStr.startsWith('lightning://')
-    ? lowStr.replace('lightning://', '')
-    : lowStr.startsWith('lightning:')
-    ? lowStr.replace('lightning:', '')
-    : lowStr
-
+  const cleanStr: string = removeLightningStandard(data)
   const decodedTransferType: TransferTypes | false =
     detectTransferType(cleanStr)
 
