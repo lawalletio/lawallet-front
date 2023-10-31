@@ -1,5 +1,6 @@
 export type AvailableCurrencies = 'SAT' | 'USD' | 'ARS'
 export const CurrenciesList: AvailableCurrencies[] = ['SAT', 'USD', 'ARS']
+export const defaultCurrency: AvailableCurrencies = 'ARS'
 
 type CurrencyMetadata = {
   locale: string

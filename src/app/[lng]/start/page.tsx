@@ -19,26 +19,34 @@ import {
   Text
 } from '@/components/UI'
 import { WALLET_DOMAIN } from '@/constants/config'
-import { regexUserName, useCreateIdentity } from '@/hooks/useCreateIdentity'
+import {
+  AccountProps,
+  regexUserName,
+  useCreateIdentity
+} from '@/hooks/useCreateIdentity'
 import { useTranslation } from '@/hooks/useTranslations'
-import { existIdentity } from '@/interceptors/identity'
+import { existIdentity, validateNonce } from '@/interceptors/identity'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
-export type AccountProps = {
-  nonce: string
-  card: string
-  name: string
+interface CreateIdentityParams extends AccountProps {
+  isValidNonce: boolean
+  loading: boolean
 }
 
 let checkExistUsername: NodeJS.Timeout
 
 export default function Page() {
   const { t } = useTranslation()
+
   const [activeStartView, setActiveStartView] = useState<boolean>(true)
-  const [accountInfo, setAccountInfo] = useState<AccountProps>({
+
+  const [accountInfo, setAccountInfo] = useState<CreateIdentityParams>({
     nonce: '',
     card: '',
-    name: ''
+    name: '',
+    isValidNonce: false,
+    loading: true
   })
 
   const { handleCreateIdentity, loading, errors } = useCreateIdentity()
@@ -49,9 +57,16 @@ export default function Page() {
     // const card: string = params.get('c') || ''
 
     if (!nonce) {
-      errors.modifyError('INVALID_NONCE')
+      setAccountInfo({ ...accountInfo, loading: false })
     } else {
-      setAccountInfo({ ...accountInfo, nonce })
+      validateNonce(nonce).then(isValidNonce => {
+        setAccountInfo({
+          ...accountInfo,
+          nonce,
+          isValidNonce,
+          loading: false
+        })
+      })
     }
   }, [])
 
@@ -90,15 +105,27 @@ export default function Page() {
     if (validUsername) {
       setAccountInfo({
         ...accountInfo,
-        name: username
+        name: username.toLowerCase()
       })
 
       checkIfExistName(username)
     }
   }
 
+  const handleConfirm = () => {
+    if (accountInfo.name && accountInfo.nonce) handleCreateIdentity(accountInfo)
+  }
+
+  useActionOnKeypress('Enter', handleConfirm, [accountInfo.name])
+
   if (activeStartView)
-    return <StartView onClick={() => setActiveStartView(false)} />
+    return (
+      <StartView
+        verifyingNonce={accountInfo.loading}
+        isValidNonce={accountInfo.isValidNonce}
+        onClick={() => setActiveStartView(false)}
+      />
+    )
 
   return (
     <>
@@ -142,10 +169,7 @@ export default function Page() {
               {t('CANCEL')}
             </Button>
             <Button
-              onClick={() => {
-                if (accountInfo.name && accountInfo.nonce)
-                  handleCreateIdentity(accountInfo)
-              }}
+              onClick={handleConfirm}
               disabled={loading || !accountInfo.nonce.length}
             >
               {loading ? <BtnLoader /> : t('CONFIRM')}

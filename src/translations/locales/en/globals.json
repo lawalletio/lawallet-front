@@ -74,7 +74,7 @@
   "TO": "To",
   "FAILED_TRANSACTION": "Transaction failed",
   "DETAIL_FAILED_TRANSACTION": "An error occurred while sending the transfer, the funds have been refunded.",
-  "INVALID_NONCE": "You need an activation code",
+  "INVALID_NONCE": "You need a valid activation code to create an account",
   "ERROR_ON_CREATE_ACCOUNT": "An error occurred while creating the account",
   "EMPTY_TRANSACTIONS_TITLE": "Bitcoin is digital money.",
   "EMPTY_TRANSACTIONS_DESC": "Try moving your first SATs.",
@@ -84,5 +84,6 @@
   "SHARE_INVOICE_TITLE": "LaWallet - Invoice",
   "INVALID_SENDABLE_AMOUNT": "The destination wallet only allows sending between {{ minSendable }} and {{ maxSendable }} {{ currency }}",
   "SENDABLE_AMOUNT": "You can send between {{ minSendable }} and {{ maxSendable }} sat",
-  "TRANSACTION_RECEIVED": "You received a transfer from {{ sats }} sat"
+  "TRANSACTION_RECEIVED": "You received a transfer from {{ sats }} sat",
+  "BACK_TO_HOME": "Back to home"
 }

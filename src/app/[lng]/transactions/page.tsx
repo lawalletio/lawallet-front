@@ -19,7 +19,7 @@ export default function Page() {
     <>
       <Navbar>
         <Flex align="center">
-          <Heading as="h5">{t('SETTINGS')}</Heading>
+          <Heading as="h5">{t('LAST_ACTIVITY')}</Heading>
         </Flex>
       </Navbar>
 

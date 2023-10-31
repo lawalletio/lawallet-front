@@ -2,37 +2,25 @@
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import {
-  Button,
-  Divider,
-  Flex,
-  Heading,
-  Text,
-  LinkSetting
-} from '@/components/UI'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { Divider, Flex, Heading, LinkSetting, Text } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'
-import { defaultIdentity } from '@/types/identity'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
 
 import theme from '@/styles/theme'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { setUserIdentity } = useContext(LaWalletContext)
-  const router: AppRouterInstance = useRouter()
+  // const { setUserIdentity } = useContext(LaWalletContext)
+  // const router: AppRouterInstance = useRouter()
 
   // const switchLanguage = () => {
   //   lng === 'es' ? changeLanguage('en') : changeLanguage('es')
   // }
 
-  const logoutSession = () => {
-    localStorage.removeItem('identity')
-    setUserIdentity(defaultIdentity)
-    router.push('/')
-  }
+  // const logoutSession = () => {
+  //   localStorage.removeItem('identity')
+  //   setUserIdentity(defaultIdentity)
+  //   router.push('/')
+  // }
 
   return (
     <>
@@ -60,12 +48,12 @@ export default function Page() {
           </Text>
         </Flex>
         <Divider y={16} />
-        <Flex>
+        {/* <Flex>
           <Button color="error" variant="bezeled" onClick={logoutSession}>
             {t('LOGOUT')}
           </Button>
         </Flex>
-        <Divider y={16} />
+        <Divider y={16} /> */}
       </Container>
     </>
   )
