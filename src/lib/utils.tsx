@@ -20,17 +20,18 @@ export const validateEmail = (email: string): RegExpMatchArray | null => {
 }
 
 export const detectTransferType = (data: string): TransferTypes | false => {
-  const isLUD16 = validateEmail(data)
+  const upperStr: string = data.toUpperCase()
+  const isLUD16 = validateEmail(upperStr)
   if (isLUD16) {
-    const domain: string = data.split('@')[1]
+    const domain: string = upperStr.split('@')[1]
 
     return domain.toUpperCase() === WALLET_DOMAIN.toUpperCase()
       ? TransferTypes.INTERNAL
       : TransferTypes.LUD16
   }
 
-  if (data.startsWith('LNURL')) return TransferTypes.LNURL
-  if (data.startsWith('LNBC')) return TransferTypes.INVOICE
+  if (upperStr.startsWith('LNURL')) return TransferTypes.LNURL
+  if (upperStr.startsWith('LNBC')) return TransferTypes.INVOICE
 
   return false
 }
@@ -138,13 +139,15 @@ export const formatTransferData = async (
 ): Promise<TransferInformation> => {
   if (!data.length) return defaultTransfer
 
-  const cleanStr: string = data.startsWith('lightning://')
-    ? data.replace('lightning://', '')
-    : data
+  const lowStr: string = data.toLowerCase()
+  const cleanStr: string = lowStr.startsWith('lightning://')
+    ? lowStr.replace('lightning://', '')
+    : lowStr.startsWith('lightning:')
+    ? lowStr.replace('lightning:', '')
+    : lowStr
 
-  const decodedTransferType: TransferTypes | false = detectTransferType(
-    cleanStr.toUpperCase()
-  )
+  const decodedTransferType: TransferTypes | false =
+    detectTransferType(cleanStr)
 
   if (!decodedTransferType) return defaultTransfer
 

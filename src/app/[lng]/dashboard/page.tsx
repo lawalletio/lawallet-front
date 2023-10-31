@@ -41,6 +41,7 @@ import { useRouter } from 'next/navigation'
 // Animations
 import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
+import { BtnLoader } from '@/components/Loader/Loader'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -119,20 +120,24 @@ export default function Page() {
           </Text>
           <Divider y={8} />
           <Flex justify="center" align="center" gap={4}>
-            {loading ? (
-              <Text> -- </Text>
-            ) : (
-              <Flex justify="center" align="center" gap={4}>
-                {currency === 'SAT' ? (
-                  <Icon size="small">
-                    <SatoshiV2Icon />
-                  </Icon>
+            <Flex justify="center" align="center" gap={4}>
+              {currency === 'SAT' ? (
+                <Icon size="small">
+                  <SatoshiV2Icon />
+                </Icon>
+              ) : (
+                <Text>$</Text>
+              )}
+              <Heading>
+                {loading || balance.loading ? (
+                  <BtnLoader />
+                ) : hideBalance ? (
+                  '*****'
                 ) : (
-                  <Text>$</Text>
+                  convertedBalance
                 )}
-                <Heading>{hideBalance ? '*****' : convertedBalance}</Heading>
-              </Flex>
-            )}
+              </Heading>
+            </Flex>
           </Flex>
           <Divider y={8} />
 
