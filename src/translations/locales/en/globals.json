@@ -85,5 +85,6 @@
   "INVALID_SENDABLE_AMOUNT": "The destination wallet only allows sending between {{ minSendable }} and {{ maxSendable }} {{ currency }}",
   "SENDABLE_AMOUNT": "You can send between {{ minSendable }} and {{ maxSendable }} sat",
   "TRANSACTION_RECEIVED": "You received a transfer from {{ sats }} sat",
-  "BACK_TO_HOME": "Back to home"
+  "BACK_TO_HOME": "Back to home",
+  "INVOICE_EXPIRED": "Expired payment invoice"
 }

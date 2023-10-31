@@ -87,5 +87,6 @@
   "INVALID_SENDABLE_AMOUNT": "La billetera de destino solo permite enviar entre {{ minSendable }} y {{ maxSendable }} {{ currency }}",
   "SENDABLE_AMOUNT": "Puedes enviar entre {{ minSendable }} y {{ maxSendable }} SATs",
   "TRANSACTION_RECEIVED": "Recibiste una transferencia de {{ sats }} sat",
-  "BACK_TO_HOME": "Regresar al inicio"
+  "BACK_TO_HOME": "Regresar al inicio",
+  "INVOICE_EXPIRED": "Factura de pago expirada"
 }

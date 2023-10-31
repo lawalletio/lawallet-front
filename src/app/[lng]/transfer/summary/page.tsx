@@ -13,7 +13,8 @@ import {
   Text,
   LinkButton,
   Avatar,
-  Icon
+  Icon,
+  Feedback
 } from '@/components/UI'
 
 import theme from '@/styles/theme'
@@ -123,6 +124,14 @@ export default function Page() {
         <Divider y={16} />
       </Container>
 
+      {transferInfo.expired && (
+        <Flex flex={1} align="center" justify="center">
+          <Feedback show={true} status={'error'}>
+            {t('INVOICE_EXPIRED')}
+          </Feedback>
+        </Flex>
+      )}
+
       <Flex>
         <Container size="small">
           <Divider y={16} />
@@ -134,7 +143,12 @@ export default function Page() {
             <Button
               color="secondary"
               onClick={() => executeTransfer(identity.signer!)}
-              disabled={loading || balance.amount < transferInfo.amount}
+              disabled={
+                !transferInfo.type ||
+                loading ||
+                balance.amount < transferInfo.amount ||
+                transferInfo.expired
+              }
             >
               {loading ? <BtnLoader /> : t('TRANSFER')}
             </Button>

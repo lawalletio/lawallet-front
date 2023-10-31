@@ -88,6 +88,7 @@ const useTransfer = (): TransferContextType => {
   }
 
   const executeTransfer = async (signer: NDKPrivateKeySigner) => {
+    if (loading || !transferInfo.type || transferInfo.expired) return
     setLoading(true)
 
     try {
