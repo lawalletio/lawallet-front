@@ -156,12 +156,12 @@ export default function Page() {
 
       <QRCode
         size={325}
-        value={
+        value={(
           'lightning://' +
           lnurl.encode(
             `https://${WALLET_DOMAIN}/.well-known/lnurlp/${identity.username}`
           )
-        }
+        ).toUpperCase()}
       />
 
       <Flex>
@@ -264,7 +264,7 @@ export default function Page() {
 
         {sheetStep === 'qr' && (
           <>
-            <QRCode size={325} value={`lightning://${invoice.bolt11}`} />
+            <QRCode size={325} value={`${invoice.bolt11.toUpperCase()}`} />
             <Divider y={24} />
             <Container size="small">
               <Flex
