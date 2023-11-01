@@ -88,5 +88,7 @@
   "SENDABLE_AMOUNT": "Puedes enviar entre {{ minSendable }} y {{ maxSendable }} SATs",
   "TRANSACTION_RECEIVED": "Recibiste una transferencia de {{ sats }} sat",
   "BACK_TO_HOME": "Regresar al inicio",
-  "INVOICE_EXPIRED": "Factura de pago expirada"
+  "INVOICE_EXPIRED": "Factura de pago expirada",
+  "ERROR_ON_CREATE_INVOICE": "Ocurrió un error al generar la factura",
+  "ERROR_INVOICE_AMOUNT": "Debes elegir entre {{ minAmount }} y {{ maxAmount }} {{ currency }}"
 }
