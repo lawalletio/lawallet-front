@@ -12,7 +12,7 @@ import {
   Heading,
   Textarea
 } from '@/components/UI'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { getPublicKey, nip19 } from 'nostr-tools'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
@@ -69,6 +69,10 @@ export default function Page() {
 
     setLoading(false)
   }
+
+  useEffect(() => {
+    router.prefetch('/dashboard')
+  }, [])
 
   return (
     <>
