@@ -91,5 +91,6 @@
   "BACK_TO_HOME": "Regresar al inicio",
   "INVOICE_EXPIRED": "Factura de pago expirada",
   "ERROR_ON_CREATE_INVOICE": "Ocurrió un error al generar la factura",
-  "ERROR_INVOICE_AMOUNT": "Debes elegir entre {{ minAmount }} y {{ maxAmount }} {{ currency }}"
+  "ERROR_INVOICE_AMOUNT": "Debes elegir entre {{ minAmount }} y {{ maxAmount }} {{ currency }}",
+  "INSUFFICIENT_BALANCE": "No tienes saldo suficiente para pagar"
 }

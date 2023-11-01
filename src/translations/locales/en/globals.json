@@ -88,5 +88,6 @@
   "BACK_TO_HOME": "Back to home",
   "INVOICE_EXPIRED": "Expired payment invoice",
   "ERROR_ON_CREATE_INVOICE": "An error occurred while generating the invoice",
-  "ERROR_INVOICE_AMOUNT": "You must choose between {{ minAmount }} and {{ maxAmount }} {{ currency }}"
+  "ERROR_INVOICE_AMOUNT": "You must choose between {{ minAmount }} and {{ maxAmount }} {{ currency }}",
+  "INSUFFICIENT_BALANCE": "You do not have enough balance to pay"
 }
