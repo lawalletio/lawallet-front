@@ -89,5 +89,11 @@
   "INVOICE_EXPIRED": "Expired payment invoice",
   "ERROR_ON_CREATE_INVOICE": "An error occurred while generating the invoice",
   "ERROR_INVOICE_AMOUNT": "You must choose between {{ minAmount }} and {{ maxAmount }} {{ currency }}",
-  "INSUFFICIENT_BALANCE": "You do not have enough balance to pay"
+  "INSUFFICIENT_BALANCE": "You do not have enough balance to pay",
+  "INSERT_PRIVATE_KEY": "Enter your private key",
+  "LOGIN_TITLE": "Login",
+  "LOGIN": "Login",
+  "KEY_LENGTH_ERROR": "The private key must be a minimum of 32 digits",
+  "NOT_FOUND_PUBKEY": "No user found",
+  "UNEXPECTED_RECEOVERY_ERROR": "An error occurred while signing in"
 }

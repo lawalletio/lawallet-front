@@ -13,7 +13,7 @@ const loggedRoutes: string[] = [
   'transactions'
 ]
 
-const unloggedRoutes: string[] = ['', 'start']
+const unloggedRoutes: string[] = ['', 'start', 'login']
 
 const ProtectRoutes = ({ children }: { children: ReactNode }) => {
   const { identity, hydrated } = useContext(LaWalletContext)

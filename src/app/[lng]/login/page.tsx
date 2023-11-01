@@ -1,43 +1,90 @@
 'use client'
-
 import { useRouter } from 'next/navigation'
-
 import { useTranslation } from '@/hooks/useTranslations'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import { BtnLoader } from '@/components/Loader/Loader'
 import {
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
   Textarea,
-  Feedback
 } from '@/components/UI'
+import { useContext, useState } from 'react'
+import { getPublicKey, nip19 } from 'nostr-tools'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import useErrors from '@/hooks/useErrors'
+import { getUsername } from '@/interceptors/identity'
+import { UserIdentity } from '@/types/identity'
 
 export default function Page() {
-  const router = useRouter()
+  const { identity, setUserIdentity } = useContext(LaWalletContext)
+  const [keyInput, setKeyInput] = useState<string>("")
   const { t } = useTranslation()
+  const router = useRouter()
+  const errors = useErrors()
 
-  const handleChange = e => {
-    console.log('e', e.target.value)
+  const handleChangeInput = e => {
+    errors.resetError()
+    setKeyInput(e.target.value)
   }
+
+  const handleRecoveryAccount = async () => {
+    if (keyInput.length < 32) {
+      errors.modifyError("KEY_LENGTH_ERROR")
+      return
+    }
+    
+    try {
+      const hexpub: string = getPublicKey(keyInput)
+      const username: string = await getUsername(hexpub)
+
+      if (!username.length) {
+        errors.modifyError("NOT_FOUND_PUBKEY")
+        return
+      }
+
+      const identity: UserIdentity = {
+        nonce: '',
+        card: [],
+        username,
+        hexpub,
+        npub: nip19.npubEncode(hexpub),
+        privateKey: keyInput
+      }
+
+      setUserIdentity(identity)
+      router.push("/dahsboard")
+    } catch (err) {
+      errors.modifyError("UNEXPECTED_RECEOVERY_ERROR")
+      console.log(err)
+    }
+  }
+
+  if (identity.hexpub.length) router.push("/dashboard")
 
   return (
     <>
       <Navbar />
       <Container size="small">
         <Flex direction="column" justify="center">
-          <Heading as="h2">Inicia sesion</Heading>
+          <Heading as="h2">{t("LOGIN_TITLE")}</Heading>
 
           <Divider y={8} />
           <Textarea
-            placeholder="Ingresa tu clave privada"
-            onChange={handleChange}
+            placeholder={t("INSERT_PRIVATE_KEY")}
+            onChange={handleChangeInput}
           />
+
+          <Feedback show={errors.errorInfo.visible} status={'error'}>
+            {errors.errorInfo.text}
+          </Feedback>
         </Flex>
       </Container>
+
+
       <Flex>
         <Container size="small">
           <Divider y={16} />
@@ -45,8 +92,8 @@ export default function Page() {
             <Button variant="bezeledGray" onClick={() => router.push('/')}>
               {t('CANCEL')}
             </Button>
-            <Button onClick={() => null} disabled={true}>
-              Ingresar
+            <Button onClick={handleRecoveryAccount} disabled={!keyInput.length}>
+              {t("LOGIN")}
             </Button>
           </Flex>
           <Divider y={32} />

@@ -127,6 +127,7 @@ export default function Page() {
               ) : (
                 <Text>$</Text>
               )}
+
               <Heading>
                 {loading || balance.loading ? (
                   <BtnLoader />
