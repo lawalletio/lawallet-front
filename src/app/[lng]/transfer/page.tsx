@@ -128,7 +128,7 @@ export default function Page() {
           </Flex>
           <Divider y={16} />
           {/* Ultimos 3 destinos */}
-          {lastDestinations.length && (
+          {Boolean(lastDestinations.length) && (
             <>
               <Text size="small" color={theme.colors.gray50}>
                 {t('LAST_RECIPIENTS')}

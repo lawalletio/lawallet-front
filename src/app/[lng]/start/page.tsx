@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -50,6 +50,7 @@ export default function Page() {
   })
 
   const { handleCreateIdentity, loading, errors } = useCreateIdentity()
+  const router = useRouter()
   const params = useSearchParams()
 
   useEffect(() => {
@@ -117,6 +118,10 @@ export default function Page() {
   }
 
   useActionOnKeypress('Enter', handleConfirm, [accountInfo.name])
+
+  useEffect(() => {
+    router.prefetch('/dashboard')
+  }, [])
 
   if (activeStartView)
     return (
