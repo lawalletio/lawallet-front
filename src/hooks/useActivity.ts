@@ -113,7 +113,7 @@ export const useActivity = ({
       tokens: eventContent.tokens,
       events: [await event.toNostrEvent()],
       errors: [],
-      createdAt: new Date(event.created_at!)
+      createdAt: new Date(event.created_at! * 1000)
     }
 
     return newTransaction
@@ -139,6 +139,12 @@ export const useActivity = ({
 
     const statusTag: string = getTag(statusEvent.tags, 't')
     const isError: boolean = statusTag.includes('error')
+
+    if (
+      transaction.direction === TransactionDirection.INCOMING &&
+      statusTag.includes('inbound')
+    )
+      transaction.type = TransactionType.LN
 
     transaction.status = isError
       ? TransactionStatus.ERROR

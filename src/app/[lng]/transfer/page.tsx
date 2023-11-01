@@ -13,20 +13,27 @@ import {
   Input,
   InputGroup,
   InputGroupRight,
-  LinkButton
+  LinkButton,
+  Text
 } from '@/components/UI'
 
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
-import { useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import { TransactionDirection } from '@/types/transaction'
+import RecipientElement from './components/RecipientElement'
+import theme from '@/styles/theme'
 
 export default function Page() {
   const { t } = useTranslation()
+  const { transactions } = useContext(LaWalletContext)
   const { prepareTransaction, transferInfo } = useTransferContext()
 
+  const [lastDestinations, setLastDestinations] = useState<string[]>([])
   const [inputText, setInputText] = useState<string>(transferInfo.data)
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -59,6 +66,25 @@ export default function Page() {
       console.log('error', error)
     }
   }
+
+  const loadLastDestinations = () => {
+    const lastDest: string[] = []
+    transactions.filter(tx => {
+      if (
+        tx.direction === TransactionDirection.OUTGOING &&
+        tx.memo &&
+        tx.memo.destination &&
+        !lastDest.includes(tx.memo.destination as string)
+      )
+        lastDest.push(tx.memo.destination as string)
+    })
+
+    setLastDestinations(lastDest)
+  }
+
+  useEffect(() => {
+    if (transactions.length) loadLastDestinations()
+  }, [transactions.length])
 
   return (
     <>
@@ -102,15 +128,26 @@ export default function Page() {
           </Flex>
           <Divider y={16} />
           {/* Ultimos 3 destinos */}
-          {/* <Text size="small" color={theme.colors.gray50}>
-            {t('LAST_RECIPIENTS')}
-          </Text>
-          <Divider y={12} />
+          {lastDestinations.length && (
+            <>
+              <Text size="small" color={theme.colors.gray50}>
+                {t('LAST_RECIPIENTS')}
+              </Text>
 
-          <div onClick={() => initializeTransfer('jona@hodl.ar')}>
-            <RecipientElement lud16="jona@hodl.ar" />
-          </div>
-          <Divider y={16} /> */}
+              <Divider y={12} />
+
+              {lastDestinations.slice(0, 5).map(lud16 => {
+                return (
+                  <Fragment key={lud16}>
+                    <div onClick={() => initializeTransfer(lud16)}>
+                      <RecipientElement lud16={lud16} />
+                    </div>
+                    <Divider y={16} />
+                  </Fragment>
+                )
+              })}
+            </>
+          )}
         </Flex>
       </Container>
 

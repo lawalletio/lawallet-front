@@ -79,7 +79,8 @@ export const generateTxStart = async (
   amount: number,
   receiver: string,
   signer: NDKPrivateKeySigner,
-  bolt11?: string
+  tags: NDKTag[],
+  destination?: string
 ): Promise<NostrEvent> => {
   const hexpub = getPublicKey(signer.privateKey!)
 
@@ -88,6 +89,7 @@ export const generateTxStart = async (
   internalEvent.kind = 1112
 
   internalEvent.content = JSON.stringify({
+    destination,
     tokens: { BTC: amount.toString() }
   })
 
@@ -97,7 +99,7 @@ export const generateTxStart = async (
     ['p', receiver]
   ]
 
-  if (bolt11) internalEvent.tags.push(['bolt11', bolt11])
+  if (tags.length) internalEvent.tags = [...internalEvent.tags, ...tags]
   await internalEvent.sign(signer!)
 
   const event: NostrEvent = await internalEvent.toNostrEvent()

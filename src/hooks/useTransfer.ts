@@ -12,6 +12,7 @@ import {
   NDKEvent,
   NDKKind,
   NDKPrivateKeySigner,
+  NDKTag,
   NostrEvent
 } from '@nostr-dev-kit/ndk'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -96,7 +97,9 @@ const useTransfer = (): TransferContextType => {
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
-          signer
+          signer,
+          [],
+          transferInfo.data
         )
 
         publishTransfer(txEvent)
@@ -109,11 +112,19 @@ const useTransfer = (): TransferContextType => {
             )
           : transferInfo.data
 
+        const eventTags: NDKTag[] = [['bolt11', bolt11]]
+        const destination: string =
+          transferInfo.type === TransferTypes.LNURL ||
+          transferInfo.type === TransferTypes.LUD16
+            ? transferInfo.data
+            : ''
+
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,
-          bolt11
+          eventTags,
+          destination
         )
 
         publishTransfer(txEvent)

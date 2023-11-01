@@ -1,12 +1,14 @@
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 
+type StrObjectType = Record<string, string>
+
 export interface Transaction {
   id: string
   status: TransactionStatus
   direction: TransactionDirection
   type: TransactionType
   tokens: TokensAmount
-  memo: string | null
+  memo: Record<string, string | StrObjectType>
   errors: string[]
   events: NostrEvent[]
   createdAt: Date

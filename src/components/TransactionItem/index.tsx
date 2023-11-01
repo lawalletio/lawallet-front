@@ -125,7 +125,11 @@ export default function Component({ transaction }: ComponentProps) {
                 <Text size="small" color={theme.colors.gray50}>
                   {isFromMe ? t('TO') : t('FROM')}
                 </Text>
-                <Text>Lightning</Text>
+                <Text>
+                  {isFromMe && transaction.memo && transaction.memo.destination
+                    ? (transaction.memo.destination as string)
+                    : 'Lightning'}
+                </Text>
               </Flex>
             </li>
             <li>
@@ -137,33 +141,20 @@ export default function Component({ transaction }: ComponentProps) {
                   <Text>
                     {dateFormatter(
                       lng,
-                      new Date(Number(transaction.createdAt) * 1000),
+                      new Date(Number(transaction.createdAt)),
                       'HH:mm'
                     )}
                   </Text>
                   <Text size="small" color={theme.colors.gray50}>
                     {dateFormatter(
                       lng,
-                      new Date(Number(transaction.createdAt) * 1000),
+                      new Date(Number(transaction.createdAt)),
                       'MMMM d, yyyy'
                     )}
                   </Text>
                 </Flex>
               </Flex>
             </li>
-            {/* <li>
-              <Flex align="center" justify="space-between">
-                <Text size="small" color={theme.colors.gray50}>
-                  {t('FEE')}
-                </Text>
-                <Flex direction="column" align="end">
-                  <Text>1 SAT</Text>
-                  <Text size="small" color={theme.colors.gray50}>
-                    {'>'}$0.01 {currency}
-                  </Text>
-                </Flex>
-              </Flex>
-            </li> */}
             <li>
               <Flex align="center" justify="space-between">
                 <Text size="small" color={theme.colors.gray50}>
