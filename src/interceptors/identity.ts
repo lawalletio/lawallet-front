@@ -70,10 +70,10 @@ export const claimIdentity = async (
 }
 
 export const getUsername = (pubkey: string) =>
-fetch(`${IDENTITY_ENDPOINT}/api/pubkey/${pubkey}`)
-  .then(res => res.json())
-  .then(info => info.username ?? '')
-  .catch(() => '')
+  fetch(`${IDENTITY_ENDPOINT}/api/pubkey/${pubkey}`)
+    .then(res => res.json())
+    .then(info => info.username ?? '')
+    .catch(() => '')
 
 export const getUserPubkey = (username: string) =>
   fetch(`${IDENTITY_ENDPOINT}/api/lud16/${username}`)

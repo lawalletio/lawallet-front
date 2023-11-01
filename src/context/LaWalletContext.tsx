@@ -19,7 +19,7 @@ import { createContext, useEffect, useState } from 'react'
 interface LaWalletContextType {
   lng: AvailableLanguages
   identity: IdentityWithSigner
-  setUserIdentity: (new_identity: UserIdentity) => void
+  setUserIdentity: (new_identity: UserIdentity) => Promise<void>
   transactions: Transaction[]
   userConfig: ConfigReturns
   notifications: UseAlertReturns
@@ -62,11 +62,13 @@ export function LaWalletProvider({
     return
   }
 
-  const setUserIdentity = (new_identity: UserIdentity) => {
+  const setUserIdentity = async (new_identity: UserIdentity) => {
     setIdentity({
       ...new_identity,
       signer: new NDKPrivateKeySigner(new_identity.privateKey)
     })
+
+    localStorage.setItem('identity', JSON.stringify(new_identity))
     return
   }
 

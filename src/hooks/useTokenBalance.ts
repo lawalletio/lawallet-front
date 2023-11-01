@@ -8,7 +8,6 @@ import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
 
-
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
 }

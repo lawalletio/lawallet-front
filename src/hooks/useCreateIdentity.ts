@@ -82,10 +82,6 @@ export const useCreateIdentity = (): UseIdentityReturns => {
         return createIdentity(props).then(
           (new_identity: CreateIdentityReturns) => {
             if (new_identity.success) {
-              localStorage.setItem(
-                'identity',
-                JSON.stringify(new_identity.identity!)
-              )
               setUserIdentity(new_identity.identity!)
               router.push('/dashboard')
             } else {
