@@ -82,7 +82,7 @@ export default function Page() {
 
             {transferInfo.type === TransferTypes.INVOICE ? (
               <Flex justify="center">
-                <Text>{formatAddress(transferInfo.data)}</Text>
+                <Text>{formatAddress(transferInfo.data, 15)}</Text>
               </Flex>
             ) : (
               <Flex justify="center">
@@ -124,13 +124,16 @@ export default function Page() {
         <Divider y={16} />
       </Container>
 
-      {transferInfo.expired && (
-        <Flex flex={1} align="center" justify="center">
-          <Feedback show={true} status={'error'}>
-            {t('INVOICE_EXPIRED')}
-          </Feedback>
-        </Flex>
-      )}
+      {transferInfo.expired ||
+        (transferInfo.amount > balance.amount && (
+          <Flex flex={1} align="center" justify="center">
+            <Feedback show={true} status={'error'}>
+              {transferInfo.expired
+                ? t('INVOICE_EXPIRED')
+                : t('INSUFICIENT_BALANCE')}
+            </Feedback>
+          </Flex>
+        ))}
 
       <Flex>
         <Container size="small">
