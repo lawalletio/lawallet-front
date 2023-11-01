@@ -8,10 +8,6 @@ import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
 
-export interface ActivitySubscriptionProps {
-  pubkey: string
-  tokenId: string
-}
 
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
@@ -20,15 +16,13 @@ export interface UseTokenBalanceReturn {
 export interface UseTokenBalanceProps {
   pubkey: string
   tokenId: string
-}
-
-export interface ActivitySubscriptionProps {
-  pubkey: string
+  closeOnEose?: boolean
 }
 
 export const useTokenBalance = ({
   pubkey,
-  tokenId
+  tokenId,
+  closeOnEose = false
 }: UseTokenBalanceProps): UseTokenBalanceReturn => {
   const { ndk } = useContext(NDKContext)
   const [balance, setBalance] = useState<TokenBalance>({
@@ -47,7 +41,8 @@ export const useTokenBalance = ({
       }
     ],
     options: {
-      groupable: false
+      groupable: false,
+      closeOnEose
     },
     enabled: Boolean(!balance.loading)
   })

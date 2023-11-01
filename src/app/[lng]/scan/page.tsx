@@ -43,7 +43,6 @@ export default function Page() {
 
       <Flex justify="center" align="center" flex={1}>
         <QrScanner
-          maxScansPerSecond={3}
           onDecode={handleScan}
           startOnLaunch={true}
           highlightScanRegion={true}

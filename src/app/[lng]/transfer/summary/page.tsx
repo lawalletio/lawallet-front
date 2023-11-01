@@ -42,7 +42,8 @@ export default function Page() {
 
   const { balance } = useTokenBalance({
     pubkey: identity.hexpub,
-    tokenId: 'BTC'
+    tokenId: 'BTC',
+    closeOnEose: true
   })
 
   const convertedAmount: string = useMemo(() => {
@@ -125,15 +126,15 @@ export default function Page() {
       </Container>
 
       {transferInfo.expired ||
-        (transferInfo.amount > balance.amount && (
+        (!balance.loading && transferInfo.amount > balance.amount) && (
           <Flex flex={1} align="center" justify="center">
             <Feedback show={true} status={'error'}>
               {transferInfo.expired
                 ? t('INVOICE_EXPIRED')
-                : t('INSUFICIENT_BALANCE')}
+                : t('INSUFFICIENT_BALANCE')}
             </Feedback>
           </Flex>
-        ))}
+        )}
 
       <Flex>
         <Container size="small">

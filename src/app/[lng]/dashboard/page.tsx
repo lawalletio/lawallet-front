@@ -66,7 +66,6 @@ export default function Page() {
 
   const convertedBalance: string = useMemo(() => {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)
-
     return formatToPreference(currency, amount, lng)
   }, [balance, pricesData, currency])
 
