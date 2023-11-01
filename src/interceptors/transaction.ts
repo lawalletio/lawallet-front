@@ -16,6 +16,7 @@ export interface TransferInformation {
   receiverPubkey: string
   walletService: LightningServiceProps | null
   type: TransferTypes | false
+  expired?: boolean
 }
 
 export const defaultTransfer: TransferInformation = {

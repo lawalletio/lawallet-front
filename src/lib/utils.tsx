@@ -41,12 +41,22 @@ const parseInvoiceInfo = (invoice: string) => {
   const invoiceAmount = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'amount'
   )
+  const createdAt = decodedInvoice.sections.find(
+    (section: Record<string, string>) => section.name === 'timestamp'
+  )
 
   const transfer: TransferInformation = {
     ...defaultTransfer,
     data: invoice.toLowerCase(),
     type: TransferTypes.INVOICE,
-    amount: invoiceAmount.value / 1000
+    amount: invoiceAmount.value / 1000,
+    expired: false
+  }
+
+  if (createdAt && createdAt.value) {
+    const expirationDate: number =
+      (createdAt.value + decodedInvoice.expiry) * 1000
+    if (expirationDate < Date.now()) transfer.expired = true
   }
 
   return transfer

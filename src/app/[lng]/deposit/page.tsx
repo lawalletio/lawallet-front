@@ -26,6 +26,7 @@ import {
   Button,
   Confetti,
   Divider,
+  Feedback,
   Flex,
   Heading,
   Icon,
@@ -35,12 +36,17 @@ import {
   Text
 } from '@/components/UI'
 
-import { LAWALLET_ENDPOINT, WALLET_DOMAIN } from '@/constants/config'
+import {
+  LAWALLET_ENDPOINT,
+  MAX_INVOICE_AMOUNT,
+  WALLET_DOMAIN
+} from '@/constants/config'
 import keys from '@/constants/keys'
 import { requestInvoice } from '@/interceptors/transaction'
 import { zapRequestEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
+import useErrors from '@/hooks/useErrors'
 
 type InvoiceProps = {
   bolt11: string
@@ -52,9 +58,16 @@ type SheetTypes = 'amount' | 'qr' | 'finished'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, lng, notifications, userConfig } =
-    useContext(LaWalletContext)
-  const numpadData = useNumpad(userConfig.props.currency)
+  const {
+    identity,
+    lng,
+    notifications,
+    userConfig: {
+      props: { currency }
+    },
+    converter: { convertCurrency }
+  } = useContext(LaWalletContext)
+  const numpadData = useNumpad(currency)
 
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)')
 
@@ -63,6 +76,7 @@ export default function Page() {
   )
 
   const router = useRouter()
+  const errors = useErrors()
   const [showSheet, setShowSeet] = useState<boolean>(false)
   const [sheetStep, setSheetStep] = useState<SheetTypes>('amount')
 
@@ -87,8 +101,24 @@ export default function Page() {
   const handleClick = async () => {
     if (invoice.loading) return
 
+    const amountSats: number = numpadData.intAmount['SAT']
+    if (amountSats < 1 || amountSats > MAX_INVOICE_AMOUNT) {
+      const convertedMinAmount: number = convertCurrency(1, 'SAT', currency)
+      const convertedMaxAmount: number = convertCurrency(
+        MAX_INVOICE_AMOUNT,
+        'SAT',
+        currency
+      )
+      errors.modifyError('ERROR_INVOICE_AMOUNT', {
+        minAmount: convertedMinAmount.toString(),
+        maxAmount: formatToPreference(currency, convertedMaxAmount, lng),
+        currency: currency
+      })
+      return
+    }
+
     setInvoice({ ...invoice, loading: true })
-    const invoice_mSats: number = numpadData.intAmount['SAT'] * 1000
+    const invoice_mSats: number = amountSats * 1000
     const zapRequest: string = await zapRequestEvent(invoice_mSats, identity)
 
     requestInvoice(
@@ -104,7 +134,7 @@ export default function Page() {
         setSheetStep('qr')
         return
       })
-      .catch(err => console.log(err))
+      .catch(() => errors.modifyError('ERROR_ON_CREATE_INVOICE'))
   }
 
   const handleCloseSheet = () => {
@@ -145,6 +175,10 @@ export default function Page() {
       })
     })
   }
+
+  useEffect(() => {
+    if (errors.errorInfo.visible) errors.resetError()
+  }, [numpadData.intAmount])
 
   return (
     <>
@@ -226,9 +260,15 @@ export default function Page() {
         {sheetStep === 'amount' && (
           <>
             <Container size="small">
-              <Flex direction="column" gap={8} flex={1} justify="center">
+              <Flex
+                direction="column"
+                gap={8}
+                flex={1}
+                justify="center"
+                align="center"
+              >
                 <Flex justify="center" align="center" gap={4}>
-                  {userConfig.props.currency === 'SAT' ? (
+                  {currency === 'SAT' ? (
                     <Icon size="small">
                       <SatoshiV2Icon />
                     </Icon>
@@ -237,13 +277,17 @@ export default function Page() {
                   )}
                   <Heading>
                     {formatToPreference(
-                      userConfig.props.currency,
+                      currency,
                       numpadData.intAmount[numpadData.usedCurrency],
                       lng
                     )}
                   </Heading>
                 </Flex>
                 <TokenList />
+
+                <Feedback show={errors.errorInfo.visible} status={'error'}>
+                  {errors.errorInfo.text}
+                </Feedback>
               </Flex>
               <Divider y={24} />
               <Flex gap={8}>
@@ -279,7 +323,7 @@ export default function Page() {
                   {t('WAITING_PAYMENT_OF')}
                 </Text>
                 <Flex justify="center" align="center" gap={4}>
-                  {userConfig.props.currency === 'SAT' ? (
+                  {currency === 'SAT' ? (
                     <Icon size="small">
                       <SatoshiV2Icon />
                     </Icon>
@@ -288,13 +332,13 @@ export default function Page() {
                   )}
                   <Heading>
                     {formatToPreference(
-                      userConfig.props.currency,
+                      currency,
                       numpadData.intAmount[numpadData.usedCurrency],
                       lng
                     )}{' '}
                   </Heading>
 
-                  <Text>{userConfig.props.currency}</Text>
+                  <Text>{currency}</Text>
                 </Flex>
               </Flex>
               <Divider y={24} />
@@ -337,7 +381,7 @@ export default function Page() {
                   {t('PAYMENT_RECEIVED')}
                 </Text>
                 <Flex justify="center" align="center" gap={4}>
-                  {userConfig.props.currency === 'SAT' ? (
+                  {currency === 'SAT' ? (
                     <Icon size="small">
                       <SatoshiV2Icon />
                     </Icon>
@@ -346,7 +390,7 @@ export default function Page() {
                   )}
                   <Heading>
                     {formatToPreference(
-                      userConfig.props.currency,
+                      currency,
                       numpadData.intAmount[numpadData.usedCurrency],
                       lng
                     )}
