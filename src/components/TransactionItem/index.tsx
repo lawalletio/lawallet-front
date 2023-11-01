@@ -9,15 +9,28 @@ import {
 import { Flex, Text, Accordion, AccordionBody, Button } from '@/components/UI'
 
 import theme from '@/styles/theme'
-import { Transaction, TransactionStatus } from '@/types/transaction'
-import { useContext, useMemo } from 'react'
+import {
+  Transaction,
+  TransactionDirection,
+  TransactionStatus,
+  TransactionType
+} from '@/types/transaction'
+import { useContext, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/hooks/useTranslations'
 import { dateFormatter, formatToPreference } from '@/lib/formatter'
 import { defaultCurrency } from '@/types/config'
+import { getUsername } from '@/interceptors/identity'
+import { WALLET_DOMAIN } from '@/constants/config'
+import { BtnLoader } from '../Loader/Loader'
 
 interface ComponentProps {
   transaction: Transaction
+}
+
+type LudInfoProps = {
+  loading: boolean
+  data: string
 }
 
 export default function Component({ transaction }: ComponentProps) {
@@ -36,6 +49,14 @@ export default function Component({ transaction }: ComponentProps) {
   const isFromMe = transaction?.direction === 'OUTGOING'
   const satsAmount = transaction.tokens?.BTC / 1000 || 0
 
+  const [ludInfo, setLudInfo] = useState<LudInfoProps>({
+    loading: false,
+    data:
+      isFromMe && transaction.memo && transaction.memo.destination
+        ? (transaction.memo.destination as string)
+        : 'Lightning'
+  })
+
   const listTypes = {
     CARD: { icon: <CreditCardIcon />, label: t('YOU_PAID') },
     INTERNAL: { icon: <TransferIcon />, label: t('YOU_TRANSFER') },
@@ -52,12 +73,26 @@ export default function Component({ transaction }: ComponentProps) {
     [pricesData, currency]
   )
 
+  const handleOpenAccordion = () => {
+    if (
+      transaction.direction === TransactionDirection.INCOMING &&
+      transaction.type === TransactionType.INTERNAL
+    ) {
+      setLudInfo({ ...ludInfo, loading: true })
+      getUsername(transaction.events[0].pubkey).then((username: string) => {
+        if (username.length)
+          setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+      })
+    }
+  }
+
   if (!satsAmount) return null
 
   return (
     <>
       <Accordion
         variant="borderless"
+        onOpen={handleOpenAccordion}
         trigger={
           <Flex align="center" gap={8}>
             <Flex align="center" gap={8}>
@@ -125,11 +160,7 @@ export default function Component({ transaction }: ComponentProps) {
                 <Text size="small" color={theme.colors.gray50}>
                   {isFromMe ? t('TO') : t('FROM')}
                 </Text>
-                <Text>
-                  {isFromMe && transaction.memo && transaction.memo.destination
-                    ? (transaction.memo.destination as string)
-                    : 'Lightning'}
-                </Text>
+                <Text>{ludInfo.loading ? <BtnLoader /> : ludInfo.data}</Text>
               </Flex>
             </li>
             <li>
