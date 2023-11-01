@@ -17,9 +17,9 @@ export default function Page() {
 
   return (
     <>
-      <Navbar>
+      <Navbar showBackPage={true}>
         <Flex align="center">
-          <Heading as="h5">{t('LAST_ACTIVITY')}</Heading>
+          <Heading as="h5">{t('ACTIVITY')}</Heading>
         </Flex>
       </Navbar>
 

@@ -173,7 +173,7 @@ export default function Page() {
         ) : (
           <Flex justify="space-between" align="center">
             <Text size="small" color={theme.colors.gray50}>
-              {t('LAST_ACTIVITY')}
+              {t('LAST_ACTIVITY').toUpperCase()}
             </Text>
 
             <Button
