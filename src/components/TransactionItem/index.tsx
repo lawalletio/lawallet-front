@@ -6,7 +6,7 @@ import {
   LightningIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 
-import { Flex, Text, Accordion, AccordionBody, Button } from '@/components/UI'
+import { Flex, Text, Accordion, AccordionBody } from '@/components/UI'
 
 import theme from '@/styles/theme'
 import {
@@ -203,11 +203,11 @@ export default function Component({ transaction }: ComponentProps) {
               </Flex>
             </li>
           </ul>
-          <Flex>
+          {/* <Flex>
             <Button variant="bezeled" onClick={() => null}>
               {t('SHARE')}
             </Button>
-          </Flex>
+          </Flex> */}
         </AccordionBody>
       </Accordion>
     </>

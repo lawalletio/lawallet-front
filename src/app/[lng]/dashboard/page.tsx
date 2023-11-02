@@ -171,25 +171,31 @@ export default function Page() {
             <Text size="small">{t('EMPTY_TRANSACTIONS_DESC')}</Text>
           </Flex>
         ) : (
-          <Flex justify="space-between" align="center">
-            <Text size="small" color={theme.colors.gray50}>
-              {t('LAST_ACTIVITY').toUpperCase()}
-            </Text>
+          <>
+            <Flex justify="space-between" align="center">
+              <Text size="small" color={theme.colors.gray50}>
+                {t('LAST_ACTIVITY').toUpperCase()}
+              </Text>
 
-            <Button
-              size="small"
-              variant="borderless"
-              onClick={() => router.push('/transactions')}
-            >
-              {t('SEE_ALL')}
-            </Button>
-          </Flex>
+              <Button
+                size="small"
+                variant="borderless"
+                onClick={() => router.push('/transactions')}
+              >
+                {t('SEE_ALL')}
+              </Button>
+            </Flex>
+
+            <Flex direction="column" gap={4}>
+              {transactions.slice(0, 10).map(transaction => (
+                <TransactionItem
+                  key={transaction.id}
+                  transaction={transaction}
+                />
+              ))}
+            </Flex>
+          </>
         )}
-
-        {transactions.slice(0, 10).map(transaction => (
-          <TransactionItem key={transaction.id} transaction={transaction} />
-        ))}
-
         <Divider y={64} />
       </Container>
 

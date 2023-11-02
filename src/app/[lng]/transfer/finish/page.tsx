@@ -5,7 +5,6 @@ import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import {
-  Button,
   Divider,
   Flex,
   Heading,
@@ -106,9 +105,9 @@ export default function Page() {
               {t('GO_HOME')}
             </LinkButton>
 
-            <Button variant="bezeled" onClick={() => null}>
+            {/* <Button variant="bezeled" onClick={() => null}>
               {t('SHARE')}
-            </Button>
+            </Button> */}
           </Flex>
           <Divider y={32} />
         </Container>
