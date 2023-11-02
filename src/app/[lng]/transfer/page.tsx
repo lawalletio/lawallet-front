@@ -119,7 +119,6 @@ export default function Page() {
               }}
               placeholder={t('TRANSFER_DATA_PLACEHOLDER')}
               type="text"
-              autoFocus={true}
               value={inputText}
               status={errors.errorInfo.visible ? 'error' : undefined}
             />

@@ -19,6 +19,11 @@ export const validateEmail = (email: string): RegExpMatchArray | null => {
   )
 }
 
+export const decodeInvoice = (invoice: string) => {
+  const decodedInvoice = bolt11.decode(invoice)
+  return decodedInvoice
+}
+
 export const detectTransferType = (data: string): TransferTypes | false => {
   const upperStr: string = data.toUpperCase()
   const isLUD16 = validateEmail(upperStr)
@@ -37,7 +42,7 @@ export const detectTransferType = (data: string): TransferTypes | false => {
 }
 
 const parseInvoiceInfo = (invoice: string) => {
-  const decodedInvoice = bolt11.decode(invoice)
+  const decodedInvoice = decodeInvoice(invoice)
   const invoiceAmount = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'amount'
   )

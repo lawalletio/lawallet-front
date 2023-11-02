@@ -97,7 +97,7 @@ export const useActivity = ({
 
   const formatStartTransaction = async (event: NDKEvent) => {
     const AuthorIsUser: boolean = event.pubkey === pubkey
-    const hasBoltTag: boolean = Boolean(getTag(event.tags, 'bolt11'))
+    const boltTag: string = getTag(event.tags, 'bolt11')
 
     const direction = AuthorIsUser
       ? TransactionDirection.OUTGOING
@@ -110,7 +110,7 @@ export const useActivity = ({
       status: TransactionStatus.PENDING,
       memo: eventContent,
       direction,
-      type: hasBoltTag ? TransactionType.LN : TransactionType.INTERNAL,
+      type: boltTag.length ? TransactionType.LN : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
       events: [await event.toNostrEvent()],
       errors: [],
