@@ -98,5 +98,8 @@
   "LOGIN": "Ingresar",
   "KEY_LENGTH_ERROR": "La clave privada debe tener un mínimo de 32 dígitos",
   "NOT_FOUND_PUBKEY": "No se encontró ningún usuario",
-  "UNEXPECTED_RECEOVERY_ERROR": "Ocurrió un error al iniciar sesión"
+  "UNEXPECTED_RECEOVERY_ERROR": "Ocurrió un error al iniciar sesión",
+  "SUCCESS_CLAIM": "Reclamaste la factura con éxito",
+  "CLAIM": "Reclamar",
+  "CLAIM_THIS_INVOICE": "Reclama esta factura"
 }

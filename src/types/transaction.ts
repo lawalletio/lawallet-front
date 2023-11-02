@@ -18,7 +18,8 @@ export enum TransferTypes {
   INTERNAL = 'INTERNAL',
   LUD16 = 'LUD16',
   INVOICE = 'INVOICE',
-  LNURL = 'LNURL'
+  LNURL = 'LNURL',
+  LNURLW = 'LNURLW'
 }
 
 export enum TransactionStatus {

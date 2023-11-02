@@ -75,13 +75,18 @@ export default function Page() {
             gap={8}
             flex={1}
           >
-            <Avatar size="large">
-              <Text size="small">
-                {transferUsername.substring(0, 2).toUpperCase()}
-              </Text>
-            </Avatar>
+            {transferInfo.type === TransferTypes.LNURLW ? (
+              <Text size="small">{t('CLAIM_THIS_INVOICE')}</Text>
+            ) : (
+              <Avatar size="large">
+                <Text size="small">
+                  {transferUsername.substring(0, 2).toUpperCase()}
+                </Text>
+              </Avatar>
+            )}
 
-            {transferInfo.type === TransferTypes.INVOICE ? (
+            {transferInfo.type === TransferTypes.INVOICE ||
+            transferInfo.type === TransferTypes.LNURLW ? (
               <Flex justify="center">
                 <Text>{formatAddress(transferInfo.data, 15)}</Text>
               </Flex>
@@ -126,15 +131,17 @@ export default function Page() {
       </Container>
 
       {transferInfo.expired ||
-        (!balance.loading && transferInfo.amount > balance.amount) && (
-          <Flex flex={1} align="center" justify="center">
-            <Feedback show={true} status={'error'}>
-              {transferInfo.expired
-                ? t('INVOICE_EXPIRED')
-                : t('INSUFFICIENT_BALANCE')}
-            </Feedback>
-          </Flex>
-        )}
+        (transferInfo.type !== TransferTypes.LNURLW &&
+          !balance.loading &&
+          transferInfo.amount > balance.amount && (
+            <Flex flex={1} align="center" justify="center">
+              <Feedback show={true} status={'error'}>
+                {transferInfo.expired
+                  ? t('INVOICE_EXPIRED')
+                  : t('INSUFFICIENT_BALANCE')}
+              </Feedback>
+            </Flex>
+          ))}
 
       <Flex>
         <Container size="small">
@@ -150,11 +157,18 @@ export default function Page() {
               disabled={
                 !transferInfo.type ||
                 loading ||
-                balance.amount < transferInfo.amount ||
-                transferInfo.expired
+                transferInfo.expired ||
+                (transferInfo.type !== TransferTypes.LNURLW &&
+                  balance.amount < transferInfo.amount)
               }
             >
-              {loading ? <BtnLoader /> : t('TRANSFER')}
+              {loading ? (
+                <BtnLoader />
+              ) : transferInfo.type === TransferTypes.LNURLW ? (
+                t('CLAIM')
+              ) : (
+                t('TRANSFER')
+              )}
             </Button>
           </Flex>
           <Divider y={32} />

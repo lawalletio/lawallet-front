@@ -100,17 +100,22 @@ const parseLNURLInfo = async (data: string) => {
     walletService
   }
 
-  try {
-    const parsedMetadata: Array<string>[] = JSON.parse(walletService.metadata)
-    const identifier: string[] | undefined = parsedMetadata.find(
-      (data: string[]) => {
-        if (data[0] === 'text/identifier') return data
-      }
-    )
+  if (walletService.tag === 'payRequest') {
+    try {
+      const parsedMetadata: Array<string>[] = JSON.parse(walletService.metadata)
+      const identifier: string[] | undefined = parsedMetadata.find(
+        (data: string[]) => {
+          if (data[0] === 'text/identifier') return data
+        }
+      )
 
-    if (identifier && identifier.length === 2) transfer.data = identifier[1]
-  } catch (error) {
-    console.log(error)
+      if (identifier && identifier.length === 2) transfer.data = identifier[1]
+    } catch (error) {
+      console.log(error)
+    }
+  } else if (walletService.tag === 'withdrawRequest') {
+    transfer.type = TransferTypes.LNURLW
+    transfer.amount = walletService.maxWithdrawable! / 1000
   }
 
   return transfer
@@ -118,7 +123,6 @@ const parseLNURLInfo = async (data: string) => {
 
 const parseLUD16Info = async (data: string) => {
   const [username, domain] = data.split('@')
-
   const walletService = await getWalletService(
     `https://${domain}/.well-known/lnurlp/${username}`
   )
@@ -132,7 +136,7 @@ const parseLUD16Info = async (data: string) => {
   }
 
   if (walletService.minSendable == walletService.maxSendable)
-    transfer.amount = walletService.maxSendable / 1000
+    transfer.amount = walletService.maxSendable! / 1000
 
   return transfer
 }

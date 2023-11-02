@@ -19,6 +19,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
 import { NDKContext } from '@/context/NDKContext'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import { LAWALLET_ENDPOINT } from '@/constants/config'
 
 export interface TransferContextType {
   loading: boolean
@@ -35,6 +37,7 @@ const useTransfer = (): TransferContextType => {
     useState<TransferInformation>(defaultTransfer)
 
   const { ndk } = useContext(NDKContext)
+  const { identity } = useContext(LaWalletContext)
 
   const router = useRouter()
   const params = useSearchParams()
@@ -52,6 +55,24 @@ const useTransfer = (): TransferContextType => {
     enabled: Boolean(startEvent?.id)
   })
 
+  const claimLNURLw = (info: TransferInformation) => {
+    const { walletService } = info
+    requestInvoice(
+      `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${walletService?.maxWithdrawable}`
+    ).then(pr => {
+      if (pr) {
+        fetch(
+          `${walletService!.callback}&k1=${walletService?.k1}&pr=${pr}`
+        ).then(res => {
+          if (res.status !== 200) router.push('/transfer/error')
+
+          router.push('/transfer/finish')
+          return
+        })
+      }
+    })
+  }
+
   const prepareTransaction = async (data: string) => {
     const formattedTransferInfo: TransferInformation =
       await formatTransferData(data)
@@ -59,6 +80,11 @@ const useTransfer = (): TransferContextType => {
     switch (formattedTransferInfo.type) {
       case false:
         return false
+
+      case TransferTypes.LNURLW:
+        if (!formattedTransferInfo.walletService?.maxWithdrawable) return false
+        router.push(`/transfer/summary?data=${formattedTransferInfo.data}`)
+        break
 
       case TransferTypes.INVOICE:
         if (formattedTransferInfo.amount > 0)
@@ -94,7 +120,9 @@ const useTransfer = (): TransferContextType => {
     setLoading(true)
 
     try {
-      if (transferInfo.type === TransferTypes.INTERNAL) {
+      if (transferInfo.type === TransferTypes.LNURLW) {
+        claimLNURLw(transferInfo)
+      } else if (transferInfo.type === TransferTypes.INTERNAL) {
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,

@@ -3,18 +3,22 @@ import keys from '@/constants/keys'
 import { TransferTypes } from '@/types/transaction'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 
-type LightningServiceProps = {
+interface LNServiceResponse {
+  tag: string
   callback: string
-  maxSendable: number
-  minSendable: number
   metadata: string
+  minSendable?: number
+  maxSendable?: number
+  k1?: string
+  minWithdrawable?: number
+  maxWithdrawable?: number
 }
 
 export interface TransferInformation {
   data: string
   amount: number
   receiverPubkey: string
-  walletService: LightningServiceProps | null
+  walletService: LNServiceResponse | null
   type: TransferTypes | false
   expired?: boolean
 }
@@ -27,11 +31,12 @@ export const defaultTransfer: TransferInformation = {
   type: false
 }
 
-export const getWalletService = (
-  url: string
-): Promise<LightningServiceProps | null> =>
+export const getWalletService = (url: string): Promise<LNServiceResponse> =>
   fetch(url)
-    .then(res => res.json())
+    .then(res => {
+      if (res.status !== 200) return null
+      return res.json()
+    })
     .then(walletInfo => {
       if (!walletInfo) return null
       return walletInfo

@@ -96,5 +96,8 @@
   "LOGIN": "Login",
   "KEY_LENGTH_ERROR": "The private key must be a minimum of 32 digits",
   "NOT_FOUND_PUBKEY": "No user found",
-  "UNEXPECTED_RECEOVERY_ERROR": "An error occurred while signing in"
+  "UNEXPECTED_RECEOVERY_ERROR": "An error occurred while signing in",
+  "SUCCESS_CLAIM": "You successfully claimed the invoice",
+  "CLAIM": "To claim",
+  "CLAIM_THIS_INVOICE": "Claim this invoice"
 }

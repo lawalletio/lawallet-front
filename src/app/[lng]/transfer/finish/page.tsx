@@ -59,7 +59,11 @@ export default function Page() {
         <Divider y={16} />
         <Heading>{t('FINISH_TRANSFER_TITLE')}</Heading>
         <Divider y={4} />
-        <Text size="small">{t('TRANSFER_TO')}</Text>
+        <Text size="small">
+          {transferInfo.type === TransferTypes.LNURLW
+            ? t('SUCCESS_CLAIM')
+            : t('TRANSFER_TO')}
+        </Text>
         <Divider y={24} />
         <Flex align="center" gap={8}>
           <Avatar size="large">
@@ -67,9 +71,10 @@ export default function Page() {
               {transferUsername.substring(0, 2).toUpperCase()}
             </Text>
           </Avatar>
-          {transferInfo.type === TransferTypes.INVOICE ? (
+          {transferInfo.type === TransferTypes.LNURLW ||
+          transferInfo.type === TransferTypes.INVOICE ? (
             <Flex justify="center">
-              <Text>{formatAddress(transferInfo.data)}</Text>
+              <Text>{formatAddress(transferInfo.data, 25)}</Text>
             </Flex>
           ) : (
             <Flex justify="center">
@@ -104,10 +109,6 @@ export default function Page() {
             <LinkButton variant="borderless" href="/dashboard">
               {t('GO_HOME')}
             </LinkButton>
-
-            {/* <Button variant="bezeled" onClick={() => null}>
-              {t('SHARE')}
-            </Button> */}
           </Flex>
           <Divider y={32} />
         </Container>
