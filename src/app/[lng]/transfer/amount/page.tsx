@@ -80,10 +80,10 @@ export default function Page() {
       const mSats = satsAmount * 1000
       const { minSendable, maxSendable } = transferInfo.walletService
 
-      if (mSats < minSendable || mSats > maxSendable) {
+      if (mSats < minSendable! || mSats > maxSendable!) {
         errors.modifyError('INVALID_SENDABLE_AMOUNT', {
-          minSendable: (minSendable / 1000).toString(),
-          maxSendable: (maxSendable / 1000).toString(),
+          minSendable: (minSendable! / 1000).toString(),
+          maxSendable: (maxSendable! / 1000).toString(),
           currency: 'SAT'
         })
 
@@ -152,12 +152,12 @@ export default function Page() {
                 {t('SENDABLE_AMOUNT', {
                   minSendable: formatToPreference(
                     'SAT',
-                    transferInfo.walletService.minSendable / 1000,
+                    transferInfo.walletService.minSendable! / 1000,
                     lng
                   ),
                   maxSendable: formatToPreference(
                     'SAT',
-                    transferInfo.walletService.maxSendable / 1000,
+                    transferInfo.walletService.maxSendable! / 1000,
                     lng
                   )
                 })}
