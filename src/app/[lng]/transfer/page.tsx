@@ -47,7 +47,8 @@ export default function Page() {
     if (loading) return
     setLoading(true)
 
-    const prepared: boolean = await prepareTransaction(data)
+    const cleanData: string = data.trim()
+    const prepared: boolean = await prepareTransaction(cleanData)
     if (!prepared) {
       errors.modifyError('INVALID_RECIPIENT')
       setLoading(false)

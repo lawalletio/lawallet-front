@@ -61,7 +61,8 @@ const useTransfer = (): TransferContextType => {
         return false
 
       case TransferTypes.INVOICE:
-        router.push(`/transfer/summary?data=${formattedTransferInfo.data}`)
+        if (formattedTransferInfo.amount > 0)
+          router.push(`/transfer/summary?data=${formattedTransferInfo.data}`)
         break
 
       default:

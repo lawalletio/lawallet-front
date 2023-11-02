@@ -41,6 +41,9 @@ const parseInvoiceInfo = (invoice: string) => {
   const invoiceAmount = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'amount'
   )
+
+  if (!invoiceAmount) return defaultTransfer
+
   const createdAt = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'timestamp'
   )
