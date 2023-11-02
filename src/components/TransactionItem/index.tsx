@@ -73,16 +73,16 @@ export default function Component({ transaction }: ComponentProps) {
     [pricesData, currency]
   )
 
-  const handleOpenAccordion = () => {
+  const handleOpenAccordion = async () => {
     if (
       transaction.direction === TransactionDirection.INCOMING &&
       transaction.type === TransactionType.INTERNAL
     ) {
       setLudInfo({ ...ludInfo, loading: true })
-      getUsername(transaction.events[0].pubkey).then((username: string) => {
-        if (username.length)
-          setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
-      })
+      const username: string = await getUsername(transaction.events[0].pubkey)
+
+      if (username.length)
+        setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
     }
   }
 
