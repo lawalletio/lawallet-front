@@ -31,7 +31,7 @@ export default function Page() {
   useEffect(() => {
     router.prefetch('/transfer/summary')
     router.prefetch('/transfer/amount')
-  }, [])
+  }, [router])
 
   return (
     <>
