@@ -23,7 +23,7 @@ import { defaultCurrency } from '@/types/config'
 import { getUsername } from '@/interceptors/identity'
 import { WALLET_DOMAIN } from '@/constants/config'
 import { BtnLoader } from '../Loader/Loader'
-import { getMultipleTags, getTag } from '@/lib/events'
+import { getMultipleTags } from '@/lib/events'
 
 interface ComponentProps {
   transaction: Transaction
@@ -72,11 +72,7 @@ export default function Component({ transaction }: ComponentProps) {
   )
 
   const handleOpenAccordion = async () => {
-    const hasBoltTag: boolean = Boolean(
-      getTag(transaction.events[0].tags, 'bolt11')
-    )
-
-    if (!hasBoltTag && transaction.type === TransactionType.INTERNAL) {
+    if (transaction.type === TransactionType.INTERNAL) {
       setLudInfo({ ...ludInfo, loading: true })
 
       let username: string = ''
