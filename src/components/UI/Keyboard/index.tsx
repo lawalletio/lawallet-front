@@ -2,6 +2,7 @@ import { ClearCharacterIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
 import { Flex, Button } from '@/components/UI'
 import { IUseNumpad } from '@/hooks/useNumpad'
+import { useEffect } from 'react'
 
 const timeOut: Record<string, NodeJS.Timeout> = {}
 type KeyboardProps = {
@@ -9,12 +10,37 @@ type KeyboardProps = {
 }
 
 export default function Component({ numpadData }: KeyboardProps) {
-  const { handleNumpad, resetAmount, deleteNumber } = numpadData
+  const { handleNumpad, intAmount, resetAmount, concatNumber, deleteNumber } =
+    numpadData
 
   const handleDeleteOnMouseDown = () =>
     (timeOut.reset = setTimeout(() => resetAmount(), 500))
 
   const handleDeleteOnMouseUp = () => clearTimeout(timeOut?.reset)
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [intAmount])
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    const { key } = e
+    const keysAccepted: string[] = [
+      '0',
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9'
+    ]
+
+    if (key == 'Backspace') deleteNumber()
+    if (keysAccepted.includes(key)) concatNumber(key)
+  }
 
   return (
     <Flex direction="column" gap={8}>

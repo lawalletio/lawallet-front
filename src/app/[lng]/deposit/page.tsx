@@ -191,7 +191,7 @@ export default function Page() {
       <QRCode
         size={325}
         value={(
-          'lightning://' +
+          'lightning:' +
           lnurl.encode(
             `https://${WALLET_DOMAIN}/.well-known/lnurlp/${identity.username}`
           )
