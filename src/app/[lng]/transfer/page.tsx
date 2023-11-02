@@ -24,13 +24,16 @@ import { Fragment, useContext, useEffect, useState } from 'react'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
 import { LaWalletContext } from '@/context/LaWalletContext'
-import { TransactionDirection } from '@/types/transaction'
+import { TransactionDirection, TransactionType } from '@/types/transaction'
 import RecipientElement from './components/RecipientElement'
 import theme from '@/styles/theme'
+import { getUsername } from '@/interceptors/identity'
+import { WALLET_DOMAIN } from '@/constants/config'
+import { getMultipleTags } from '@/lib/events'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { transactions } = useContext(LaWalletContext)
+  const { identity, transactions } = useContext(LaWalletContext)
   const { prepareTransaction, transferInfo } = useTransferContext()
 
   const [lastDestinations, setLastDestinations] = useState<string[]>([])
@@ -69,14 +72,24 @@ export default function Page() {
 
   const loadLastDestinations = () => {
     const lastDest: string[] = []
-    transactions.filter(tx => {
+
+    transactions.forEach(async tx => {
       if (
-        tx.direction === TransactionDirection.OUTGOING &&
-        tx.memo &&
-        tx.memo.destination &&
-        !lastDest.includes(tx.memo.destination as string)
-      )
-        lastDest.push(tx.memo.destination as string)
+        tx.type === TransactionType.INTERNAL &&
+        tx.direction === TransactionDirection.OUTGOING
+      ) {
+        const txPubkeys: string[] = getMultipleTags(tx.events[0].tags, 'p')
+        if (txPubkeys.length !== 2) return
+
+        const receiverPubkey: string = txPubkeys[1]
+        if (receiverPubkey === identity.hexpub) return
+
+        const username: string = await getUsername(receiverPubkey)
+        if (username.length) {
+          const formattedLud16: string = `${username}@${WALLET_DOMAIN}`
+          if (!lastDest.includes(formattedLud16)) lastDest.push(formattedLud16)
+        }
+      }
     })
 
     setLastDestinations(lastDest)

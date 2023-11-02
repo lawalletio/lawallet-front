@@ -113,7 +113,7 @@ export const useActivity = ({
       tokens: eventContent.tokens,
       events: [await event.toNostrEvent()],
       errors: [],
-      createdAt: new Date(event.created_at! * 1000)
+      createdAt: event.created_at! * 1000
     }
 
     return newTransaction
@@ -252,10 +252,7 @@ export const useActivity = ({
   }, [walletEvents])
 
   const sortedTransactions: Transaction[] = useMemo(
-    () =>
-      transactions.new.sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-      ),
+    () => transactions.new.sort((a, b) => b.createdAt - a.createdAt),
     [transactions.new]
   )
 

@@ -98,8 +98,7 @@ const useTransfer = (): TransferContextType => {
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,
-          [],
-          transferInfo.data
+          []
         )
 
         publishTransfer(txEvent)
@@ -113,18 +112,18 @@ const useTransfer = (): TransferContextType => {
           : transferInfo.data
 
         const eventTags: NDKTag[] = [['bolt11', bolt11]]
-        const destination: string =
-          transferInfo.type === TransferTypes.LNURL ||
-          transferInfo.type === TransferTypes.LUD16
-            ? transferInfo.data
-            : ''
+
+        // const destination: string =
+        //   transferInfo.type === TransferTypes.LNURL ||
+        //   transferInfo.type === TransferTypes.LUD16
+        //     ? transferInfo.data
+        //     : ''
 
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,
-          eventTags,
-          destination
+          eventTags
         )
 
         publishTransfer(txEvent)

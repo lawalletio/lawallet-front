@@ -11,7 +11,7 @@ export interface Transaction {
   memo: Record<string, string | StrObjectType>
   errors: string[]
   events: NostrEvent[]
-  createdAt: Date
+  createdAt: number
 }
 
 export enum TransferTypes {

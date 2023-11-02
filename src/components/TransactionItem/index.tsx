@@ -23,6 +23,7 @@ import { defaultCurrency } from '@/types/config'
 import { getUsername } from '@/interceptors/identity'
 import { WALLET_DOMAIN } from '@/constants/config'
 import { BtnLoader } from '../Loader/Loader'
+import { getMultipleTags, getTag } from '@/lib/events'
 
 interface ComponentProps {
   transaction: Transaction
@@ -51,10 +52,7 @@ export default function Component({ transaction }: ComponentProps) {
 
   const [ludInfo, setLudInfo] = useState<LudInfoProps>({
     loading: false,
-    data:
-      isFromMe && transaction.memo && transaction.memo.destination
-        ? (transaction.memo.destination as string)
-        : 'Lightning'
+    data: 'Lightning'
   })
 
   const listTypes = {
@@ -74,12 +72,26 @@ export default function Component({ transaction }: ComponentProps) {
   )
 
   const handleOpenAccordion = async () => {
-    if (
-      transaction.direction === TransactionDirection.INCOMING &&
-      transaction.type === TransactionType.INTERNAL
-    ) {
+    const hasBoltTag: boolean = Boolean(
+      getTag(transaction.events[0].tags, 'bolt11')
+    )
+
+    if (!hasBoltTag && transaction.type === TransactionType.INTERNAL) {
       setLudInfo({ ...ludInfo, loading: true })
-      const username: string = await getUsername(transaction.events[0].pubkey)
+
+      let username: string = ''
+      if (transaction.direction === TransactionDirection.INCOMING) {
+        username = await getUsername(transaction.events[0].pubkey)
+      } else {
+        const txPubkeys: string[] = getMultipleTags(
+          transaction.events[0].tags,
+          'p'
+        )
+        if (txPubkeys.length < 2) return
+
+        const receiverPubkey: string = txPubkeys[1]
+        username = await getUsername(receiverPubkey)
+      }
 
       if (username.length)
         setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
