@@ -33,7 +33,7 @@ import { getMultipleTags } from '@/lib/events'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, transactions } = useContext(LaWalletContext)
+  const { identity, sortedTransactions } = useContext(LaWalletContext)
   const { prepareTransaction, transferInfo } = useTransferContext()
 
   const [lastDestinations, setLastDestinations] = useState<string[]>([])
@@ -74,7 +74,7 @@ export default function Page() {
   const loadLastDestinations = () => {
     const lastDest: string[] = []
 
-    transactions.forEach(async tx => {
+    sortedTransactions.forEach(async tx => {
       if (
         tx.type === TransactionType.INTERNAL &&
         tx.direction === TransactionDirection.OUTGOING
@@ -97,8 +97,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (transactions.length) loadLastDestinations()
-  }, [transactions.length])
+    if (sortedTransactions.length) loadLastDestinations()
+  }, [sortedTransactions.length])
 
   return (
     <>

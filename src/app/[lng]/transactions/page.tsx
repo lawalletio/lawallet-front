@@ -12,7 +12,7 @@ import { LaWalletContext } from '@/context/LaWalletContext'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { transactions } = useContext(LaWalletContext)
+  const { sortedTransactions } = useContext(LaWalletContext)
   const router = useRouter()
 
   return (
@@ -30,7 +30,7 @@ export default function Page() {
         </Text> */}
         <Divider y={8} />
         <Flex direction="column" gap={4}>
-          {transactions.map(transaction => (
+          {sortedTransactions.map(transaction => (
             <TransactionItem key={transaction.id} transaction={transaction} />
           ))}
         </Flex>

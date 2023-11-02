@@ -16,8 +16,16 @@ export interface ActivitySubscriptionProps {
   pubkey: string
 }
 
+export type ActivityType = {
+  loading: boolean
+  lastCached: number
+  cached: Transaction[]
+  previous: Transaction[]
+  suscription: Transaction[]
+}
+
 export interface UseActivityReturn {
-  previousTransactions: Transaction[]
+  activityInfo: ActivityType
   sortedTransactions: Transaction[]
 }
 
@@ -62,18 +70,28 @@ export const useActivity = ({
   enabled,
   limit = 100
 }: UseActivityProps): UseActivityReturn => {
+  const [activityInfo, setActivityInfo] = useState<ActivityType>({
+    loading: true,
+    lastCached: 0,
+    previous: [],
+    cached: [],
+    suscription: []
+  })
+
   const { events: walletEvents } = useSubscription({
     filters: [
       {
         authors: [pubkey],
         kinds: [1112 as NDKKind],
         '#t': ['internal-transaction-start'],
+        since: activityInfo.lastCached,
         limit
       },
       {
         '#p': [pubkey],
         '#t': startTags,
         kinds: [1112 as NDKKind],
+        since: activityInfo.lastCached,
         limit
       },
       {
@@ -81,18 +99,12 @@ export const useActivity = ({
         kinds: [1112 as NDKKind],
         '#p': [pubkey],
         '#t': statusTags,
+        since: activityInfo.lastCached,
         limit
       }
     ],
     options,
-    enabled
-  })
-
-  const [transactions, setTransactions] = useState<
-    Record<'old' | 'new', Transaction[]>
-  >({
-    old: [],
-    new: []
+    enabled: enabled && !activityInfo.loading
   })
 
   const formatStartTransaction = async (event: NDKEvent) => {
@@ -200,6 +212,14 @@ export const useActivity = ({
     const [startedEvents, statusEvents, refundEvents] =
       filterEventsByTxType(events)
 
+    setActivityInfo(prev => {
+      return {
+        ...prev,
+        previous: sortedTransactions,
+        loading: true
+      }
+    })
+
     startedEvents.forEach(startEvent => {
       formatStartTransaction(startEvent)
         .then(formattedTx => {
@@ -230,10 +250,11 @@ export const useActivity = ({
         })
     })
 
-    setTransactions(prev => {
+    setActivityInfo(prev => {
       return {
-        old: !prev.new.length ? userTransactions : prev.new,
-        new: userTransactions
+        ...prev,
+        suscription: userTransactions,
+        loading: false
       }
     })
   }
@@ -252,13 +273,45 @@ export const useActivity = ({
     return () => clearTimeout(intervalGenerateTransactions)
   }, [walletEvents])
 
+  const loadCachedTransactions = () => {
+    const storagedData: string = localStorage.getItem('transactions') || ''
+    if (!storagedData) {
+      setActivityInfo({
+        ...activityInfo,
+        loading: false
+      })
+      return
+    }
+
+    const cachedTxs: Transaction[] = JSON.parse(storagedData)
+    setActivityInfo({
+      suscription: [],
+      previous: cachedTxs,
+      cached: cachedTxs,
+      lastCached: cachedTxs.length ? 1 + cachedTxs[0].createdAt / 1000 : 0,
+      loading: false
+    })
+  }
+
+  useEffect(() => {
+    loadCachedTransactions()
+  }, [])
+
   const sortedTransactions: Transaction[] = useMemo(
-    () => transactions.new.sort((a, b) => b.createdAt - a.createdAt),
-    [transactions.new]
+    () =>
+      [...activityInfo.suscription, ...activityInfo.cached].sort(
+        (a, b) => b.createdAt - a.createdAt
+      ),
+    [activityInfo]
   )
 
+  useEffect(() => {
+    if (sortedTransactions.length)
+      localStorage.setItem('transactions', JSON.stringify(sortedTransactions))
+  }, [sortedTransactions])
+
   return {
-    previousTransactions: transactions.old,
+    activityInfo,
     sortedTransactions
   }
 }

@@ -50,7 +50,7 @@ export default function Page() {
   const {
     lng,
     identity,
-    transactions,
+    sortedTransactions,
     userConfig: {
       loading,
       toggleHideBalance,
@@ -163,7 +163,7 @@ export default function Page() {
           </Button>
         </Flex>
         <Divider y={16} />
-        {transactions.length === 0 ? (
+        {sortedTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
             <Heading as="h4">{t('EMPTY_TRANSACTIONS_TITLE')}</Heading>
@@ -187,7 +187,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {transactions.slice(0, 10).map(transaction => (
+              {sortedTransactions.slice(0, 10).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}

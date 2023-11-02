@@ -20,7 +20,7 @@ interface LaWalletContextType {
   lng: AvailableLanguages
   identity: IdentityWithSigner
   setUserIdentity: (new_identity: UserIdentity) => Promise<void>
-  transactions: Transaction[]
+  sortedTransactions: Transaction[]
   userConfig: ConfigReturns
   notifications: UseAlertReturns
   converter: UseConverterReturns
@@ -41,12 +41,11 @@ export function LaWalletProvider({
 
   const notifications = useAlert()
 
-  const { sortedTransactions: transactions, previousTransactions } =
-    useActivity({
-      pubkey: identity.hexpub,
-      enabled: Boolean(identity.hexpub.length),
-      limit: 100
-    })
+  const { activityInfo, sortedTransactions } = useActivity({
+    pubkey: identity.hexpub,
+    enabled: Boolean(identity.hexpub.length),
+    limit: 100
+  })
 
   const userConfig: ConfigReturns = useConfiguration()
   const converter = useCurrencyConverter()
@@ -73,15 +72,13 @@ export function LaWalletProvider({
   }
 
   const notifyReceivedTransaction = () => {
-    const new_transactions: Transaction[] = transactions.filter(tx => {
+    const new_transactions: Transaction[] = sortedTransactions.filter(tx => {
       const transactionId: string = tx.id
-
       const existTransaction: Transaction | undefined =
-        previousTransactions.find(prevTx => prevTx.id === transactionId)
+        activityInfo.previous.find(prevTx => prevTx.id === transactionId)
 
       return Boolean(!existTransaction)
     })
-
     if (
       new_transactions.length &&
       new_transactions[0].direction === TransactionDirection.INCOMING
@@ -100,14 +97,14 @@ export function LaWalletProvider({
   }, [])
 
   useEffect(() => {
-    if (transactions.length) notifyReceivedTransaction()
-  }, [transactions.length])
+    if (sortedTransactions.length) notifyReceivedTransaction()
+  }, [sortedTransactions.length])
 
   const value = {
     lng,
     identity,
     setUserIdentity,
-    transactions,
+    sortedTransactions,
     userConfig,
     notifications,
     converter,
