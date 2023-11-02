@@ -23,7 +23,6 @@ export enum TransferTypes {
 
 export enum TransactionStatus {
   PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
   CONFIRMED = 'CONFIRMED',
   ERROR = 'ERROR',
   REVERTED = 'REVERTED'
