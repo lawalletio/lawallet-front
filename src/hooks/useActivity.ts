@@ -101,6 +101,14 @@ export const useActivity = ({
         '#t': statusTags,
         since: activityInfo.lastCached,
         limit
+      },
+      {
+        authors: [keys.cardPubkey],
+        kinds: [1112 as NDKKind],
+        '#p': [pubkey],
+        '#t': statusTags,
+        since: activityInfo.lastCached,
+        limit
       }
     ],
     options,
@@ -297,13 +305,21 @@ export const useActivity = ({
     loadCachedTransactions()
   }, [])
 
-  const sortedTransactions: Transaction[] = useMemo(
-    () =>
-      [...activityInfo.suscription, ...activityInfo.cached].sort(
-        (a, b) => b.createdAt - a.createdAt
-      ),
-    [activityInfo]
-  )
+  const sortedTransactions: Transaction[] = useMemo(() => {
+    const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
+      tx => {
+        const cached = activityInfo.cached.find(
+          cachedTX => cachedTX.id === tx.id
+        )
+
+        return Boolean(!cached)
+      }
+    )
+
+    return [...TXsWithoutCached, ...activityInfo.cached].sort(
+      (a, b) => b.createdAt - a.createdAt
+    )
+  }, [activityInfo])
 
   useEffect(() => {
     if (sortedTransactions.length)

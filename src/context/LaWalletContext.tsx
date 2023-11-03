@@ -14,6 +14,7 @@ import {
 } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
 import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk'
+import { differenceInSeconds } from 'date-fns'
 import { createContext, useEffect, useState } from 'react'
 
 interface LaWalletContextType {
@@ -82,14 +83,21 @@ export function LaWalletProvider({
     if (
       new_transactions.length &&
       new_transactions[0].direction === TransactionDirection.INCOMING
-    )
-      notifications.showAlert({
-        description: 'TRANSACTION_RECEIVED',
-        type: 'success',
-        params: {
-          sats: (new_transactions[0].tokens.BTC / 1000).toString()
-        }
-      })
+    ) {
+      const secondsSinceCreated: number = differenceInSeconds(
+        new Date(),
+        new Date(new_transactions[0].createdAt)
+      )
+
+      if (secondsSinceCreated < 15)
+        notifications.showAlert({
+          description: 'TRANSACTION_RECEIVED',
+          type: 'success',
+          params: {
+            sats: (new_transactions[0].tokens.BTC / 1000).toString()
+          }
+        })
+    }
   }
 
   useEffect(() => {
