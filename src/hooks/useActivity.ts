@@ -88,7 +88,7 @@ export const useActivity = ({
   const { events: walletEvents } = useSubscription({
     filters: [
       {
-        authors: [pubkey],
+        authors: [pubkey, keys.cardPubkey],
         kinds: [1112 as NDKKind],
         '#t': ['internal-transaction-start'],
         since: activityInfo.lastCached,
@@ -108,13 +108,6 @@ export const useActivity = ({
         '#t': statusTags,
         since: activityInfo.lastCached,
         limit
-      },
-      {
-        authors: [keys.cardPubkey],
-        kinds: [1112 as NDKKind],
-        '#t': startTags,
-        since: activityInfo.lastCached,
-        limit
       }
     ],
     options,
@@ -122,16 +115,17 @@ export const useActivity = ({
   })
 
   const formatStartTransaction = async (event: NDKEvent) => {
-    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
     const nostrEvent: NostrEvent = await event.toNostrEvent()
+    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
 
-    if (AuthorIsCard) {
-      const delegator = nip26.getDelegator(nostrEvent as Event)
-      if (delegator !== pubkey) return
+    const DelegatorIsUser: boolean =
+      AuthorIsCard && nip26.getDelegator(nostrEvent as Event) === pubkey
+    const AuthorIsUser: boolean = DelegatorIsUser || event.pubkey === pubkey
+
+    if (AuthorIsCard && !DelegatorIsUser) {
+      const delegation_pTags: string[] = getMultipleTags(event.tags, 'p')
+      if (!delegation_pTags.includes(pubkey)) return
     }
-
-    const AuthorIsUser: boolean = AuthorIsCard || event.pubkey === pubkey
-    const boltTag: string = getTag(event.tags, 'bolt11')
 
     const direction = AuthorIsUser
       ? TransactionDirection.OUTGOING
@@ -144,15 +138,16 @@ export const useActivity = ({
       status: TransactionStatus.PENDING,
       memo: eventContent,
       direction,
-      type: AuthorIsCard
-        ? TransactionType.CARD
-        : boltTag.length
-        ? TransactionType.LN
-        : TransactionType.INTERNAL,
+      type: AuthorIsCard ? TransactionType.CARD : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
       events: [nostrEvent],
       errors: [],
       createdAt: event.created_at! * 1000
+    }
+
+    if (!AuthorIsCard) {
+      const boltTag: string = getTag(event.tags, 'bolt11')
+      if (boltTag.length) newTransaction.type = TransactionType.LN
     }
 
     return newTransaction
