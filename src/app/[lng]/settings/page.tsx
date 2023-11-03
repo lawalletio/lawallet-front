@@ -31,6 +31,7 @@ export default function Page() {
   const logoutSession = () => {
     setUserIdentity(defaultIdentity).then(() => {
       localStorage.removeItem('identity')
+      localStorage.removeItem('cached_txs')
       router.push('/login')
     })
   }

@@ -101,14 +101,6 @@ export const useActivity = ({
         '#t': statusTags,
         since: activityInfo.lastCached,
         limit
-      },
-      {
-        authors: [keys.cardPubkey],
-        kinds: [1112 as NDKKind],
-        '#p': [pubkey],
-        '#t': statusTags,
-        since: activityInfo.lastCached,
-        limit
       }
     ],
     options,
@@ -282,7 +274,7 @@ export const useActivity = ({
   }, [walletEvents])
 
   const loadCachedTransactions = () => {
-    const storagedData: string = localStorage.getItem('transactions') || ''
+    const storagedData: string = localStorage.getItem(`cached_txs`) || ''
     if (!storagedData) {
       setActivityInfo({
         ...activityInfo,
@@ -323,7 +315,7 @@ export const useActivity = ({
 
   useEffect(() => {
     if (sortedTransactions.length)
-      localStorage.setItem('transactions', JSON.stringify(sortedTransactions))
+      localStorage.setItem('cached_txs', JSON.stringify(sortedTransactions))
   }, [sortedTransactions])
 
   return {
