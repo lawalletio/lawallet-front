@@ -6,7 +6,7 @@ import {
   requestInvoice
 } from '@/interceptors/transaction'
 import { generateTxStart, getTag } from '@/lib/events'
-import { formatTransferData } from '@/lib/utils'
+import { addQueryParameter, formatTransferData } from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import {
   NDKEvent,
@@ -61,9 +61,11 @@ const useTransfer = (): TransferContextType => {
       `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${walletService?.maxWithdrawable}`
     ).then(pr => {
       if (pr) {
-        fetch(
-          `${walletService!.callback}&k1=${walletService?.k1}&pr=${pr}`
-        ).then(res => {
+        let urlCallback: string = walletService!.callback
+        urlCallback = addQueryParameter(urlCallback, `k1=${walletService!.k1!}`)
+        urlCallback = addQueryParameter(urlCallback, `pr=${pr}`)
+
+        fetch(urlCallback).then(res => {
           if (res.status !== 200) router.push('/transfer/error')
 
           router.push('/transfer/finish')

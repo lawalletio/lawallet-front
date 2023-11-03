@@ -203,3 +203,11 @@ export function checkIOS(navigator: Navigator) {
     )
   }
 }
+
+export function addQueryParameter(url: string, parameter: string) {
+  if (url.indexOf('?') === -1) {
+    return url + '?' + parameter
+  } else {
+    return url + '&' + parameter
+  }
+}
