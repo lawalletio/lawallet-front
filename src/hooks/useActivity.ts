@@ -6,11 +6,18 @@ import {
 } from '@/types/transaction'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { NDKEvent, NDKKind, NDKSubscriptionOptions } from '@nostr-dev-kit/ndk'
+import {
+  NDKEvent,
+  NDKKind,
+  NDKSubscriptionOptions,
+  NostrEvent
+} from '@nostr-dev-kit/ndk'
 
 import { useSubscription } from './useSubscription'
 import keys from '@/constants/keys'
 import { getMultipleTags, getTag } from '@/lib/events'
+import { nip26 } from 'nostr-tools'
+import { Event } from 'nostr-tools'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -97,8 +104,15 @@ export const useActivity = ({
       {
         authors: [keys.ledgerPubkey],
         kinds: [1112 as NDKKind],
-        '#p': [pubkey],
+        '#p': [pubkey, keys.cardPubkey],
         '#t': statusTags,
+        since: activityInfo.lastCached,
+        limit
+      },
+      {
+        authors: [keys.cardPubkey],
+        kinds: [1112 as NDKKind],
+        '#t': startTags,
         since: activityInfo.lastCached,
         limit
       }
@@ -108,7 +122,15 @@ export const useActivity = ({
   })
 
   const formatStartTransaction = async (event: NDKEvent) => {
-    const AuthorIsUser: boolean = event.pubkey === pubkey
+    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
+    const nostrEvent: NostrEvent = await event.toNostrEvent()
+
+    if (AuthorIsCard) {
+      const delegator = nip26.getDelegator(nostrEvent as Event)
+      if (delegator !== pubkey) return
+    }
+
+    const AuthorIsUser: boolean = AuthorIsCard || event.pubkey === pubkey
     const boltTag: string = getTag(event.tags, 'bolt11')
 
     const direction = AuthorIsUser
@@ -122,9 +144,13 @@ export const useActivity = ({
       status: TransactionStatus.PENDING,
       memo: eventContent,
       direction,
-      type: boltTag.length ? TransactionType.LN : TransactionType.INTERNAL,
+      type: AuthorIsCard
+        ? TransactionType.CARD
+        : boltTag.length
+        ? TransactionType.LN
+        : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
-      events: [await event.toNostrEvent()],
+      events: [nostrEvent],
       errors: [],
       createdAt: event.created_at! * 1000
     }
@@ -223,6 +249,8 @@ export const useActivity = ({
     startedEvents.forEach(startEvent => {
       formatStartTransaction(startEvent)
         .then(formattedTx => {
+          if (!formattedTx) return
+
           const statusEvent: NDKEvent | undefined = findAsocciatedEvent(
             statusEvents,
             startEvent.id!
@@ -232,6 +260,8 @@ export const useActivity = ({
           return updateTxStatus(formattedTx, statusEvent)
         })
         .then(formattedTx => {
+          if (!formattedTx) return
+
           const refundEvent: NDKEvent | undefined = findAsocciatedEvent(
             refundEvents,
             startEvent.id!
@@ -245,7 +275,9 @@ export const useActivity = ({
           )
           return markTxRefund(formattedTx, statusRefundEvent || refundEvent)
         })
-        .then((transaction: Transaction) => {
+        .then((transaction: Transaction | undefined) => {
+          if (!transaction) return
+
           userTransactions.push(transaction)
         })
     })
@@ -274,7 +306,7 @@ export const useActivity = ({
   }, [walletEvents])
 
   const loadCachedTransactions = () => {
-    const storagedData: string = localStorage.getItem(`cached_txs`) || ''
+    const storagedData: string = localStorage.getItem(`txs_cache`) || ''
     if (!storagedData) {
       setActivityInfo({
         ...activityInfo,
@@ -315,7 +347,7 @@ export const useActivity = ({
 
   useEffect(() => {
     if (sortedTransactions.length)
-      localStorage.setItem('cached_txs', JSON.stringify(sortedTransactions))
+      localStorage.setItem('txs_cache', JSON.stringify(sortedTransactions))
   }, [sortedTransactions])
 
   return {

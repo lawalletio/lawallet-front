@@ -75,6 +75,8 @@
   "TO": "To",
   "FAILED_TRANSACTION": "Transaction failed",
   "DETAIL_FAILED_TRANSACTION": "An error occurred while sending the transfer, the funds have been refunded.",
+  "PENDING_INBOUND_TRANSACTION": "Pending deposit",
+  "PENDING_OUTBOUND_TRANSACTION": "Pending withdrawal",
   "INVALID_NONCE": "You need a valid activation code to create an account",
   "ERROR_ON_CREATE_ACCOUNT": "An error occurred while creating the account",
   "EMPTY_TRANSACTIONS_TITLE": "Bitcoin is digital money.",

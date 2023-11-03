@@ -93,7 +93,7 @@ export default function Page() {
       }
     })
 
-    setLastDestinations(lastDest)
+    if (lastDest.length) setLastDestinations(lastDest)
   }
 
   useEffect(() => {
@@ -155,7 +155,7 @@ export default function Page() {
                     <div onClick={() => initializeTransfer(lud16)}>
                       <RecipientElement lud16={lud16} />
                     </div>
-                    <Divider y={16} />
+                    <Divider y={24} />
                   </Fragment>
                 )
               })}

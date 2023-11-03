@@ -89,8 +89,9 @@ export default function Component({ transaction }: ComponentProps) {
         username = await getUsername(receiverPubkey)
       }
 
-      if (username.length)
-        setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+      username.length
+        ? setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+        : setLudInfo({ ...ludInfo, loading: false })
     }
   }
 
