@@ -10,6 +10,7 @@ import {
   LinkSetting,
   Text
 } from '@/components/UI'
+import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/hooks/useTranslations'
 
@@ -29,11 +30,9 @@ export default function Page() {
   // }
 
   const logoutSession = () => {
-    setUserIdentity(defaultIdentity).then(() => {
-      localStorage.removeItem('identity')
-      localStorage.removeItem('cached_txs')
-      router.push('/login')
-    })
+    setUserIdentity(defaultIdentity)
+    localStorage.removeItem(STORAGE_IDENTITY_KEY)
+    router.replace('/login')
   }
 
   return (

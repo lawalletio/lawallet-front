@@ -19,43 +19,38 @@ import {
   Text
 } from '@/components/UI'
 import { WALLET_DOMAIN } from '@/constants/config'
-import {
-  AccountProps,
-  regexUserName,
-  useCreateIdentity
-} from '@/hooks/useCreateIdentity'
-import { useTranslation } from '@/hooks/useTranslations'
-import { existIdentity, validateNonce } from '@/interceptors/identity'
-import { ChangeEvent, useEffect, useState } from 'react'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
-
-interface CreateIdentityParams extends AccountProps {
-  isValidNonce: boolean
-  loading: boolean
-}
-
-let checkExistUsername: NodeJS.Timeout
+import { useCreateIdentity } from '@/hooks/useCreateIdentity'
+import { useTranslation } from '@/hooks/useTranslations'
+import { validateNonce } from '@/interceptors/identity'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
 
   const [activeStartView, setActiveStartView] = useState<boolean>(true)
 
-  const [accountInfo, setAccountInfo] = useState<CreateIdentityParams>({
-    nonce: '',
-    card: '',
-    name: '',
-    isValidNonce: false,
-    loading: true
-  })
+  const {
+    handleCreateIdentity,
+    accountInfo,
+    setAccountInfo,
+    handleChangeUsername,
+    loading,
+    errors
+  } = useCreateIdentity()
 
-  const { handleCreateIdentity, loading, errors } = useCreateIdentity()
   const router = useRouter()
   const params = useSearchParams()
 
+  const handleConfirm = () => {
+    if (accountInfo.name && accountInfo.nonce) handleCreateIdentity(accountInfo)
+  }
+
+  useActionOnKeypress('Enter', handleConfirm, [accountInfo.name])
+
   useEffect(() => {
     const nonce: string = params.get('i') || ''
-    // const card: string = params.get('c') || ''
+    const card: string = params.get('c') || ''
 
     if (!nonce) {
       setAccountInfo({ ...accountInfo, loading: false })
@@ -64,60 +59,13 @@ export default function Page() {
         setAccountInfo({
           ...accountInfo,
           nonce,
+          card,
           isValidNonce,
           loading: false
         })
       })
     }
   }, [])
-
-  const validateUsername = (username: string) => {
-    const invalidUsername = !regexUserName.test(username)
-
-    if (invalidUsername) {
-      errors.modifyError('INVALID_USERNAME')
-      return false
-    }
-    return true
-  }
-
-  const checkIfExistName = (username: string) => {
-    if (checkExistUsername) clearTimeout(checkExistUsername)
-    checkExistUsername = setTimeout(async () => {
-      const nameWasTaken = await existIdentity(username)
-      if (nameWasTaken) {
-        errors.modifyError('NAME_ALREADY_TAKEN')
-        return false
-      }
-    }, 350)
-  }
-
-  const handleChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
-    const username: string = e.target.value
-    errors.resetError()
-
-    if (!username.length && accountInfo.name.length) {
-      setAccountInfo({ ...accountInfo, name: '' })
-      if (checkExistUsername) clearTimeout(checkExistUsername)
-      return
-    }
-
-    const validUsername: boolean = validateUsername(username)
-    if (validUsername) {
-      setAccountInfo({
-        ...accountInfo,
-        name: username.toLowerCase()
-      })
-
-      checkIfExistName(username)
-    }
-  }
-
-  const handleConfirm = () => {
-    if (accountInfo.name && accountInfo.nonce) handleCreateIdentity(accountInfo)
-  }
-
-  useActionOnKeypress('Enter', handleConfirm, [accountInfo.name])
 
   useEffect(() => {
     router.prefetch('/dashboard')
@@ -142,7 +90,9 @@ export default function Page() {
           <Divider y={8} />
           <InputGroup>
             <Input
-              onChange={handleChangeUsername}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                handleChangeUsername(e.target.value)
+              }
               placeholder="Satoshi"
               type="text"
               id="username"

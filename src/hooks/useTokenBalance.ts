@@ -56,22 +56,26 @@ export const useTokenBalance = ({
     if (event) {
       setBalance({
         tokenId: tokenId,
-        amount: Number(event.getMatchingTags('amount')[0]?.[1]) / 1000,
+        amount: event
+          ? Number(event.getMatchingTags('amount')[0]?.[1]) / 1000
+          : 0,
         loading: false,
-        lastEvent: event as NostrEvent,
-        createdAt: new Date(event.created_at!)
-      })
-    } else {
-      setBalance({
-        ...balance,
-        loading: false
+        lastEvent: event ? (event as NostrEvent) : undefined,
+        createdAt: event ? new Date(event.created_at!) : new Date()
       })
     }
   }
 
   useEffect(() => {
     loadBalance()
-  }, [])
+
+    setTimeout(() => {
+      if (balance.loading)
+        setBalance(prev => {
+          return { ...prev, loading: false }
+        })
+    }, 2000)
+  }, [ndk])
 
   useEffect(() => {
     if (balanceEvents.length) {

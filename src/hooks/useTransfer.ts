@@ -27,7 +27,7 @@ export interface TransferContextType {
   transferInfo: TransferInformation
   prepareTransaction: (data: string) => Promise<boolean>
   setAmountToPay: (amount: number) => void
-  executeTransfer: (signer: NDKPrivateKeySigner) => void
+  executeTransfer: (privateKey: string) => void
 }
 
 const useTransfer = (): TransferContextType => {
@@ -117,7 +117,8 @@ const useTransfer = (): TransferContextType => {
     })
   }
 
-  const executeTransfer = async (signer: NDKPrivateKeySigner) => {
+  const executeTransfer = async (privateKey: string) => {
+    const signer = new NDKPrivateKeySigner(privateKey)
     if (loading || !transferInfo.type || transferInfo.expired) return
     setLoading(true)
 

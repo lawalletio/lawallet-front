@@ -153,7 +153,7 @@ export default function Page() {
 
             <Button
               color="secondary"
-              onClick={() => executeTransfer(identity.signer!)}
+              onClick={() => executeTransfer(identity.privateKey)}
               disabled={
                 !transferInfo.type ||
                 loading ||

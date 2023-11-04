@@ -18,6 +18,7 @@ import keys from '@/constants/keys'
 import { getMultipleTags, getTag } from '@/lib/events'
 import { nip26 } from 'nostr-tools'
 import { Event } from 'nostr-tools'
+import { CACHE_TXS_KEY } from '@/constants/constants'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -27,8 +28,8 @@ export type ActivityType = {
   loading: boolean
   lastCached: number
   cached: Transaction[]
-  previous: Transaction[]
   suscription: Transaction[]
+  idsLoaded: string[]
 }
 
 export interface UseActivityReturn {
@@ -80,9 +81,9 @@ export const useActivity = ({
   const [activityInfo, setActivityInfo] = useState<ActivityType>({
     loading: true,
     lastCached: 0,
-    previous: [],
     cached: [],
-    suscription: []
+    suscription: [],
+    idsLoaded: []
   })
 
   const { events: walletEvents } = useSubscription({
@@ -236,7 +237,7 @@ export const useActivity = ({
     setActivityInfo(prev => {
       return {
         ...prev,
-        previous: sortedTransactions,
+        idsLoaded: sortedTransactions.map(tx => tx.id.toString()),
         loading: true
       }
     })
@@ -301,28 +302,36 @@ export const useActivity = ({
   }, [walletEvents])
 
   const loadCachedTransactions = () => {
-    const storagedData: string = localStorage.getItem(`txs_cache`) || ''
-    if (!storagedData) {
+    if (pubkey.length) {
+      const storagedData: string =
+        localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
+      if (!storagedData) {
+        setActivityInfo({
+          ...activityInfo,
+          loading: false
+        })
+        return
+      }
+
+      const cachedTxs: Transaction[] = JSON.parse(storagedData)
+
+      const lastCached: number = cachedTxs.length
+        ? 1 + cachedTxs[0].events[cachedTxs[0].events.length - 1].created_at
+        : 0
+
       setActivityInfo({
-        ...activityInfo,
+        suscription: [],
+        idsLoaded: cachedTxs.map(tx => tx.id.toString()),
+        cached: cachedTxs,
+        lastCached,
         loading: false
       })
-      return
     }
-
-    const cachedTxs: Transaction[] = JSON.parse(storagedData)
-    setActivityInfo({
-      suscription: [],
-      previous: cachedTxs,
-      cached: cachedTxs,
-      lastCached: cachedTxs.length ? 1 + cachedTxs[0].createdAt / 1000 : 0,
-      loading: false
-    })
   }
 
   useEffect(() => {
     loadCachedTransactions()
-  }, [])
+  }, [pubkey])
 
   const sortedTransactions: Transaction[] = useMemo(() => {
     const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
@@ -342,7 +351,10 @@ export const useActivity = ({
 
   useEffect(() => {
     if (sortedTransactions.length)
-      localStorage.setItem('txs_cache', JSON.stringify(sortedTransactions))
+      localStorage.setItem(
+        `${CACHE_TXS_KEY}_${pubkey}`,
+        JSON.stringify(sortedTransactions)
+      )
   }, [sortedTransactions])
 
   return {

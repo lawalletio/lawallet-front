@@ -7,7 +7,7 @@ import {
   NDKTag,
   NostrEvent
 } from '@nostr-dev-kit/ndk'
-import { getPublicKey } from 'nostr-tools'
+import { getPublicKey, nip26 } from 'nostr-tools'
 
 export type GenerateIdentityReturns = {
   identity: UserIdentity
@@ -52,17 +52,48 @@ export const identityEvent = async (
   return event.toNostrEvent()
 }
 
-export const zapRequestEvent = async (
-  amount: number,
-  identity: UserIdentity
-) => {
-  const signer = new NDKPrivateKeySigner(identity.privateKey)
+export const cardActivationEvent = async (
+  otc: string,
+  privateKey: string
+): Promise<NostrEvent> => {
+  const signer = new NDKPrivateKeySigner(privateKey)
+  const pubkey: string = getPublicKey(privateKey)
+
+  const delegation = nip26.createDelegation(privateKey, {
+    pubkey: keys.cardPubkey,
+    kind: 1112,
+    since: Math.floor(Date.now() / 1000) - 36000,
+    until: Math.floor(Date.now() / 1000) + 3600 * 24 * 30 * 12
+  })
+
+  const event: NDKEvent = new NDKEvent()
+  event.pubkey = pubkey
+  event.kind = 21111
+
+  event.content = JSON.stringify({
+    otc,
+    delegation: {
+      conditions: delegation.cond,
+      token: delegation.sig
+    }
+  })
+
+  event.tags = [['t', 'asociate-card']]
+
+  await event.sign(signer)
+  return event.toNostrEvent()
+}
+
+export const zapRequestEvent = async (amount: number, privateKey: string) => {
+  const signer = new NDKPrivateKeySigner(privateKey)
+  const pubkey: string = getPublicKey(privateKey)
+
   const zapEvent: NDKEvent = new NDKEvent()
-  zapEvent.pubkey = identity.hexpub
+  zapEvent.pubkey = pubkey
   zapEvent.kind = 9734
 
   zapEvent.tags = [
-    ['p', identity.hexpub],
+    ['p', pubkey],
     ['amount', amount.toString()],
     ['relays', ...RelaysList]
   ]

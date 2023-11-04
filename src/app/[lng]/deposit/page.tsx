@@ -119,7 +119,10 @@ export default function Page() {
 
     setInvoice({ ...invoice, loading: true })
     const invoice_mSats: number = amountSats * 1000
-    const zapRequest: string = await zapRequestEvent(invoice_mSats, identity)
+    const zapRequest: string = await zapRequestEvent(
+      invoice_mSats,
+      identity.privateKey
+    )
 
     requestInvoice(
       `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${invoice_mSats}&nostr=${zapRequest}`

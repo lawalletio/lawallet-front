@@ -10,7 +10,7 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
@@ -68,6 +68,12 @@ export default function Page() {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)
     return formatToPreference(currency, amount, lng)
   }, [balance, pricesData, currency])
+
+  useEffect(() => {
+    router.prefetch('/deposit')
+    router.prefetch('/transfer')
+    router.prefetch('/settings')
+  }, [router])
 
   return (
     <>
