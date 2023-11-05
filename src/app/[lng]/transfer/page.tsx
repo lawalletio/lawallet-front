@@ -86,14 +86,16 @@ export default function Page() {
         if (receiverPubkey === identity.hexpub) return
 
         const username: string = await getUsername(receiverPubkey)
+
         if (username.length) {
           const formattedLud16: string = `${username}@${WALLET_DOMAIN}`
-          if (!lastDest.includes(formattedLud16)) lastDest.push(formattedLud16)
+          if (!lastDest.includes(formattedLud16)) {
+            lastDest.push(formattedLud16)
+            setLastDestinations(lastDest)
+          }
         }
       }
     })
-
-    if (lastDest.length) setLastDestinations(lastDest)
   }
 
   useEffect(() => {
