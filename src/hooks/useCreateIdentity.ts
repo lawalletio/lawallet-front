@@ -148,7 +148,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
               // if (props.card) {
               //   cardActivationEvent(props.card, identity.privateKey)
               //     .then((cardEvent: NostrEvent) => {
-              //       // requestCardAssociation(cardEvent)
+              //       // requestCardActivation(cardEvent)
               //       console.log(cardEvent)
               //     })
               //     .catch(() => {

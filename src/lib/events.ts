@@ -78,7 +78,10 @@ export const cardActivationEvent = async (
     }
   })
 
-  event.tags = [['t', 'asociate-card']]
+  event.tags = [
+    ['p', pubkey],
+    ['t', 'card-activation-request']
+  ]
 
   await event.sign(signer)
   return event.toNostrEvent()

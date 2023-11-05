@@ -1,7 +1,7 @@
 import { LAWALLET_ENDPOINT } from '@/constants/config'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 
-export const requestCardAssociation = async (
+export const requestCardActivation = async (
   event: NostrEvent
 ): Promise<boolean> => {
   return fetch(`${LAWALLET_ENDPOINT}/card`, {
