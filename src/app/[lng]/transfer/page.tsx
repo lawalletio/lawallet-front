@@ -102,6 +102,10 @@ export default function Page() {
     if (sortedTransactions.length) loadLastDestinations()
   }, [sortedTransactions.length])
 
+  useEffect(() => {
+    router.prefetch('/scan')
+  }, [router])
+
   return (
     <>
       <Navbar showBackPage={true}>

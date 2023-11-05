@@ -73,6 +73,7 @@ export default function Page() {
     router.prefetch('/deposit')
     router.prefetch('/transfer')
     router.prefetch('/settings')
+    router.prefetch('/scan')
   }, [router])
 
   return (
