@@ -32,7 +32,7 @@ export default function Page() {
   const logoutSession = () => {
     setUserIdentity(defaultIdentity)
     localStorage.removeItem(STORAGE_IDENTITY_KEY)
-    router.replace('/login')
+    router.push('/login')
   }
 
   return (

@@ -29,7 +29,7 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
 
       switch (true) {
         case !userLogged && pathname == '/' && !nonce:
-          location.replace('https://lawallet.ar')
+          router.push('/')
           break
 
         case !userLogged && loggedRoutes.includes(cleanedPath):

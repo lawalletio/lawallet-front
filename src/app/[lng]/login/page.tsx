@@ -48,6 +48,7 @@ export default function Page() {
 
       if (!username.length) {
         errors.modifyError('NOT_FOUND_PUBKEY')
+        setLoading(false)
         return
       }
 

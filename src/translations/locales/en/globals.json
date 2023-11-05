@@ -101,5 +101,6 @@
   "UNEXPECTED_RECEOVERY_ERROR": "An error occurred while signing in",
   "SUCCESS_CLAIM": "You successfully claimed the invoice",
   "CLAIM": "To claim",
-  "CLAIM_THIS_INVOICE": "Claim this invoice"
+  "CLAIM_THIS_INVOICE": "Claim this invoice",
+  "LOGIN_ACCOUNT": "Login account"
 }

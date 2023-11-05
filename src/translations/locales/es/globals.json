@@ -101,5 +101,6 @@
   "UNEXPECTED_RECEOVERY_ERROR": "Ocurrió un error al iniciar sesión",
   "SUCCESS_CLAIM": "Reclamaste la factura con éxito",
   "CLAIM": "Reclamar",
-  "CLAIM_THIS_INVOICE": "Reclama esta factura"
+  "CLAIM_THIS_INVOICE": "Reclama esta factura",
+  "LOGIN_ACCOUNT": "Iniciar sesión"
 }
