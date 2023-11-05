@@ -141,9 +141,9 @@ export default function Component({ transaction }: ComponentProps) {
                   '*****'
                 ) : (
                   <>
-                    {!isFromMe &&
-                      !(transaction.status === TransactionStatus.ERROR) &&
-                      '+ '}
+                    {!(transaction.status === TransactionStatus.ERROR) && (
+                      <>{!isFromMe ? '+ ' : '- '}</>
+                    )}
                     {formatToPreference('SAT', satsAmount, lng)} SAT
                   </>
                 )}
