@@ -75,7 +75,7 @@ export const useTokenBalance = ({
           return { ...prev, loading: false }
         })
     }, 2000)
-  }, [ndk])
+  }, [])
 
   useEffect(() => {
     if (balanceEvents.length) {
