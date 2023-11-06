@@ -75,7 +75,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
         errors.modifyError('NAME_ALREADY_TAKEN')
         return false
       }
-    }, 200)
+    }, 300)
   }
 
   const handleChangeUsername = (username: string) => {
