@@ -79,7 +79,7 @@ export const cardActivationEvent = async (
   })
 
   event.tags = [
-    ['p', pubkey],
+    ['p', keys.cardPubkey],
     ['t', 'card-activation-request']
   ]
 

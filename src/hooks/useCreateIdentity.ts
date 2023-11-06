@@ -5,13 +5,13 @@ import {
   existIdentity,
   generateUserIdentity
 } from '@/interceptors/identity'
-import { identityEvent } from '@/lib/events'
+import { cardActivationEvent, identityEvent } from '@/lib/events'
 import { UserIdentity } from '@/types/identity'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import useErrors, { IUseErrors } from './useErrors'
-// import { requestCardAssociation } from '@/interceptors/card'
+import { requestCardActivation } from '@/interceptors/card'
 
 export interface AccountProps {
   nonce: string
@@ -145,17 +145,19 @@ export const useCreateIdentity = (): UseIdentityReturns => {
             if (success && identity) {
               setUserIdentity(identity!)
 
-              // if (props.card) {
-              //   cardActivationEvent(props.card, identity.privateKey)
-              //     .then((cardEvent: NostrEvent) => {
-              //       // requestCardActivation(cardEvent)
-              //       console.log(cardEvent)
-              //     })
-              //     .catch(() => {
-              //       router.push('/dashboard')
-              //     })
-              // }
-              router.push('/dashboard')
+              if (props.card) {
+                cardActivationEvent(props.card, identity.privateKey)
+                  .then((cardEvent: NostrEvent) => {
+                    requestCardActivation(cardEvent).then(res => {
+                      router.push('/dashboard')
+                    })
+                  })
+                  .catch(() => {
+                    router.push('/dashboard')
+                  })
+              } else {
+                router.push('/dashboard')
+              }
             } else {
               errors.modifyError(message)
             }
@@ -164,7 +166,6 @@ export const useCreateIdentity = (): UseIdentityReturns => {
       })
       .then(() => setLoading(false))
   }
-
   return {
     accountInfo,
     setAccountInfo,
