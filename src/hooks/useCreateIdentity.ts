@@ -107,18 +107,25 @@ export const useCreateIdentity = (): UseIdentityReturns => {
       name
     )
 
-    const event: NostrEvent = await identityEvent(nonce, generatedIdentity)
-    const createdAccount: IdentityResponse = await claimIdentity(event)
-    if (!createdAccount.success)
+    try {
+      const event: NostrEvent = await identityEvent(nonce, generatedIdentity)
+      const createdAccount: IdentityResponse = await claimIdentity(event)
+      if (!createdAccount.success)
+        return {
+          success: false,
+          message: createdAccount.reason!
+        }
+
+      return {
+        success: true,
+        message: 'ok',
+        identity: generatedIdentity
+      }
+    } catch {
       return {
         success: false,
-        message: createdAccount.reason!
+        message: 'ERROR_ON_CREATE_ACCOUNT'
       }
-
-    return {
-      success: true,
-      message: 'ok',
-      identity: generatedIdentity
     }
   }
 
