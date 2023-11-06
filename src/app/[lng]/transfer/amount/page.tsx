@@ -25,7 +25,6 @@ import { useNumpad } from '@/hooks/useNumpad'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 import useErrors from '@/hooks/useErrors'
 import { TransferTypes } from '@/types/transaction'
 
@@ -35,18 +34,13 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false)
   const { transferInfo, setAmountToPay } = useTransferContext()
   const {
-    identity,
+    balance,
     lng,
     userConfig: {
       props: { currency: userCurrency }
     },
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
-
-  const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
-    tokenId: 'BTC'
-  })
 
   const maxAvailableAmount: number = useMemo(() => {
     const convertedAmount: number = convertCurrency(

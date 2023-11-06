@@ -53,7 +53,7 @@ export const useTokenBalance = ({
       '#d': [`balance:${tokenId}:${pubkey}`]
     })
 
-    if (event) {
+    if (event)
       setBalance({
         tokenId: tokenId,
         amount: event
@@ -63,19 +63,20 @@ export const useTokenBalance = ({
         lastEvent: event ? (event as NostrEvent) : undefined,
         createdAt: event ? new Date(event.created_at!) : new Date()
       })
-    }
   }
 
   useEffect(() => {
-    loadBalance()
+    if (pubkey.length) {
+      loadBalance()
 
-    setTimeout(() => {
-      if (balance.loading)
-        setBalance(prev => {
-          return { ...prev, loading: false }
-        })
-    }, 2000)
-  }, [])
+      setTimeout(() => {
+        if (balance.loading)
+          setBalance(prev => {
+            return { ...prev, loading: false }
+          })
+      }, 2000)
+    }
+  }, [pubkey])
 
   useEffect(() => {
     if (balanceEvents.length) {

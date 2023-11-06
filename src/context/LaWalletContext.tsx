@@ -7,8 +7,10 @@ import useConfiguration, { ConfigReturns } from '@/hooks/useConfiguration'
 import useCurrencyConverter, {
   UseConverterReturns
 } from '@/hooks/useCurrencyConverter'
+import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { getUsername } from '@/interceptors/identity'
 import { AvailableLanguages } from '@/translations'
+import { TokenBalance } from '@/types/balance'
 import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
 import { differenceInSeconds } from 'date-fns'
@@ -19,6 +21,7 @@ interface LaWalletContextType {
   lng: AvailableLanguages
   identity: UserIdentity
   setUserIdentity: (new_identity: UserIdentity) => Promise<void>
+  balance: TokenBalance
   sortedTransactions: Transaction[]
   userConfig: ConfigReturns
   notifications: UseAlertReturns
@@ -48,6 +51,11 @@ export function LaWalletProvider({
 
   const userConfig: ConfigReturns = useConfiguration()
   const converter = useCurrencyConverter()
+
+  const { balance } = useTokenBalance({
+    pubkey: identity.hexpub,
+    tokenId: 'BTC'
+  })
 
   const preloadIdentity = async () => {
     const storageIdentity = localStorage.getItem(STORAGE_IDENTITY_KEY)
@@ -119,6 +127,7 @@ export function LaWalletProvider({
     lng,
     identity,
     setUserIdentity,
+    balance,
     sortedTransactions,
     userConfig,
     notifications,

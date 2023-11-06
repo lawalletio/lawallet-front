@@ -33,7 +33,6 @@ import theme from '@/styles/theme'
 
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTranslation } from '@/hooks/useTranslations'
 import { formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
@@ -50,6 +49,7 @@ export default function Page() {
   const {
     lng,
     identity,
+    balance,
     sortedTransactions,
     userConfig: {
       loading,
@@ -58,11 +58,6 @@ export default function Page() {
     },
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
-
-  const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
-    tokenId: 'BTC'
-  })
 
   const convertedBalance: string = useMemo(() => {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)
