@@ -1,6 +1,14 @@
 'use client'
-import Container from '@/components/Layout/Container'
-import { Navbar } from '@/components/Layout/Navbar/style'
+
+import React, { ChangeEvent, useContext, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+import { LaWalletContext } from '@/context/LaWalletContext'
+
+import { blacklistedDomains, validateEmail } from '@/lib/email'
+import useErrors from '@/hooks/useErrors'
+import { useTranslation } from '@/hooks/useTranslations'
+
 import {
   Button,
   Divider,
@@ -8,16 +16,11 @@ import {
   Flex,
   Heading,
   Input,
-  Text
+  Text,
+  Pin
 } from '@/components/UI'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import useErrors from '@/hooks/useErrors'
-import { useTranslation } from '@/hooks/useTranslations'
-// import { claimVoucher, requestVoucher } from '@/interceptors/vouchers'
-import { blacklistedDomains, validateEmail } from '@/lib/email'
-import { useRouter } from 'next/navigation'
-import React, { ChangeEvent, useContext, useState } from 'react'
-import VerificationInput from 'react-verification-input'
+import Container from '@/components/Layout/Container'
+import { Navbar } from '@/components/Layout/Navbar/style'
 
 const tldRegex =
   /(?=^.{4,253}$)(^((?!-)[a-z0-9-]{0,62}[a-z0-9]\.)+[a-z]{2,63}$)/i
@@ -81,7 +84,7 @@ const RequestVoucher = () => {
       //   })
 
       //TMP
-      // setViewCode(true)
+      setViewCode(true)
     } else {
       //   claimVoucher(identity.username, claimCode).then(res => {
       //     console.log(res)
@@ -116,7 +119,7 @@ const RequestVoucher = () => {
 
               <Divider y={8} />
 
-              <VerificationInput
+              <Pin
                 onChange={handleChangeCode}
                 length={8}
                 autoFocus={true}
