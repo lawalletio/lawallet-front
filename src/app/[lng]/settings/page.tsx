@@ -11,7 +11,11 @@ import {
   LinkSetting,
   Text
 } from '@/components/UI'
-import { CACHE_BACKUP_KEY, STORAGE_IDENTITY_KEY } from '@/constants/constants'
+import {
+  CACHE_BACKUP_KEY,
+  LAWALLET_VERSION,
+  STORAGE_IDENTITY_KEY
+} from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
@@ -73,7 +77,7 @@ export default function Page() {
         <Divider y={16} />
         <Flex justify="center">
           <Text size="small" color={theme.colors.gray50}>
-            LaWallet v1.0.0
+            LaWallet {LAWALLET_VERSION}
           </Text>
         </Flex>
         <Divider y={16} />

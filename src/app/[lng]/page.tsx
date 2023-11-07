@@ -3,6 +3,7 @@
 import Container from '@/components/Layout/Container'
 import Logo from '@/components/Logo'
 import { Button, Divider, Flex, Text } from '@/components/UI'
+import { LAWALLET_VERSION } from '@/constants/constants'
 import { useTranslation } from '@/hooks/useTranslations'
 
 import theme from '@/styles/theme'
@@ -23,7 +24,7 @@ export default function Page() {
       <Flex direction="column" align="center" justify="center" gap={8} flex={1}>
         <Logo />
         <Text align="center" color={theme.colors.gray50}>
-          v1.0.0
+          {LAWALLET_VERSION}
         </Text>
       </Flex>
 

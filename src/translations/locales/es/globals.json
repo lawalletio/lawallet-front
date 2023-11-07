@@ -108,5 +108,9 @@
   "INSERT_CODE": "Ingresa el código que recibiste en tu correo",
   "CONFIRM_LOGOUT": "¿Estás seguro que quieres cerrar sesión?",
   "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión",
-  "INVALID_EMAIL": "El correo ingresado no es válido"
+  "INVALID_EMAIL": "El correo ingresado no es válido",
+  "DETECT_NEW_CARD": "Se detectó una nueva tarjeta, presiona el botón a continuación si quieres asociarla a tu cuenta.",
+  "ACTIVATE_CARD": "Activar tarjeta",
+  "ACTIVATE_SUCCESS": "La tarjeta fue activada y asociada a tu cuenta",
+  "ACTIVATE_ERROR": "Ocurrió un error al activar la tarjeta"
 }

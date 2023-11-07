@@ -18,6 +18,7 @@ import { useMediaQuery } from '@uidotdev/usehooks'
 import { Loader } from '../Loader/Loader'
 import { useRouter } from 'next/navigation'
 import { IDENTITY_ENDPOINT } from '@/constants/config'
+import { LAWALLET_VERSION } from '@/constants/constants'
 
 const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
   const { t } = useTranslation()
@@ -35,7 +36,7 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
       <Flex direction="column" align="center" justify="center" gap={8} flex={1}>
         <Logo />
         <Text align="center" color={theme.colors.gray50}>
-          v1.0.0
+          {LAWALLET_VERSION}
         </Text>
       </Flex>
 

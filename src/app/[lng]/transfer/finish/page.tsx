@@ -73,20 +73,23 @@ export default function Page() {
           </Avatar>
           {transferInfo.type === TransferTypes.LNURLW ||
           transferInfo.type === TransferTypes.INVOICE ? (
-            <Flex justify="center">
-              <Text>{formatAddress(transferInfo.data, 25)}</Text>
-            </Flex>
+            <Text>{formatAddress(transferInfo.data, 25)}</Text>
           ) : (
-            <Flex justify="center">
-              <Text>{transferUsername}</Text>
-              <Text color={theme.colors.gray50}>@{transferDomain}</Text>
-            </Flex>
+            <Text>
+              {transferUsername}@{transferDomain}
+            </Text>
           )}
         </Flex>
         <Divider y={24} />
         {Number(convertedAmount) !== 0 ? (
           <Flex align="center" justify="center" gap={4}>
-            {currency !== 'SAT' && <Text>$</Text>}
+            {currency === 'SAT' ? (
+              <Icon size="small">
+                <SatoshiV2Icon />
+              </Icon>
+            ) : (
+              <Text>$</Text>
+            )}
             <Heading>{convertedAmount}</Heading>
             <Text>{currency}</Text>
           </Flex>

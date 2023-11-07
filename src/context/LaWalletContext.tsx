@@ -1,5 +1,4 @@
-import { Loader } from '@/components/Loader/Loader'
-import { Alert, Flex } from '@/components/UI'
+import { Alert } from '@/components/UI'
 import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { useActivity } from '@/hooks/useActivity'
 import useAlert, { UseAlertReturns } from '@/hooks/useAlerts'
@@ -134,13 +133,6 @@ export function LaWalletProvider({
     converter,
     hydrated
   }
-
-  if (!hydrated)
-    return (
-      <Flex flex={1} justify="center" align="center">
-        <Loader />
-      </Flex>
-    )
 
   return (
     <LaWalletContext.Provider value={value}>

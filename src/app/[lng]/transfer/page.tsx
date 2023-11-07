@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -14,7 +15,8 @@ import {
   InputGroup,
   InputGroupRight,
   LinkButton,
-  Text
+  Text,
+  Icon
 } from '@/components/UI'
 
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
@@ -157,12 +159,20 @@ export default function Page() {
 
               {lastDestinations.slice(0, 5).map(lud16 => {
                 return (
-                  <Fragment key={lud16}>
-                    <div onClick={() => initializeTransfer(lud16)}>
+                  <Flex
+                    key={lud16}
+                    onClick={() => initializeTransfer(lud16)}
+                    direction="column"
+                  >
+                    <Divider y={8} />
+                    <Flex align="center">
                       <RecipientElement lud16={lud16} />
-                    </div>
-                    <Divider y={24} />
-                  </Fragment>
+                      <Icon>
+                        <CaretRightIcon />
+                      </Icon>
+                    </Flex>
+                    <Divider y={8} />
+                  </Flex>
                 )
               })}
             </>
