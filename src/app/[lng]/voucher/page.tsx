@@ -37,7 +37,7 @@ const RequestVoucher = () => {
 
   const handleChangeCode = (text: string) => {
     errors.resetError()
-    setClaimCode(text)
+    setClaimCode(text.toUpperCase())
   }
 
   const handleClick = () => {
