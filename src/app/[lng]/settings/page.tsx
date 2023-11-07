@@ -5,13 +5,15 @@ import Navbar from '@/components/Layout/Navbar'
 import {
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
   LinkSetting,
   Text
 } from '@/components/UI'
-import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
+import { CACHE_BACKUP_KEY, STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
+import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
 
 import theme from '@/styles/theme'
@@ -22,17 +24,31 @@ import { useContext } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const { identity, setUserIdentity } = useContext(LaWalletContext)
   const router: AppRouterInstance = useRouter()
+  const errors = useErrors()
 
   // const switchLanguage = () => {
   //   lng === 'es' ? changeLanguage('en') : changeLanguage('es')
   // }
 
   const logoutSession = () => {
-    setUserIdentity(defaultIdentity)
-    localStorage.removeItem(STORAGE_IDENTITY_KEY)
-    router.push('/login')
+    const cachedBackup = localStorage.getItem(
+      `${CACHE_BACKUP_KEY}_${identity.hexpub}`
+    )
+
+    if (!cachedBackup) {
+      errors.modifyError('ERROR_MADE_BACKUP')
+      return
+    }
+
+    const confirmation: boolean = confirm(t('CONFIRM_LOGOUT'))
+
+    if (confirmation) {
+      setUserIdentity(defaultIdentity)
+      localStorage.removeItem(STORAGE_IDENTITY_KEY)
+      router.push('/login')
+    }
   }
 
   return (
@@ -61,6 +77,15 @@ export default function Page() {
           </Text>
         </Flex>
         <Divider y={16} />
+
+        <Feedback show={errors.errorInfo.visible} status={'error'}>
+          <Flex flex={1} align="center" justify="center">
+            {errors.errorInfo.text}
+          </Flex>
+
+          <Divider y={16} />
+        </Feedback>
+
         <Flex>
           <Button color="error" variant="bezeled" onClick={logoutSession}>
             {t('LOGOUT')}

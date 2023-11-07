@@ -13,20 +13,24 @@ import { InfoCopy } from './style'
 interface ComponentProps {
   title: string
   value: string
+  onCopy?: () => void
 }
 
 export default function Component(props: ComponentProps) {
-  const { title, value } = props
+  const { title, value, onCopy = null } = props
 
   const { t } = useTranslation()
   const { alert, showAlert } = useAlert()
 
   const handleCopy = () => {
-    showAlert({
-      description: 'SUCCESS_COPY',
-      type: 'success'
+    copy(value).then(res => {
+      showAlert({
+        description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
+        type: res ? 'success' : 'error'
+      })
+
+      if (onCopy) onCopy()
     })
-    copy(value)
   }
 
   return (

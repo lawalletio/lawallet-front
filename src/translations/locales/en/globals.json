@@ -104,5 +104,7 @@
   "CLAIM_THIS_INVOICE": "Claim this invoice",
   "LOGIN_ACCOUNT": "Login account",
   "VOUCHER_REQUEST_TITLE": "Claim your voucher",
-  "INSERT_EMAIL": "Enter your email"
+  "INSERT_EMAIL": "Enter your email",
+  "CONFIRM_LOGOUT": "Are you sure you want to log out?",
+  "ERROR_MADE_BACKUP": "You must back up your account before signing out"
 }

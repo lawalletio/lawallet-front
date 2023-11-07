@@ -105,5 +105,7 @@
   "LOGIN_ACCOUNT": "Iniciar sesión",
   "VOUCHER_REQUEST_TITLE": "Reclama tu voucher",
   "INSERT_EMAIL": "Escribe tu correo electronico",
-  "INSERT_CODE": "Ingresa el código que recibiste en tu correo"
+  "INSERT_CODE": "Ingresa el código que recibiste en tu correo",
+  "CONFIRM_LOGOUT": "¿Estás seguro que quieres cerrar sesión?",
+  "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión"
 }

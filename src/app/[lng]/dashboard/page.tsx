@@ -100,10 +100,9 @@ export default function Page() {
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
-                  <>
-                    <Text>{identity.username}</Text>
-                    <Text>@{WALLET_DOMAIN}</Text>
-                  </>
+                  <Text>
+                    {identity.username}@{WALLET_DOMAIN}
+                  </Text>
                 )}
               </Flex>
             </Flex>
