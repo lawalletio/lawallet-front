@@ -91,8 +91,9 @@ export default function Page() {
               </Flex>
             ) : (
               <Flex justify="center">
-                <Text>{transferUsername}</Text>
-                <Text color={theme.colors.gray50}>@{transferDomain}</Text>
+                <Text>
+                  {transferUsername}@{transferDomain}
+                </Text>
               </Flex>
             )}
           </Flex>
