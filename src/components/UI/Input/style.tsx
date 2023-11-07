@@ -38,16 +38,24 @@ export const Input = styled.input<InputCustomProps>`
     color: ${theme.colors.gray30};
   }
 
-  &:hover {
-    border-color: ${theme.colors.gray30};
+  &:not(:disabled) {
+    &:hover {
+      border-color: ${theme.colors.gray30};
+    }
+
+    &:focus-visible {
+      border-color: ${theme.colors.primary};
+    }
+
+    &:active {
+      border-color: ${theme.colors.primary};
+    }
   }
 
-  &:active {
-    border-color: ${theme.colors.primary};
-  }
+  &:disabled {
+    opacity: 0.35;
 
-  &:focus-visible {
-    border-color: ${theme.colors.primary};
+    cursor: not-allowed;
   }
 `
 
@@ -173,5 +181,35 @@ export const Textarea = styled.textarea<InputCustomProps>`
 
   &:focus-visible {
     border-color: ${theme.colors.primary};
+  }
+`
+export const Pin = styled.div`
+  width: 100%;
+
+  .vi__wrapper {
+    width: 100%;
+  }
+
+  .vi__container {
+    width: 100%;
+  }
+
+  .vi__character {
+    width: 100%;
+    max-width: 40px;
+
+    background-color: ${theme.colors.gray15};
+    border-radius: 8px;
+    border: 1px solid ${theme.colors.gray20};
+
+    font-size: initial;
+    color: ${theme.colors.text};
+    font-size: 0.8em;
+
+    &.vi__character--inactive {
+      opacity: 0.35;
+
+      cursor: not-allowed;
+    }
   }
 `
