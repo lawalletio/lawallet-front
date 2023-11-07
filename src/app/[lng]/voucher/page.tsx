@@ -13,14 +13,38 @@ import {
 import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
-import { claimVoucher, requestVoucher } from '@/interceptors/vouchers'
+// import { claimVoucher, requestVoucher } from '@/interceptors/vouchers'
+import { blacklistedDomains, validateEmail } from '@/lib/email'
 import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, useContext, useState } from 'react'
 import VerificationInput from 'react-verification-input'
 
+const tldRegex =
+  /(?=^.{4,253}$)(^((?!-)[a-z0-9-]{0,62}[a-z0-9]\.)+[a-z]{2,63}$)/i
+const usrRegex = /^[a-z0-9_.+-]+$/i
+
+function cleanupEmail(
+  email: string
+): { cleanUser: string; cleanDomain: string; normal: string } | null {
+  const isEmail = validateEmail(email)
+  if (!isEmail) return null
+
+  const [userParts, ...domainParts] = email.split('@')
+  const user = userParts ?? ''
+  const domain = domainParts.join('@')
+
+  if (!usrRegex.test(user) || !tldRegex.test(domain)) return null
+
+  return {
+    cleanUser: (user.split('+')[0] ?? '').split('.').join('').toLowerCase(),
+    cleanDomain: domain.toLowerCase(),
+    normal: email
+  }
+}
+
 const RequestVoucher = () => {
   const [viewCode, setViewCode] = useState<boolean>(false)
-  const [email, setEmail] = useState<string>('')
+  const [inputEmail, setInputEmail] = useState<string>('')
   const [claimCode, setClaimCode] = useState<string>('')
 
   const { identity } = useContext(LaWalletContext)
@@ -32,7 +56,7 @@ const RequestVoucher = () => {
   const handleChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     errors.resetError()
     const text: string = e.target.value
-    setEmail(text)
+    setInputEmail(text)
   }
 
   const handleChangeCode = (text: string) => {
@@ -42,12 +66,22 @@ const RequestVoucher = () => {
 
   const handleClick = () => {
     if (!viewCode) {
-      //   requestVoucher(identity.username, email).then(res => {
+      const email = cleanupEmail(inputEmail)
+      if (!email || blacklistedDomains.includes(email.cleanDomain)) {
+        errors.modifyError('INVALID_EMAIL')
+        return
+      }
+
+      const cleanEmail = `${email.cleanUser}@${email.cleanDomain}`
+      console.log('name: ', identity.username)
+      console.log('email: ', cleanEmail)
+
+      //   requestVoucher(identity.username, cleanEmail).then(res => {
       //     if (!Object.keys(res).includes('error')) setViewCode(true)
       //   })
 
       //TMP
-      setViewCode(true)
+      // setViewCode(true)
     } else {
       //   claimVoucher(identity.username, claimCode).then(res => {
       //     console.log(res)
@@ -70,7 +104,7 @@ const RequestVoucher = () => {
           <Input
             placeholder={t('INSERT_EMAIL')}
             onChange={handleChangeEmail}
-            value={email}
+            value={inputEmail}
             disabled={viewCode}
           />
 

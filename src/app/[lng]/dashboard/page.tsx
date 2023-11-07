@@ -51,7 +51,6 @@ export default function Page() {
     lng,
     identity,
     balance,
-    notifications,
     sortedTransactions,
     userConfig: {
       loading,

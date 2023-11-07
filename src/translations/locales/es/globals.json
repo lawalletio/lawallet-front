@@ -107,5 +107,6 @@
   "INSERT_EMAIL": "Escribe tu correo electronico",
   "INSERT_CODE": "Ingresa el código que recibiste en tu correo",
   "CONFIRM_LOGOUT": "¿Estás seguro que quieres cerrar sesión?",
-  "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión"
+  "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión",
+  "INVALID_EMAIL": "El correo ingresado no es válido"
 }
