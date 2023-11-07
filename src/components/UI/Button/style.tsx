@@ -16,10 +16,10 @@ export const ButtonCustom = styled.button<ButtonCustomProps>`
   justify-content: center;
   gap: 8px;
   flex: ${props => (props.$isSmall ? 'inherit' : 1)};
-  min-width: ${props => (props.$isSmall ? '30px' : '50px')};
-  min-height: ${props => (props.$isSmall ? '30px' : '50px')};
+  min-width: ${props => (props.$isSmall ? '40px' : '50px')};
+  min-height: ${props => (props.$isSmall ? '40px' : '50px')};
 
-  padding: ${props => (props.$isSmall ? '4px 6px' : '12px 8px')};
+  padding: ${props => (props.$isSmall ? '4px 8px' : '12px 8px')};
 
   border: none;
   border-radius: 50px;
