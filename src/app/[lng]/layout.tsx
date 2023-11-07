@@ -72,14 +72,15 @@ const Providers = (props: ProviderProps) => {
 
       <body>
         <NDKProvider explicitRelayUrls={RelaysList}>
-          <LaWalletProvider lng={params.lng}>
-            <ProtectRoutes>
-              <StyledComponentsRegistry>
-                <GlobalStyles />
+          <StyledComponentsRegistry>
+            <GlobalStyles />
+
+            <LaWalletProvider lng={params.lng}>
+              <ProtectRoutes>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </StyledComponentsRegistry>
-            </ProtectRoutes>
-          </LaWalletProvider>
+              </ProtectRoutes>
+            </LaWalletProvider>
+          </StyledComponentsRegistry>
         </NDKProvider>
       </body>
     </html>

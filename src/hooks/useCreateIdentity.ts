@@ -155,7 +155,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
               if (props.card) {
                 cardActivationEvent(props.card, identity.privateKey)
                   .then((cardEvent: NostrEvent) => {
-                    requestCardActivation(cardEvent).then(res => {
+                    requestCardActivation(cardEvent).then(() => {
                       router.push('/dashboard')
                     })
                   })
