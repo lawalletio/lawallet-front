@@ -121,7 +121,7 @@ const RequestVoucher = () => {
 
               <Pin
                 onChange={handleChangeCode}
-                length={8}
+                length={6}
                 autoFocus={true}
                 value={claimCode}
               />
