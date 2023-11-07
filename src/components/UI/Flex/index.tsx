@@ -10,6 +10,7 @@ interface FlexProps {
   flex?: 0 | 1 | 'initial'
   justify?: 'start' | 'end' | 'space-between' | 'center'
   align?: 'start' | 'center' | 'end'
+  onClick?: (e: any) => void
 }
 
 export default function Flex(props: FlexProps) {
@@ -19,11 +20,13 @@ export default function Flex(props: FlexProps) {
     direction = 'row',
     flex = 'initial',
     justify = 'start',
-    align = 'start'
+    align = 'start',
+    onClick = () => null
   } = props
 
   return (
     <FlexCustom
+      onClick={onClick}
       $gap={`${gap}px`}
       $direction={direction}
       $flex={flex}

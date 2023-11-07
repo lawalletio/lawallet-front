@@ -41,6 +41,7 @@ import { useRouter } from 'next/navigation'
 import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { copy } from '@/lib/share'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -50,6 +51,7 @@ export default function Page() {
     lng,
     identity,
     balance,
+    notifications,
     sortedTransactions,
     userConfig: {
       loading,
@@ -85,7 +87,16 @@ export default function Page() {
               <Text size="small" color={theme.colors.gray50}>
                 {t('HELLO')},
               </Text>
-              <Flex>
+              <Flex
+                onClick={() =>
+                  copy(`${identity.username}@${WALLET_DOMAIN}`).then(res => {
+                    notifications.showAlert({
+                      description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
+                      type: res ? 'success' : 'error'
+                    })
+                  })
+                }
+              >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
