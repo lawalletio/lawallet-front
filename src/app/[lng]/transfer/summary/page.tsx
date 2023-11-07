@@ -113,7 +113,13 @@ export default function Page() {
 
           {Number(convertedAmount) !== 0 ? (
             <Flex align="center" justify="center" gap={4}>
-              {currency !== 'SAT' && <Text>$</Text>}
+              {currency === 'SAT' ? (
+                <Icon size="small">
+                  <SatoshiV2Icon />
+                </Icon>
+              ) : (
+                <Text>$</Text>
+              )}
               <Heading>{convertedAmount}</Heading>
               <Text>{currency}</Text>
             </Flex>
