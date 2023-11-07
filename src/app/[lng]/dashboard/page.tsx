@@ -88,14 +88,9 @@ export default function Page() {
                 {t('HELLO')},
               </Text>
               <Flex
-                onClick={() =>
-                  copy(`${identity.username}@${WALLET_DOMAIN}`).then(res => {
-                    notifications.showAlert({
-                      description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
-                      type: res ? 'success' : 'error'
-                    })
-                  })
-                }
+                onClick={() => {
+                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                }}
               >
                 {loading ? (
                   <Text> -- </Text>
