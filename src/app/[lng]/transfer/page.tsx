@@ -13,20 +13,30 @@ import {
   Input,
   InputGroup,
   InputGroupRight,
-  LinkButton
+  LinkButton,
+  Text
 } from '@/components/UI'
 
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
-import { useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import { TransactionDirection, TransactionType } from '@/types/transaction'
+import RecipientElement from './components/RecipientElement'
+import theme from '@/styles/theme'
+import { getUsername } from '@/interceptors/identity'
+import { WALLET_DOMAIN } from '@/constants/config'
+import { getMultipleTags } from '@/lib/events'
 
 export default function Page() {
   const { t } = useTranslation()
+  const { identity, sortedTransactions } = useContext(LaWalletContext)
   const { prepareTransaction, transferInfo } = useTransferContext()
 
+  const [lastDestinations, setLastDestinations] = useState<string[]>([])
   const [inputText, setInputText] = useState<string>(transferInfo.data)
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -37,7 +47,8 @@ export default function Page() {
     if (loading) return
     setLoading(true)
 
-    const prepared: boolean = await prepareTransaction(data)
+    const cleanData: string = data.trim()
+    const prepared: boolean = await prepareTransaction(cleanData)
     if (!prepared) {
       errors.modifyError('INVALID_RECIPIENT')
       setLoading(false)
@@ -60,6 +71,41 @@ export default function Page() {
     }
   }
 
+  const loadLastDestinations = () => {
+    const lastDest: string[] = []
+
+    sortedTransactions.forEach(async tx => {
+      if (
+        tx.type === TransactionType.INTERNAL &&
+        tx.direction === TransactionDirection.OUTGOING
+      ) {
+        const txPubkeys: string[] = getMultipleTags(tx.events[0].tags, 'p')
+        if (txPubkeys.length !== 2) return
+
+        const receiverPubkey: string = txPubkeys[1]
+        if (receiverPubkey === identity.hexpub) return
+
+        const username: string = await getUsername(receiverPubkey)
+
+        if (username.length) {
+          const formattedLud16: string = `${username}@${WALLET_DOMAIN}`
+          if (!lastDest.includes(formattedLud16)) {
+            lastDest.push(formattedLud16)
+            setLastDestinations(lastDest)
+          }
+        }
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (sortedTransactions.length) loadLastDestinations()
+  }, [sortedTransactions.length])
+
+  useEffect(() => {
+    router.prefetch('/scan')
+  }, [router])
+
   return (
     <>
       <Navbar showBackPage={true}>
@@ -79,7 +125,6 @@ export default function Page() {
               }}
               placeholder={t('TRANSFER_DATA_PLACEHOLDER')}
               type="text"
-              autoFocus={true}
               value={inputText}
               status={errors.errorInfo.visible ? 'error' : undefined}
             />
@@ -102,15 +147,26 @@ export default function Page() {
           </Flex>
           <Divider y={16} />
           {/* Ultimos 3 destinos */}
-          {/* <Text size="small" color={theme.colors.gray50}>
-            {t('LAST_RECIPIENTS')}
-          </Text>
-          <Divider y={12} />
+          {Boolean(lastDestinations.length) && (
+            <>
+              <Text size="small" color={theme.colors.gray50}>
+                {t('LAST_RECIPIENTS')}
+              </Text>
 
-          <div onClick={() => initializeTransfer('jona@hodl.ar')}>
-            <RecipientElement lud16="jona@hodl.ar" />
-          </div>
-          <Divider y={16} /> */}
+              <Divider y={12} />
+
+              {lastDestinations.slice(0, 5).map(lud16 => {
+                return (
+                  <Fragment key={lud16}>
+                    <div onClick={() => initializeTransfer(lud16)}>
+                      <RecipientElement lud16={lud16} />
+                    </div>
+                    <Divider y={24} />
+                  </Fragment>
+                )
+              })}
+            </>
+          )}
         </Flex>
       </Container>
 

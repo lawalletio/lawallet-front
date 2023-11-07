@@ -1,27 +1,29 @@
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 
+type StrObjectType = Record<string, string>
+
 export interface Transaction {
   id: string
   status: TransactionStatus
   direction: TransactionDirection
   type: TransactionType
   tokens: TokensAmount
-  memo: string | null
+  memo: Record<string, string | StrObjectType>
   errors: string[]
   events: NostrEvent[]
-  createdAt: Date
+  createdAt: number
 }
 
 export enum TransferTypes {
   INTERNAL = 'INTERNAL',
   LUD16 = 'LUD16',
   INVOICE = 'INVOICE',
-  LNURL = 'LNURL'
+  LNURL = 'LNURL',
+  LNURLW = 'LNURLW'
 }
 
 export enum TransactionStatus {
   PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
   CONFIRMED = 'CONFIRMED',
   ERROR = 'ERROR',
   REVERTED = 'REVERTED'

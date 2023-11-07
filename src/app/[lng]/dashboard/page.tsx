@@ -10,7 +10,7 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
@@ -33,7 +33,6 @@ import theme from '@/styles/theme'
 
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTranslation } from '@/hooks/useTranslations'
 import { formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
@@ -42,6 +41,7 @@ import { useRouter } from 'next/navigation'
 import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { copy } from '@/lib/share'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -50,7 +50,8 @@ export default function Page() {
   const {
     lng,
     identity,
-    transactions,
+    balance,
+    sortedTransactions,
     userConfig: {
       loading,
       toggleHideBalance,
@@ -59,16 +60,17 @@ export default function Page() {
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
 
-  const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
-    tokenId: 'BTC'
-  })
-
   const convertedBalance: string = useMemo(() => {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)
-
     return formatToPreference(currency, amount, lng)
   }, [balance, pricesData, currency])
+
+  useEffect(() => {
+    router.prefetch('/deposit')
+    router.prefetch('/transfer')
+    router.prefetch('/settings')
+    router.prefetch('/scan')
+  }, [router])
 
   return (
     <>
@@ -84,14 +86,17 @@ export default function Page() {
               <Text size="small" color={theme.colors.gray50}>
                 {t('HELLO')},
               </Text>
-              <Flex>
+              <Flex
+                onClick={() => {
+                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                }}
+              >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
-                  <>
-                    <Text>{identity.username}</Text>
-                    <Text>@{WALLET_DOMAIN}</Text>
-                  </>
+                  <Text>
+                    {identity.username}@{WALLET_DOMAIN}
+                  </Text>
                 )}
               </Flex>
             </Flex>
@@ -128,6 +133,7 @@ export default function Page() {
               ) : (
                 <Text>$</Text>
               )}
+
               <Heading>
                 {loading || balance.loading ? (
                   <BtnLoader />
@@ -163,7 +169,7 @@ export default function Page() {
           </Button>
         </Flex>
         <Divider y={16} />
-        {transactions.length === 0 ? (
+        {sortedTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
             <Heading as="h4">{t('EMPTY_TRANSACTIONS_TITLE')}</Heading>
@@ -171,25 +177,31 @@ export default function Page() {
             <Text size="small">{t('EMPTY_TRANSACTIONS_DESC')}</Text>
           </Flex>
         ) : (
-          <Flex justify="space-between" align="center">
-            <Text size="small" color={theme.colors.gray50}>
-              {t('LAST_ACTIVITY').toUpperCase()}
-            </Text>
+          <>
+            <Flex justify="space-between" align="center">
+              <Text size="small" color={theme.colors.gray50}>
+                {t('LAST_ACTIVITY').toUpperCase()}
+              </Text>
 
-            <Button
-              size="small"
-              variant="borderless"
-              onClick={() => router.push('/transactions')}
-            >
-              {t('SEE_ALL')}
-            </Button>
-          </Flex>
+              <Button
+                size="small"
+                variant="borderless"
+                onClick={() => router.push('/transactions')}
+              >
+                {t('SEE_ALL')}
+              </Button>
+            </Flex>
+
+            <Flex direction="column" gap={4}>
+              {sortedTransactions.slice(0, 10).map(transaction => (
+                <TransactionItem
+                  key={transaction.id}
+                  transaction={transaction}
+                />
+              ))}
+            </Flex>
+          </>
         )}
-
-        {transactions.slice(0, 10).map(transaction => (
-          <TransactionItem key={transaction.id} transaction={transaction} />
-        ))}
-
         <Divider y={64} />
       </Container>
 

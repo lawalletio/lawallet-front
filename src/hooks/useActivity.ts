@@ -6,18 +6,34 @@ import {
 } from '@/types/transaction'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { NDKEvent, NDKKind, NDKSubscriptionOptions } from '@nostr-dev-kit/ndk'
+import {
+  NDKEvent,
+  NDKKind,
+  NDKSubscriptionOptions,
+  NostrEvent
+} from '@nostr-dev-kit/ndk'
 
 import { useSubscription } from './useSubscription'
 import keys from '@/constants/keys'
 import { getMultipleTags, getTag } from '@/lib/events'
+import { nip26 } from 'nostr-tools'
+import { Event } from 'nostr-tools'
+import { CACHE_TXS_KEY } from '@/constants/constants'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
 }
 
+export type ActivityType = {
+  loading: boolean
+  lastCached: number
+  cached: Transaction[]
+  suscription: Transaction[]
+  idsLoaded: string[]
+}
+
 export interface UseActivityReturn {
-  previousTransactions: Transaction[]
+  activityInfo: ActivityType
   sortedTransactions: Transaction[]
 }
 
@@ -62,41 +78,55 @@ export const useActivity = ({
   enabled,
   limit = 100
 }: UseActivityProps): UseActivityReturn => {
+  const [activityInfo, setActivityInfo] = useState<ActivityType>({
+    loading: true,
+    lastCached: 0,
+    cached: [],
+    suscription: [],
+    idsLoaded: []
+  })
+
   const { events: walletEvents } = useSubscription({
     filters: [
       {
-        authors: [pubkey],
+        authors: [pubkey, keys.cardPubkey],
         kinds: [1112 as NDKKind],
         '#t': ['internal-transaction-start'],
+        since: activityInfo.lastCached,
         limit
       },
       {
         '#p': [pubkey],
         '#t': startTags,
         kinds: [1112 as NDKKind],
+        since: activityInfo.lastCached,
         limit
       },
       {
         authors: [keys.ledgerPubkey],
         kinds: [1112 as NDKKind],
-        '#p': [pubkey],
+        '#p': [pubkey, keys.cardPubkey],
         '#t': statusTags,
+        since: activityInfo.lastCached,
         limit
       }
     ],
     options,
-    enabled
-  })
-
-  const [transactions, setTransactions] = useState<
-    Record<'old' | 'new', Transaction[]>
-  >({
-    old: [],
-    new: []
+    enabled: enabled && !activityInfo.loading
   })
 
   const formatStartTransaction = async (event: NDKEvent) => {
-    const AuthorIsUser: boolean = event.pubkey === pubkey
+    const nostrEvent: NostrEvent = await event.toNostrEvent()
+    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
+
+    const DelegatorIsUser: boolean =
+      AuthorIsCard && nip26.getDelegator(nostrEvent as Event) === pubkey
+    const AuthorIsUser: boolean = DelegatorIsUser || event.pubkey === pubkey
+
+    if (AuthorIsCard && !DelegatorIsUser) {
+      const delegation_pTags: string[] = getMultipleTags(event.tags, 'p')
+      if (!delegation_pTags.includes(pubkey)) return
+    }
 
     const direction = AuthorIsUser
       ? TransactionDirection.OUTGOING
@@ -109,11 +139,16 @@ export const useActivity = ({
       status: TransactionStatus.PENDING,
       memo: eventContent,
       direction,
-      type: TransactionType.INTERNAL,
+      type: AuthorIsCard ? TransactionType.CARD : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
-      events: [await event.toNostrEvent()],
+      events: [nostrEvent],
       errors: [],
-      createdAt: new Date(event.created_at!)
+      createdAt: event.created_at! * 1000
+    }
+
+    if (!AuthorIsCard) {
+      const boltTag: string = getTag(event.tags, 'bolt11')
+      if (boltTag.length) newTransaction.type = TransactionType.LN
     }
 
     return newTransaction
@@ -139,6 +174,12 @@ export const useActivity = ({
 
     const statusTag: string = getTag(statusEvent.tags, 't')
     const isError: boolean = statusTag.includes('error')
+
+    if (
+      transaction.direction === TransactionDirection.INCOMING &&
+      statusTag.includes('inbound')
+    )
+      transaction.type = TransactionType.LN
 
     transaction.status = isError
       ? TransactionStatus.ERROR
@@ -193,9 +234,19 @@ export const useActivity = ({
     const [startedEvents, statusEvents, refundEvents] =
       filterEventsByTxType(events)
 
+    setActivityInfo(prev => {
+      return {
+        ...prev,
+        idsLoaded: sortedTransactions.map(tx => tx.id.toString()),
+        loading: true
+      }
+    })
+
     startedEvents.forEach(startEvent => {
       formatStartTransaction(startEvent)
         .then(formattedTx => {
+          if (!formattedTx) return
+
           const statusEvent: NDKEvent | undefined = findAsocciatedEvent(
             statusEvents,
             startEvent.id!
@@ -205,6 +256,8 @@ export const useActivity = ({
           return updateTxStatus(formattedTx, statusEvent)
         })
         .then(formattedTx => {
+          if (!formattedTx) return
+
           const refundEvent: NDKEvent | undefined = findAsocciatedEvent(
             refundEvents,
             startEvent.id!
@@ -218,15 +271,18 @@ export const useActivity = ({
           )
           return markTxRefund(formattedTx, statusRefundEvent || refundEvent)
         })
-        .then((transaction: Transaction) => {
+        .then((transaction: Transaction | undefined) => {
+          if (!transaction) return
+
           userTransactions.push(transaction)
         })
     })
 
-    setTransactions(prev => {
+    setActivityInfo(prev => {
       return {
-        old: !prev.new.length ? userTransactions : prev.new,
-        new: userTransactions
+        ...prev,
+        suscription: userTransactions,
+        loading: false
       }
     })
   }
@@ -245,16 +301,64 @@ export const useActivity = ({
     return () => clearTimeout(intervalGenerateTransactions)
   }, [walletEvents])
 
-  const sortedTransactions: Transaction[] = useMemo(
-    () =>
-      transactions.new.sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-      ),
-    [transactions.new]
-  )
+  const loadCachedTransactions = () => {
+    if (pubkey.length) {
+      const storagedData: string =
+        localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
+      if (!storagedData) {
+        setActivityInfo({
+          ...activityInfo,
+          loading: false
+        })
+        return
+      }
+
+      const cachedTxs: Transaction[] = JSON.parse(storagedData)
+
+      const lastCached: number = cachedTxs.length
+        ? 1 + cachedTxs[0].events[cachedTxs[0].events.length - 1].created_at
+        : 0
+
+      setActivityInfo({
+        suscription: [],
+        idsLoaded: cachedTxs.map(tx => tx.id.toString()),
+        cached: cachedTxs,
+        lastCached,
+        loading: false
+      })
+    }
+  }
+
+  useEffect(() => {
+    loadCachedTransactions()
+  }, [pubkey])
+
+  const sortedTransactions: Transaction[] = useMemo(() => {
+    const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
+      tx => {
+        const cached = activityInfo.cached.find(
+          cachedTX => cachedTX.id === tx.id
+        )
+
+        return Boolean(!cached)
+      }
+    )
+
+    return [...TXsWithoutCached, ...activityInfo.cached].sort(
+      (a, b) => b.createdAt - a.createdAt
+    )
+  }, [activityInfo])
+
+  useEffect(() => {
+    if (sortedTransactions.length)
+      localStorage.setItem(
+        `${CACHE_TXS_KEY}_${pubkey}`,
+        JSON.stringify(sortedTransactions)
+      )
+  }, [sortedTransactions])
 
   return {
-    previousTransactions: transactions.old,
+    activityInfo,
     sortedTransactions
   }
 }

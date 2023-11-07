@@ -18,32 +18,28 @@ import {
 } from '@/components/UI'
 
 import theme from '@/styles/theme'
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { TransferTypes } from '@/types/transaction'
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 
 export default function Page() {
   const { t } = useTranslation()
+  const [insufficientBalance, setInsufficientBalance] = useState<boolean>(false)
 
   const { loading, transferInfo, executeTransfer } = useTransferContext()
   const {
     lng,
     identity,
+    balance,
     userConfig: {
       props: { currency }
     },
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
-
-  const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
-    tokenId: 'BTC'
-  })
 
   const convertedAmount: string = useMemo(() => {
     const convertedInt: number = convertCurrency(
@@ -54,6 +50,10 @@ export default function Page() {
 
     return formatToPreference(currency, convertedInt, lng)
   }, [transferInfo.amount, pricesData, currency])
+
+  useEffect(() => {
+    if (balance.amount < transferInfo.amount) setInsufficientBalance(true)
+  }, [transferInfo.amount])
 
   const [transferUsername, transferDomain] = transferInfo.data.split('@')
 
@@ -74,13 +74,18 @@ export default function Page() {
             gap={8}
             flex={1}
           >
-            <Avatar size="large">
-              <Text size="small">
-                {transferUsername.substring(0, 2).toUpperCase()}
-              </Text>
-            </Avatar>
+            {transferInfo.type === TransferTypes.LNURLW ? (
+              <Text size="small">{t('CLAIM_THIS_INVOICE')}</Text>
+            ) : (
+              <Avatar size="large">
+                <Text size="small">
+                  {transferUsername.substring(0, 2).toUpperCase()}
+                </Text>
+              </Avatar>
+            )}
 
-            {transferInfo.type === TransferTypes.INVOICE ? (
+            {transferInfo.type === TransferTypes.INVOICE ||
+            transferInfo.type === TransferTypes.LNURLW ? (
               <Flex justify="center">
                 <Text>{formatAddress(transferInfo.data, 15)}</Text>
               </Flex>
@@ -125,15 +130,17 @@ export default function Page() {
       </Container>
 
       {transferInfo.expired ||
-        (transferInfo.amount > balance.amount && (
-          <Flex flex={1} align="center" justify="center">
-            <Feedback show={true} status={'error'}>
-              {transferInfo.expired
-                ? t('INVOICE_EXPIRED')
-                : t('INSUFICIENT_BALANCE')}
-            </Feedback>
-          </Flex>
-        ))}
+        (transferInfo.type !== TransferTypes.LNURLW &&
+          !balance.loading &&
+          insufficientBalance && (
+            <Flex flex={1} align="center" justify="center">
+              <Feedback show={true} status={'error'}>
+                {transferInfo.expired
+                  ? t('INVOICE_EXPIRED')
+                  : t('INSUFFICIENT_BALANCE')}
+              </Feedback>
+            </Flex>
+          ))}
 
       <Flex>
         <Container size="small">
@@ -145,15 +152,22 @@ export default function Page() {
 
             <Button
               color="secondary"
-              onClick={() => executeTransfer(identity.signer!)}
+              onClick={() => executeTransfer(identity.privateKey)}
               disabled={
                 !transferInfo.type ||
                 loading ||
-                balance.amount < transferInfo.amount ||
-                transferInfo.expired
+                transferInfo.expired ||
+                (transferInfo.type !== TransferTypes.LNURLW &&
+                  insufficientBalance)
               }
             >
-              {loading ? <BtnLoader /> : t('TRANSFER')}
+              {loading ? (
+                <BtnLoader />
+              ) : transferInfo.type === TransferTypes.LNURLW ? (
+                t('CLAIM')
+              ) : (
+                t('TRANSFER')
+              )}
             </Button>
           </Flex>
           <Divider y={32} />

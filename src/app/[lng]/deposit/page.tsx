@@ -47,6 +47,7 @@ import { zapRequestEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
 import useErrors from '@/hooks/useErrors'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 type InvoiceProps = {
   bolt11: string
@@ -109,6 +110,7 @@ export default function Page() {
         'SAT',
         currency
       )
+
       errors.modifyError('ERROR_INVOICE_AMOUNT', {
         minAmount: convertedMinAmount.toString(),
         maxAmount: formatToPreference(currency, convertedMaxAmount, lng),
@@ -119,7 +121,10 @@ export default function Page() {
 
     setInvoice({ ...invoice, loading: true })
     const invoice_mSats: number = amountSats * 1000
-    const zapRequest: string = await zapRequestEvent(invoice_mSats, identity)
+    const zapRequest: string = await zapRequestEvent(
+      invoice_mSats,
+      identity.privateKey
+    )
 
     requestInvoice(
       `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${invoice_mSats}&nostr=${zapRequest}`
@@ -141,6 +146,7 @@ export default function Page() {
     if (sheetStep === 'finished') {
       router.push('/dashboard')
     } else {
+      numpadData.resetAmount()
       setShowSeet(false)
       setSheetStep('amount')
       setInvoice({ bolt11: '', created_at: 0, loading: false })
@@ -180,6 +186,8 @@ export default function Page() {
     if (errors.errorInfo.visible) errors.resetError()
   }, [numpadData.intAmount])
 
+  useActionOnKeypress('Enter', handleClick, [numpadData.intAmount['SAT']])
+
   return (
     <>
       <Navbar showBackPage={true}>
@@ -191,7 +199,7 @@ export default function Page() {
       <QRCode
         size={325}
         value={(
-          'lightning://' +
+          'lightning:' +
           lnurl.encode(
             `https://${WALLET_DOMAIN}/.well-known/lnurlp/${identity.username}`
           )
@@ -235,7 +243,6 @@ export default function Page() {
             <Button
               variant="bezeled"
               onClick={() => {
-                numpadData.resetAmount()
                 setShowSeet(true)
               }}
             >

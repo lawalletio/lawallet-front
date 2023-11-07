@@ -69,6 +69,21 @@ export const claimIdentity = async (
     })
 }
 
+export const getUsername = (pubkey: string) => {
+  const storagedUsername: string = localStorage.getItem(pubkey) || ''
+  if (storagedUsername.length) return storagedUsername
+
+  return fetch(`${IDENTITY_ENDPOINT}/api/pubkey/${pubkey}`)
+    .then(res => res.json())
+    .then(info => {
+      if (!info || !info.username) return ''
+
+      localStorage.setItem(pubkey, info.username)
+      return info.username
+    })
+    .catch(() => '')
+}
+
 export const getUserPubkey = (username: string) =>
   fetch(`${IDENTITY_ENDPOINT}/api/lud16/${username}`)
     .then(res => res.json())

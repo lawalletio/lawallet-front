@@ -31,7 +31,7 @@ export default function Page() {
   useEffect(() => {
     router.prefetch('/transfer/summary')
     router.prefetch('/transfer/amount')
-  }, [])
+  }, [router])
 
   return (
     <>
@@ -43,7 +43,6 @@ export default function Page() {
 
       <Flex justify="center" align="center" flex={1}>
         <QrScanner
-          maxScansPerSecond={3}
           onDecode={handleScan}
           startOnLaunch={true}
           highlightScanRegion={true}

@@ -13,7 +13,7 @@ const loggedRoutes: string[] = [
   'transactions'
 ]
 
-const unloggedRoutes: string[] = ['', 'start']
+const unloggedRoutes: string[] = ['', 'start', 'login']
 
 const ProtectRoutes = ({ children }: { children: ReactNode }) => {
   const { identity, hydrated } = useContext(LaWalletContext)
@@ -29,7 +29,7 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
 
       switch (true) {
         case !userLogged && pathname == '/' && !nonce:
-          location.replace('https://lawallet.ar')
+          router.push('/')
           break
 
         case !userLogged && loggedRoutes.includes(cleanedPath):

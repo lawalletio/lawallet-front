@@ -25,7 +25,6 @@ import { useNumpad } from '@/hooks/useNumpad'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 import useErrors from '@/hooks/useErrors'
 import { TransferTypes } from '@/types/transaction'
 
@@ -35,18 +34,13 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false)
   const { transferInfo, setAmountToPay } = useTransferContext()
   const {
-    identity,
+    balance,
     lng,
     userConfig: {
       props: { currency: userCurrency }
     },
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
-
-  const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
-    tokenId: 'BTC'
-  })
 
   const maxAvailableAmount: number = useMemo(() => {
     const convertedAmount: number = convertCurrency(
@@ -80,10 +74,10 @@ export default function Page() {
       const mSats = satsAmount * 1000
       const { minSendable, maxSendable } = transferInfo.walletService
 
-      if (mSats < minSendable || mSats > maxSendable) {
+      if (mSats < minSendable! || mSats > maxSendable!) {
         errors.modifyError('INVALID_SENDABLE_AMOUNT', {
-          minSendable: (minSendable / 1000).toString(),
-          maxSendable: (maxSendable / 1000).toString(),
+          minSendable: (minSendable! / 1000).toString(),
+          maxSendable: (maxSendable! / 1000).toString(),
           currency: 'SAT'
         })
 
@@ -152,12 +146,12 @@ export default function Page() {
                 {t('SENDABLE_AMOUNT', {
                   minSendable: formatToPreference(
                     'SAT',
-                    transferInfo.walletService.minSendable / 1000,
+                    transferInfo.walletService.minSendable! / 1000,
                     lng
                   ),
                   maxSendable: formatToPreference(
                     'SAT',
-                    transferInfo.walletService.maxSendable / 1000,
+                    transferInfo.walletService.maxSendable! / 1000,
                     lng
                   )
                 })}

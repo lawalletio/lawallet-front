@@ -8,15 +8,15 @@ import {
 import { TransferTypes } from '@/types/transaction'
 import bolt11 from 'light-bolt11-decoder'
 import lnurl from './lnurl'
+import { validateEmail } from './email'
 
 export const formatBigNumber = (number: number | string) => {
   return Number(number).toLocaleString('es-ES')
 }
 
-export const validateEmail = (email: string): RegExpMatchArray | null => {
-  return email.match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  )
+export const decodeInvoice = (invoice: string) => {
+  const decodedInvoice = bolt11.decode(invoice)
+  return decodedInvoice
 }
 
 export const detectTransferType = (data: string): TransferTypes | false => {
@@ -37,10 +37,13 @@ export const detectTransferType = (data: string): TransferTypes | false => {
 }
 
 const parseInvoiceInfo = (invoice: string) => {
-  const decodedInvoice = bolt11.decode(invoice)
+  const decodedInvoice = decodeInvoice(invoice)
   const invoiceAmount = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'amount'
   )
+
+  if (!invoiceAmount) return defaultTransfer
+
   const createdAt = decodedInvoice.sections.find(
     (section: Record<string, string>) => section.name === 'timestamp'
   )
@@ -92,17 +95,22 @@ const parseLNURLInfo = async (data: string) => {
     walletService
   }
 
-  try {
-    const parsedMetadata: Array<string>[] = JSON.parse(walletService.metadata)
-    const identifier: string[] | undefined = parsedMetadata.find(
-      (data: string[]) => {
-        if (data[0] === 'text/identifier') return data
-      }
-    )
+  if (walletService.tag === 'payRequest') {
+    try {
+      const parsedMetadata: Array<string>[] = JSON.parse(walletService.metadata)
+      const identifier: string[] | undefined = parsedMetadata.find(
+        (data: string[]) => {
+          if (data[0] === 'text/identifier') return data
+        }
+      )
 
-    if (identifier && identifier.length === 2) transfer.data = identifier[1]
-  } catch (error) {
-    console.log(error)
+      if (identifier && identifier.length === 2) transfer.data = identifier[1]
+    } catch (error) {
+      console.log(error)
+    }
+  } else if (walletService.tag === 'withdrawRequest') {
+    transfer.type = TransferTypes.LNURLW
+    transfer.amount = walletService.maxWithdrawable! / 1000
   }
 
   return transfer
@@ -110,7 +118,6 @@ const parseLNURLInfo = async (data: string) => {
 
 const parseLUD16Info = async (data: string) => {
   const [username, domain] = data.split('@')
-
   const walletService = await getWalletService(
     `https://${domain}/.well-known/lnurlp/${username}`
   )
@@ -124,7 +131,7 @@ const parseLUD16Info = async (data: string) => {
   }
 
   if (walletService.minSendable == walletService.maxSendable)
-    transfer.amount = walletService.maxSendable / 1000
+    transfer.amount = walletService.maxSendable! / 1000
 
   return transfer
 }
@@ -189,5 +196,13 @@ export function checkIOS(navigator: Navigator) {
         navigator.maxTouchPoints > 2 &&
         /MacIntel/.test(navigator.userAgent)
     )
+  }
+}
+
+export function addQueryParameter(url: string, parameter: string) {
+  if (url.indexOf('?') === -1) {
+    return url + '?' + parameter
+  } else {
+    return url + '&' + parameter
   }
 }

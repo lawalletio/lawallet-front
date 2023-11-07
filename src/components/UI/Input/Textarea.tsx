@@ -8,10 +8,19 @@ interface ComponentProps {
   id?: string
   name?: string
   value?: string
+  disabled?: boolean
 }
 
 export default function Component(props: ComponentProps) {
-  const { placeholder, status, onChange, id = '', name = '', value } = props
+  const {
+    placeholder,
+    status,
+    onChange,
+    id = '',
+    name = '',
+    value,
+    disabled = false
+  } = props
 
   return (
     <Textarea
@@ -21,6 +30,7 @@ export default function Component(props: ComponentProps) {
       value={value}
       placeholder={placeholder}
       onChange={onChange}
+      disabled={disabled}
       $showValidate={!status}
       $isSuccess={status && status === 'success'}
     ></Textarea>

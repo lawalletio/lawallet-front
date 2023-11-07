@@ -8,11 +8,6 @@ import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
 
-export interface ActivitySubscriptionProps {
-  pubkey: string
-  tokenId: string
-}
-
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
 }
@@ -20,15 +15,13 @@ export interface UseTokenBalanceReturn {
 export interface UseTokenBalanceProps {
   pubkey: string
   tokenId: string
-}
-
-export interface ActivitySubscriptionProps {
-  pubkey: string
+  closeOnEose?: boolean
 }
 
 export const useTokenBalance = ({
   pubkey,
-  tokenId
+  tokenId,
+  closeOnEose = false
 }: UseTokenBalanceProps): UseTokenBalanceReturn => {
   const { ndk } = useContext(NDKContext)
   const [balance, setBalance] = useState<TokenBalance>({
@@ -47,7 +40,8 @@ export const useTokenBalance = ({
       }
     ],
     options: {
-      groupable: false
+      groupable: false,
+      closeOnEose
     },
     enabled: Boolean(!balance.loading)
   })
@@ -59,25 +53,30 @@ export const useTokenBalance = ({
       '#d': [`balance:${tokenId}:${pubkey}`]
     })
 
-    if (event) {
+    if (event)
       setBalance({
         tokenId: tokenId,
-        amount: Number(event.getMatchingTags('amount')[0]?.[1]) / 1000,
+        amount: event
+          ? Number(event.getMatchingTags('amount')[0]?.[1]) / 1000
+          : 0,
         loading: false,
-        lastEvent: event as NostrEvent,
-        createdAt: new Date(event.created_at!)
+        lastEvent: event ? (event as NostrEvent) : undefined,
+        createdAt: event ? new Date(event.created_at!) : new Date()
       })
-    } else {
-      setBalance({
-        ...balance,
-        loading: false
-      })
-    }
   }
 
   useEffect(() => {
-    loadBalance()
-  }, [])
+    if (pubkey.length) {
+      loadBalance()
+
+      setTimeout(() => {
+        if (balance.loading)
+          setBalance(prev => {
+            return { ...prev, loading: false }
+          })
+      }, 2000)
+    }
+  }, [pubkey])
 
   useEffect(() => {
     if (balanceEvents.length) {

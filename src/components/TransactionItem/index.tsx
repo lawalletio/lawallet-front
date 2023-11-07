@@ -6,18 +6,32 @@ import {
   LightningIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 
-import { Flex, Text, Accordion, AccordionBody, Button } from '@/components/UI'
+import { Flex, Text, Accordion, AccordionBody } from '@/components/UI'
 
 import theme from '@/styles/theme'
-import { Transaction, TransactionStatus } from '@/types/transaction'
-import { useContext, useMemo } from 'react'
+import {
+  Transaction,
+  TransactionDirection,
+  TransactionStatus,
+  TransactionType
+} from '@/types/transaction'
+import { useContext, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/hooks/useTranslations'
 import { dateFormatter, formatToPreference } from '@/lib/formatter'
 import { defaultCurrency } from '@/types/config'
+import { getUsername } from '@/interceptors/identity'
+import { WALLET_DOMAIN } from '@/constants/config'
+import { BtnLoader } from '../Loader/Loader'
+import { getMultipleTags } from '@/lib/events'
 
 interface ComponentProps {
   transaction: Transaction
+}
+
+type LudInfoProps = {
+  loading: boolean
+  data: string
 }
 
 export default function Component({ transaction }: ComponentProps) {
@@ -36,6 +50,11 @@ export default function Component({ transaction }: ComponentProps) {
   const isFromMe = transaction?.direction === 'OUTGOING'
   const satsAmount = transaction.tokens?.BTC / 1000 || 0
 
+  const [ludInfo, setLudInfo] = useState<LudInfoProps>({
+    loading: false,
+    data: 'Lightning'
+  })
+
   const listTypes = {
     CARD: { icon: <CreditCardIcon />, label: t('YOU_PAID') },
     INTERNAL: { icon: <TransferIcon />, label: t('YOU_TRANSFER') },
@@ -52,12 +71,37 @@ export default function Component({ transaction }: ComponentProps) {
     [pricesData, currency]
   )
 
+  const handleOpenAccordion = async () => {
+    if (transaction.type === TransactionType.INTERNAL) {
+      setLudInfo({ ...ludInfo, loading: true })
+
+      let username: string = ''
+      if (transaction.direction === TransactionDirection.INCOMING) {
+        username = await getUsername(transaction.events[0].pubkey)
+      } else {
+        const txPubkeys: string[] = getMultipleTags(
+          transaction.events[0].tags,
+          'p'
+        )
+        if (txPubkeys.length < 2) return
+
+        const receiverPubkey: string = txPubkeys[1]
+        username = await getUsername(receiverPubkey)
+      }
+
+      username.length
+        ? setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+        : setLudInfo({ ...ludInfo, loading: false })
+    }
+  }
+
   if (!satsAmount) return null
 
   return (
     <>
       <Accordion
         variant="borderless"
+        onOpen={handleOpenAccordion}
         trigger={
           <Flex align="center" gap={8}>
             <Flex align="center" gap={8}>
@@ -97,9 +141,9 @@ export default function Component({ transaction }: ComponentProps) {
                   '*****'
                 ) : (
                   <>
-                    {!isFromMe &&
-                      !(transaction.status === TransactionStatus.ERROR) &&
-                      '+ '}
+                    {!(transaction.status === TransactionStatus.ERROR) && (
+                      <>{!isFromMe ? '+ ' : '- '}</>
+                    )}
                     {formatToPreference('SAT', satsAmount, lng)} SAT
                   </>
                 )}
@@ -125,7 +169,7 @@ export default function Component({ transaction }: ComponentProps) {
                 <Text size="small" color={theme.colors.gray50}>
                   {isFromMe ? t('TO') : t('FROM')}
                 </Text>
-                <Text>Lightning</Text>
+                <Text>{ludInfo.loading ? <BtnLoader /> : ludInfo.data}</Text>
               </Flex>
             </li>
             <li>
@@ -137,33 +181,20 @@ export default function Component({ transaction }: ComponentProps) {
                   <Text>
                     {dateFormatter(
                       lng,
-                      new Date(Number(transaction.createdAt) * 1000),
+                      new Date(Number(transaction.createdAt)),
                       'HH:mm'
                     )}
                   </Text>
                   <Text size="small" color={theme.colors.gray50}>
                     {dateFormatter(
                       lng,
-                      new Date(Number(transaction.createdAt) * 1000),
+                      new Date(Number(transaction.createdAt)),
                       'MMMM d, yyyy'
                     )}
                   </Text>
                 </Flex>
               </Flex>
             </li>
-            {/* <li>
-              <Flex align="center" justify="space-between">
-                <Text size="small" color={theme.colors.gray50}>
-                  {t('FEE')}
-                </Text>
-                <Flex direction="column" align="end">
-                  <Text>1 SAT</Text>
-                  <Text size="small" color={theme.colors.gray50}>
-                    {'>'}$0.01 {currency}
-                  </Text>
-                </Flex>
-              </Flex>
-            </li> */}
             <li>
               <Flex align="center" justify="space-between">
                 <Text size="small" color={theme.colors.gray50}>
@@ -173,11 +204,11 @@ export default function Component({ transaction }: ComponentProps) {
               </Flex>
             </li>
           </ul>
-          <Flex>
+          {/* <Flex>
             <Button variant="bezeled" onClick={() => null}>
               {t('SHARE')}
             </Button>
-          </Flex>
+          </Flex> */}
         </AccordionBody>
       </Accordion>
     </>

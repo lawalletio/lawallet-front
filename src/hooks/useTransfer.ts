@@ -6,25 +6,28 @@ import {
   requestInvoice
 } from '@/interceptors/transaction'
 import { generateTxStart, getTag } from '@/lib/events'
-import { formatTransferData } from '@/lib/utils'
+import { addQueryParameter, formatTransferData } from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import {
   NDKEvent,
   NDKKind,
   NDKPrivateKeySigner,
+  NDKTag,
   NostrEvent
 } from '@nostr-dev-kit/ndk'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
 import { NDKContext } from '@/context/NDKContext'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import { LAWALLET_ENDPOINT } from '@/constants/config'
 
 export interface TransferContextType {
   loading: boolean
   transferInfo: TransferInformation
   prepareTransaction: (data: string) => Promise<boolean>
   setAmountToPay: (amount: number) => void
-  executeTransfer: (signer: NDKPrivateKeySigner) => void
+  executeTransfer: (privateKey: string) => void
 }
 
 const useTransfer = (): TransferContextType => {
@@ -34,6 +37,7 @@ const useTransfer = (): TransferContextType => {
     useState<TransferInformation>(defaultTransfer)
 
   const { ndk } = useContext(NDKContext)
+  const { identity } = useContext(LaWalletContext)
 
   const router = useRouter()
   const params = useSearchParams()
@@ -51,6 +55,26 @@ const useTransfer = (): TransferContextType => {
     enabled: Boolean(startEvent?.id)
   })
 
+  const claimLNURLw = (info: TransferInformation) => {
+    const { walletService } = info
+    requestInvoice(
+      `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${walletService?.maxWithdrawable}`
+    ).then(pr => {
+      if (pr) {
+        let urlCallback: string = walletService!.callback
+        urlCallback = addQueryParameter(urlCallback, `k1=${walletService!.k1!}`)
+        urlCallback = addQueryParameter(urlCallback, `pr=${pr}`)
+
+        fetch(urlCallback).then(res => {
+          if (res.status !== 200) router.push('/transfer/error')
+
+          router.push('/transfer/finish')
+          return
+        })
+      }
+    })
+  }
+
   const prepareTransaction = async (data: string) => {
     const formattedTransferInfo: TransferInformation =
       await formatTransferData(data)
@@ -59,8 +83,14 @@ const useTransfer = (): TransferContextType => {
       case false:
         return false
 
-      case TransferTypes.INVOICE:
+      case TransferTypes.LNURLW:
+        if (!formattedTransferInfo.walletService?.maxWithdrawable) return false
         router.push(`/transfer/summary?data=${formattedTransferInfo.data}`)
+        break
+
+      case TransferTypes.INVOICE:
+        if (formattedTransferInfo.amount > 0)
+          router.push(`/transfer/summary?data=${formattedTransferInfo.data}`)
         break
 
       default:
@@ -87,16 +117,20 @@ const useTransfer = (): TransferContextType => {
     })
   }
 
-  const executeTransfer = async (signer: NDKPrivateKeySigner) => {
+  const executeTransfer = async (privateKey: string) => {
+    const signer = new NDKPrivateKeySigner(privateKey)
     if (loading || !transferInfo.type || transferInfo.expired) return
     setLoading(true)
 
     try {
-      if (transferInfo.type === TransferTypes.INTERNAL) {
+      if (transferInfo.type === TransferTypes.LNURLW) {
+        claimLNURLw(transferInfo)
+      } else if (transferInfo.type === TransferTypes.INTERNAL) {
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
-          signer
+          signer,
+          []
         )
 
         publishTransfer(txEvent)
@@ -109,11 +143,13 @@ const useTransfer = (): TransferContextType => {
             )
           : transferInfo.data
 
+        const eventTags: NDKTag[] = [['bolt11', bolt11]]
+
         const txEvent: NostrEvent = await generateTxStart(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,
-          bolt11
+          eventTags
         )
 
         publishTransfer(txEvent)

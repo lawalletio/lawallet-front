@@ -20,6 +20,7 @@ import Navbar from '@/components/Layout/Navbar'
 
 import theme from '@/styles/theme'
 import { LaWalletContext } from '@/context/LaWalletContext'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -47,7 +48,16 @@ export default function Page() {
       {showRecovery ? (
         <>
           <Container size="small">
-            <InfoCopy title={t('PRIVATE_KEY')} value={identity.privateKey} />
+            <InfoCopy
+              title={t('PRIVATE_KEY')}
+              value={identity.privateKey}
+              onCopy={() => {
+                localStorage.setItem(
+                  `${CACHE_BACKUP_KEY}_${identity.hexpub}`,
+                  '1'
+                )
+              }}
+            />
             <Divider y={16} />
           </Container>
 

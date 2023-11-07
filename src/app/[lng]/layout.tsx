@@ -53,8 +53,8 @@ const Providers = (props: ProviderProps) => {
           sizes="180x180"
           href="/icons/icon-192x192.png"
         />
-        <link rel="manifest" href="./manifest.json" />
-        <link rel="shortcut icon" href="./favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="shortcut icon" href="/favicon.ico" />
 
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`}

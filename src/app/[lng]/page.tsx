@@ -6,12 +6,16 @@ import { Button, Divider, Flex, Text } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'
 
 import theme from '@/styles/theme'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
   const router = useRouter()
-  const params = useSearchParams()
+
+  useEffect(() => {
+    router.prefetch('/login')
+  }, [router])
 
   return (
     <Container size="small">
@@ -27,12 +31,8 @@ export default function Page() {
         <Divider y={16} />
 
         <Flex>
-          <Button
-            onClick={() =>
-              router.push(`/start?i=${params.get('i')}&c=${params.get('c')}`)
-            }
-          >
-            {t('START')}
+          <Button onClick={() => router.push('/login')}>
+            {t('LOGIN_ACCOUNT')}
           </Button>
         </Flex>
       </Flex>
