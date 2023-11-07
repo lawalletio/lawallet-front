@@ -102,5 +102,8 @@
   "SUCCESS_CLAIM": "Reclamaste la factura con éxito",
   "CLAIM": "Reclamar",
   "CLAIM_THIS_INVOICE": "Reclama esta factura",
-  "LOGIN_ACCOUNT": "Iniciar sesión"
+  "LOGIN_ACCOUNT": "Iniciar sesión",
+  "VOUCHER_REQUEST_TITLE": "Reclama tu voucher",
+  "INSERT_EMAIL": "Escribe tu correo electronico",
+  "INSERT_CODE": "Ingresa el código que recibiste en tu correo"
 }

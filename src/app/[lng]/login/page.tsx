@@ -12,7 +12,7 @@ import {
   Heading,
   Textarea
 } from '@/components/UI'
-import { useContext, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { getPublicKey, nip19 } from 'nostr-tools'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
@@ -29,7 +29,7 @@ export default function Page() {
   const router = useRouter()
   const errors = useErrors()
 
-  const handleChangeInput = e => {
+  const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     errors.resetError()
     setKeyInput(e.target.value)
   }

@@ -102,5 +102,7 @@
   "SUCCESS_CLAIM": "You successfully claimed the invoice",
   "CLAIM": "To claim",
   "CLAIM_THIS_INVOICE": "Claim this invoice",
-  "LOGIN_ACCOUNT": "Login account"
+  "LOGIN_ACCOUNT": "Login account",
+  "VOUCHER_REQUEST_TITLE": "Claim your voucher",
+  "INSERT_EMAIL": "Enter your email"
 }

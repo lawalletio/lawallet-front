@@ -11,10 +11,8 @@ export const requestCardActivation = async (
     },
     body: JSON.stringify(event)
   })
-    .then(res => res.json())
-    .then(response => {
-      console.log(response)
-      return true
+    .then(res => {
+      return res.status === 200 || res.status === 204
     })
     .catch(() => {
       return false

@@ -22,6 +22,7 @@ interface InputProps {
   isLoading?: boolean
   isChecked?: boolean
   isError?: boolean
+  disabled?: boolean
 }
 
 export default function Component(props: InputProps) {
@@ -36,7 +37,8 @@ export default function Component(props: InputProps) {
     onChange,
     isLoading = false,
     isChecked = false,
-    isError = false
+    isError = false,
+    disabled = false
   } = props
 
   return (
@@ -51,6 +53,7 @@ export default function Component(props: InputProps) {
         $showValidate={!status}
         $isSuccess={status && status === 'success'}
         autoFocus={autoFocus}
+        disabled={disabled}
       />
       {(isLoading || isChecked || isError) && (
         <InputIcon>
