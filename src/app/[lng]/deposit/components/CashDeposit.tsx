@@ -10,11 +10,11 @@ const CashDeposit = () => {
     <Container size="small">
       <Flex direction="column" justify="center" align="center" flex={1}>
         <Animations data={Wifi} />
-        <Heading as="h4">Acercate a nuestro stand</Heading>
+        <Heading as="h4">¿Tenés solo efectivo?</Heading>
         <Divider y={4} />
         <Text size="small" align="center">
-          Buscá alguno de nuestros arbolitos para cambiar FIAT por SATs, o
-          dirigite a nuestro stand donde podremos ayudarte.
+          ¡No hay problema! Acercate a nuestro stand que vamos a ayudarte a
+          cargar tu billetera.
         </Text>
       </Flex>
     </Container>
