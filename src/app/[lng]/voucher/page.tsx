@@ -21,6 +21,7 @@ import {
 } from '@/components/UI'
 import Container from '@/components/Layout/Container'
 import { Navbar } from '@/components/Layout/Navbar/style'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 const tldRegex =
   /(?=^.{4,253}$)(^((?!-)[a-z0-9-]{0,62}[a-z0-9]\.)+[a-z]{2,63}$)/i
@@ -47,6 +48,7 @@ function cleanupEmail(
 
 const RequestVoucher = () => {
   const [viewCode, setViewCode] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [inputEmail, setInputEmail] = useState<string>('')
   const [claimCode, setClaimCode] = useState<string>('')
 
@@ -68,6 +70,9 @@ const RequestVoucher = () => {
   }
 
   const handleClick = () => {
+    if (loading) return
+    setLoading(true)
+
     if (!viewCode) {
       const email = cleanupEmail(inputEmail)
       if (!email || blacklistedDomains.includes(email.cleanDomain)) {
@@ -93,7 +98,11 @@ const RequestVoucher = () => {
       //TMP
       setViewCode(false)
     }
+
+    setLoading(false)
   }
+
+  useActionOnKeypress('Enter', handleClick, [inputEmail])
 
   return (
     <>
@@ -144,7 +153,10 @@ const RequestVoucher = () => {
             >
               {t('CANCEL')}
             </Button>
-            <Button onClick={handleClick}>
+            <Button
+              onClick={handleClick}
+              disabled={loading || !inputEmail.length}
+            >
               {!viewCode ? t('SEND') : t('CLAIM')}
             </Button>
           </Flex>

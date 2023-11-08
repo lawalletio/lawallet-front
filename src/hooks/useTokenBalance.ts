@@ -43,7 +43,7 @@ export const useTokenBalance = ({
       groupable: false,
       closeOnEose
     },
-    enabled: Boolean(!balance.loading)
+    enabled: !balance.loading && Boolean(pubkey.length)
   })
 
   const loadBalance = async () => {
