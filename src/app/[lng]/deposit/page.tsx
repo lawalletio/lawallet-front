@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import { Button, ButtonGroup, Flex, Heading } from '@/components/UI'
+import { Button, ButtonGroup, Flex, Heading, Divider } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'
 import LightningDeposit from './components/LightningDeposit'
 import CashDeposit from './components/CashDeposit'
@@ -21,14 +21,14 @@ export default function Page() {
         </Flex>
       </Navbar>
 
-      <Container>
+      <Flex justify="center">
         <ButtonGroup>
           <Button
             onClick={() => setViewLightning(true)}
             size="small"
             variant={viewLightning ? 'bezeled' : 'borderless'}
           >
-            Lightning
+            Exchange
           </Button>
           <Button
             onClick={() => setViewLightning(false)}
@@ -38,7 +38,9 @@ export default function Page() {
             Efectivo
           </Button>
         </ButtonGroup>
-      </Container>
+      </Flex>
+
+      <Divider y={24} />
 
       {viewLightning ? <LightningDeposit /> : <CashDeposit />}
     </>
