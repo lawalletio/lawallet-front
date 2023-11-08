@@ -69,8 +69,14 @@ export const useCreateIdentity = (): UseIdentityReturns => {
 
   const checkIfExistName = (username: string) => {
     if (checkExistUsername) clearTimeout(checkExistUsername)
+
     checkExistUsername = setTimeout(async () => {
       const nameWasTaken = await existIdentity(username)
+
+      setAccountInfo(prev => {
+        return { ...prev, loading: false }
+      })
+
       if (nameWasTaken) {
         errors.modifyError('NAME_ALREADY_TAKEN')
         return false
@@ -82,7 +88,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     errors.resetError()
 
     if (!username.length && accountInfo.name.length) {
-      setAccountInfo({ ...accountInfo, name: '' })
+      setAccountInfo({ ...accountInfo, name: '', loading: false })
       if (checkExistUsername) clearTimeout(checkExistUsername)
       return
     }
@@ -91,7 +97,8 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     if (validUsername) {
       setAccountInfo({
         ...accountInfo,
-        name: username.toLowerCase()
+        name: username.toLowerCase(),
+        loading: true
       })
 
       checkIfExistName(username)

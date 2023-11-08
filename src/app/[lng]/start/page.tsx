@@ -100,6 +100,15 @@ export default function Page() {
               status={errors.errorInfo.visible ? 'error' : undefined}
               autoFocus={true}
               value={accountInfo.name}
+              isLoading={accountInfo.loading}
+              isError={
+                accountInfo.loading ? undefined : errors.errorInfo.visible
+              }
+              isChecked={
+                accountInfo.loading
+                  ? undefined
+                  : !errors.errorInfo.visible && Boolean(accountInfo.name)
+              }
             />
             <InputGroupRight>
               <Text size="small">@{WALLET_DOMAIN}</Text>
