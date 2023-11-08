@@ -10,14 +10,15 @@ import { ReactNode } from 'react'
 interface ComponentProps {
   children: ReactNode
   href: string
+  target?: '_self' | '_blank'
 }
 
 export default function Component(props: ComponentProps) {
-  const { children, href } = props
+  const { children, href, target = '_self' } = props
 
   return (
     <LinkSetting>
-      <Link href={href}>
+      <Link href={href} target={target}>
         {children}
         <Icon size="small" color={theme.colors.gray40}>
           <CaretRightIcon />
