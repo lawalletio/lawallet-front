@@ -113,5 +113,10 @@
   "ACTIVATE_CARD": "Activate card",
   "ACTIVATE_SUCCESS": "The card was activated and associated with your account",
   "ACTIVATE_ERROR": "An error occurred while activating the card",
-  "RECOVERING_ACCOUNT": "Recovering account..."
+  "RECOVERING_ACCOUNT": "Recovering account...",
+  "RECOMMEND_BACKUP": "We recommend backing up your account",
+  "RECOMMEND_BACKUP_REASON": "so you can log in whenever you need.",
+  "RECOMMEND_SAFARI": "We recommend using Safari",
+  "RECOMMEND_SAFARI_REASON": "for better handling of the application.",
+  "RECOMMEND_SAFARI_TITLE": "iPhone User"
 }

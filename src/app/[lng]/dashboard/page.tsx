@@ -10,7 +10,7 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useEffect, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
@@ -21,6 +21,7 @@ import TransactionItem from '@/components/TransactionItem'
 import {
   Avatar,
   Button,
+  CardAlert,
   Divider,
   Flex,
   Heading,
@@ -41,10 +42,13 @@ import { useRouter } from 'next/navigation'
 import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
 import { copy } from '@/lib/share'
+import Link from 'next/link'
 
 export default function Page() {
   const { t } = useTranslation()
+  const [showBackup, setShowBackup] = useState<boolean>(false)
 
   const router = useRouter()
   const {
@@ -71,6 +75,14 @@ export default function Page() {
     router.prefetch('/settings')
     router.prefetch('/scan')
   }, [router])
+
+  useEffect(() => {
+    const userMadeBackup: boolean = Boolean(
+      localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
+    )
+
+    setShowBackup(!userMadeBackup && balance.amount > 0)
+  }, [balance.amount])
 
   return (
     <>
@@ -169,6 +181,23 @@ export default function Page() {
           </Button>
         </Flex>
         <Divider y={16} />
+
+        {showBackup && (
+          <Link href="/settings/recovery">
+            <CardAlert
+              isHome={false}
+              title=""
+              description={
+                <>
+                  <strong>{t('RECOMMEND_BACKUP')}</strong>{' '}
+                  {t('RECOMMEND_BACKUP_REASON')}
+                </>
+              }
+            />
+            <Divider y={16} />
+          </Link>
+        )}
+
         {sortedTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
@@ -193,7 +222,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {sortedTransactions.slice(0, 10).map(transaction => (
+              {sortedTransactions.slice(0, 4).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}

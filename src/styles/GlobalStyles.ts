@@ -35,6 +35,10 @@ const GlobalStyles = createGlobalStyle`
     list-style: none;
   }
 
+  a {
+    text-decoration: none;
+  }
+
   a, 
   button {
     font-family: var(--font-primary);
