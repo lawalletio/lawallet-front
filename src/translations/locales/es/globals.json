@@ -112,5 +112,6 @@
   "DETECT_NEW_CARD": "Se detectó una nueva tarjeta, presiona el botón a continuación si quieres asociarla a tu cuenta.",
   "ACTIVATE_CARD": "Activar tarjeta",
   "ACTIVATE_SUCCESS": "La tarjeta fue activada y asociada a tu cuenta",
-  "ACTIVATE_ERROR": "Ocurrió un error al activar la tarjeta"
+  "ACTIVATE_ERROR": "Ocurrió un error al activar la tarjeta",
+  "RECOVERING_ACCOUNT": "Recuperando cuenta..."
 }

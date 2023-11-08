@@ -67,13 +67,13 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
               </Feedback>
             </Flex>
 
-            <Divider y={16} />
+            {/* <Divider y={16} /> */}
 
-            <Flex>
+            {/* <Flex>
               <Button onClick={() => router.replace(IDENTITY_ENDPOINT)}>
                 {t('BACK_TO_HOME')}
               </Button>
-            </Flex>
+            </Flex> */}
           </>
         )}
       </Flex>
