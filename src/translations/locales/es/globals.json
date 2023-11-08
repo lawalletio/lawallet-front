@@ -118,5 +118,7 @@
   "RECOMMEND_BACKUP_REASON": "para poder iniciar sesión siempre que lo necesites.",
   "RECOMMEND_SAFARI": "Recomendamos utilizar Safari",
   "RECOMMEND_SAFARI_REASON": "para un mejor manejo de la aplicacion.",
-  "RECOMMEND_SAFARI_TITLE": "Usuario de iPhone"
+  "RECOMMEND_SAFARI_TITLE": "Usuario de iPhone",
+  "VOUCHER_SUCCESS_DESC": "Recibiste un premio en tu cuenta de...",
+  "VOUCHER_CARD_INFO": "¡Ya puedes utilizarlos con tu tarjeta!"
 }
