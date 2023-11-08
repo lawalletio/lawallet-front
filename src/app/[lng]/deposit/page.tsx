@@ -130,13 +130,17 @@ export default function Page() {
       `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${invoice_mSats}&nostr=${zapRequest}`
     )
       .then(bolt11 => {
-        setInvoice({
-          bolt11,
-          created_at: Math.round(Date.now() / 1000),
-          loading: false
-        })
+        if (bolt11) {
+          setInvoice({
+            bolt11,
+            created_at: Math.round(Date.now() / 1000),
+            loading: false
+          })
 
-        setSheetStep('qr')
+          setSheetStep('qr')
+        } else {
+          errors.modifyError('ERROR_ON_CREATE_INVOICE')
+        }
         return
       })
       .catch(() => errors.modifyError('ERROR_ON_CREATE_INVOICE'))
