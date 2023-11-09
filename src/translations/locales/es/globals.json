@@ -125,5 +125,6 @@
   "ABOUT_US": "Sobre nosotros",
   "RECEIVE_CODE_EMAIL": "Recibiste un código en tu correo electrónico",
   "CLAIM_VOUCHER_TITLE": "Premio disponible",
-  "CLAIM_VOUCHER_DESC": "Reclama tus SATs para disfrutar la Bitconf 23!"
+  "CLAIM_VOUCHER_DESC": "Reclama tus SATs para disfrutar la Bitconf 23!",
+  "FAILED_REQUEST_VOUCHER": "Ocurrió un error al reclamar el voucher"
 }

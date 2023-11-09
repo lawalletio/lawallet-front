@@ -125,5 +125,6 @@
   "ABOUT_US": "About us",
   "RECEIVE_CODE_EMAIL": "You received a code in your email",
   "CLAIM_VOUCHER_TITLE": "Prize available",
-  "CLAIM_VOUCHER_DESC": "Claim your SATs to enjoy Bitconf 23!"
+  "CLAIM_VOUCHER_DESC": "Claim your SATs to enjoy Bitconf 23!",
+  "FAILED_REQUEST_VOUCHER": "An error occurred while claiming the voucher"
 }

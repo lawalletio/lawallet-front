@@ -83,28 +83,32 @@ const RequestVoucher = () => {
 
     const cleanEmail = `${email.cleanUser}@${email.cleanDomain}`
 
-    requestVoucher(identity.username, cleanEmail).then(res => {
-      Object.keys(res).includes('error')
-        ? errors.modifyError(res['error']!)
-        : setViewCode(true)
+    requestVoucher(identity.username, cleanEmail)
+      .then(res => {
+        Object.keys(res).includes('error')
+          ? errors.modifyError(res['error']!)
+          : setViewCode(true)
 
-      setLoading(false)
-    })
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }
 
   const handleClaimVoucher = (code: string) => {
     setLoading(true)
 
-    claimVoucher(identity.username, code).then(res => {
-      if (Object.keys(res).includes('error')) {
-        errors.modifyError(res['error']!)
-      } else {
-        localStorage.setItem(`${CACHE_CLAIM_VOUCHER}_${identity.hexpub}`, '1')
-        router.push('/voucher/finish')
-      }
+    claimVoucher(identity.username, code)
+      .then(res => {
+        if (Object.keys(res).includes('error')) {
+          errors.modifyError(res['error']!)
+        } else {
+          localStorage.setItem(`${CACHE_CLAIM_VOUCHER}_${identity.hexpub}`, '1')
+          router.push('/voucher/finish')
+        }
 
-      setLoading(false)
-    })
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }
 
   const handleClick = () => {
