@@ -36,7 +36,7 @@ export default function Page() {
           <Icon size="small">
             <SatoshiV2Icon />
           </Icon>
-          <Heading>2100</Heading>
+          <Heading>1000</Heading>
           <Text>SAT</Text>
         </Flex>
 

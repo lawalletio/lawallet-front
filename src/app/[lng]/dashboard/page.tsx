@@ -21,7 +21,6 @@ import TransactionItem from '@/components/TransactionItem'
 import {
   Avatar,
   Button,
-  CardAlert,
   Divider,
   Flex,
   Heading,
@@ -46,10 +45,13 @@ import { BtnLoader } from '@/components/Loader/Loader'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
 import { copy } from '@/lib/share'
 import Link from 'next/link'
+import { checkClaimVoucher } from '@/lib/utils'
 
 export default function Page() {
   const { t } = useTranslation()
-  const [showBackup, setShowBackup] = useState<boolean>(false)
+  const [showBanner, setShowBanner] = useState<'voucher' | 'backup' | 'none'>(
+    'none'
+  )
 
   const router = useRouter()
   const {
@@ -82,8 +84,19 @@ export default function Page() {
       localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
     )
 
-    setShowBackup(!userMadeBackup && balance.amount > 0)
-  }, [balance.amount])
+    const userClaimVoucher: boolean = checkClaimVoucher(
+      sortedTransactions,
+      identity.hexpub
+    )
+
+    setShowBanner(
+      !userClaimVoucher
+        ? 'voucher'
+        : !userMadeBackup && balance.amount > 0
+        ? 'backup'
+        : 'none'
+    )
+  }, [sortedTransactions, balance.amount])
 
   return (
     <>
@@ -183,7 +196,18 @@ export default function Page() {
         </Flex>
         <Divider y={16} />
 
-        {showBackup && (
+        {showBanner === 'voucher' ? (
+          <>
+            <Link href="/voucher">
+              <BannerAlert
+                title={t('CLAIM_VOUCHER_TITLE')}
+                description={t('CLAIM_VOUCHER_DESC')}
+                color="warning"
+              />
+            </Link>
+            <Divider y={16} />
+          </>
+        ) : showBanner === 'backup' ? (
           <>
             <Link href="/settings/recovery">
               <BannerAlert
@@ -194,7 +218,7 @@ export default function Page() {
             </Link>
             <Divider y={16} />
           </>
-        )}
+        ) : null}
 
         {sortedTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
