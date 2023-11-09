@@ -9,6 +9,7 @@ export interface IError {
 export interface IUseErrors {
   errorInfo: IError
   modifyError: (text: string, params?: ReplacementParams) => void
+  isExactError: (errorCode: string, params?: ReplacementParams) => boolean
   resetError: () => void
 }
 
@@ -31,6 +32,12 @@ export default function useErrors(): IUseErrors {
     setErrorInfo({ text, visible: true })
   }
 
+  const isExactError = (
+    errorCode: string,
+    params?: ReplacementParams
+  ): boolean =>
+    errorInfo.visible && errorInfo.text === getError(errorCode, params)
+
   const removeError = () => setErrorInfo({ ...errorInfo, visible: false })
 
   const resetError = () => {
@@ -39,6 +46,7 @@ export default function useErrors(): IUseErrors {
   return {
     errorInfo,
     modifyError,
+    isExactError,
     resetError
   }
 }
