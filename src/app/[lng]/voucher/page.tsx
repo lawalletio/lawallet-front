@@ -22,6 +22,7 @@ import {
 import Container from '@/components/Layout/Container'
 import { Navbar } from '@/components/Layout/Navbar/style'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+// import { claimVoucher, requestVoucher } from '@/interceptors/vouchers'
 
 const tldRegex =
   /(?=^.{4,253}$)(^((?!-)[a-z0-9-]{0,62}[a-z0-9]\.)+[a-z]{2,63}$)/i
@@ -84,16 +85,18 @@ const RequestVoucher = () => {
       console.log('name: ', identity.username)
       console.log('email: ', cleanEmail)
 
-      //   requestVoucher(identity.username, cleanEmail).then(res => {
-      //     if (!Object.keys(res).includes('error')) setViewCode(true)
-      //   })
+      // requestVoucher(identity.username, cleanEmail).then(res => {
+      //   console.log(res)
+      // }).catch(() => null)
 
       //TMP
       setViewCode(true)
     } else {
-      //   claimVoucher(identity.username, claimCode).then(res => {
+      // claimVoucher(identity.username, claimCode)
+      //   .then(res => {
       //     console.log(res)
       //   })
+      //   .catch(() => null)
 
       //TMP
       // setViewCode(false)
@@ -124,7 +127,7 @@ const RequestVoucher = () => {
           {viewCode && (
             <>
               <Feedback show={true} status={'success'}>
-                Recibiste un código en tu correo electrónico
+                {t('RECEIVE_CODE_EMAIL')}
               </Feedback>
 
               <Divider y={24} />

@@ -16,7 +16,12 @@ export const requestVoucher = async (
     },
     body: JSON.stringify({ name, email })
   })
-    .then(res => res.json())
+    .then(res => {
+      const test = res.json()
+      console.log(test)
+
+      return test
+    })
     .catch(() => {
       return {
         error: 'FAILED_REQUEST_VOUCHER'

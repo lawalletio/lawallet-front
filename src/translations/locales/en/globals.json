@@ -122,5 +122,6 @@
   "VOUCHER_SUCCESS_DESC": "You received a prize in your account...",
   "VOUCHER_CARD_INFO": "You can now use them with your card!",
   "ONLY_BACKUP_MISSING": "Now you just need to back up your account",
-  "ABOUT_US": "About us"
+  "ABOUT_US": "About us",
+  "RECEIVE_CODE_EMAIL": "You received a code in your email"
 }
