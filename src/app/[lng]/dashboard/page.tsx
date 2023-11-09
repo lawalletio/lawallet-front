@@ -26,7 +26,8 @@ import {
   Flex,
   Heading,
   Icon,
-  Text
+  Text,
+  BannerAlert
 } from '@/components/UI'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
@@ -183,19 +184,16 @@ export default function Page() {
         <Divider y={16} />
 
         {showBackup && (
-          <Link href="/settings/recovery">
-            <CardAlert
-              isHome={false}
-              title=""
-              description={
-                <>
-                  <strong>{t('RECOMMEND_BACKUP')}</strong>{' '}
-                  {t('RECOMMEND_BACKUP_REASON')}
-                </>
-              }
-            />
+          <>
+            <Link href="/settings/recovery">
+              <BannerAlert
+                title={t('RECOMMEND_BACKUP')}
+                description={t('RECOMMEND_BACKUP_REASON')}
+                color="error"
+              />
+            </Link>
             <Divider y={16} />
-          </Link>
+          </>
         )}
 
         {sortedTransactions.length === 0 ? (
