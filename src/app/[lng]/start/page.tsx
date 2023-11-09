@@ -97,9 +97,23 @@ export default function Page() {
               type="text"
               id="username"
               name="username"
-              status={errors.errorInfo.visible ? 'error' : undefined}
+              status={
+                errors.isExactError('NAME_ALREADY_TAKEN') ? 'error' : undefined
+              }
               autoFocus={true}
               value={accountInfo.name}
+              isLoading={accountInfo.loading}
+              isError={
+                accountInfo.loading
+                  ? undefined
+                  : errors.isExactError('NAME_ALREADY_TAKEN')
+              }
+              isChecked={
+                accountInfo.loading
+                  ? undefined
+                  : !errors.isExactError('NAME_ALREADY_TAKEN') &&
+                    Boolean(accountInfo.name)
+              }
             />
             <InputGroupRight>
               <Text size="small">@{WALLET_DOMAIN}</Text>

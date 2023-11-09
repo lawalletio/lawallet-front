@@ -196,7 +196,7 @@ export const Pin = styled.div`
 
   .vi__character {
     width: 100%;
-    max-width: 40px;
+    flex: 1;
 
     background-color: ${theme.colors.gray15};
     border-radius: 8px;

@@ -18,3 +18,19 @@ export const requestCardActivation = async (
       return false
     })
 }
+
+export const restartCardClaim = async (event: NostrEvent): Promise<boolean> => {
+  return fetch(`${LAWALLET_ENDPOINT}/card/reset/claim`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(event)
+  })
+    .then(res => {
+      return res.status === 200 || res.status === 204
+    })
+    .catch(() => {
+      return false
+    })
+}

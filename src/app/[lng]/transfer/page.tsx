@@ -129,6 +129,7 @@ export default function Page() {
               type="text"
               value={inputText}
               status={errors.errorInfo.visible ? 'error' : undefined}
+              disabled={loading}
             />
             <InputGroupRight>
               <Button size="small" variant="bezeled" onClick={handlePasteInput}>

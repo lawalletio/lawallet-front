@@ -8,15 +8,17 @@ interface InputProps {
   length: number
   value: string
   onChange: (text: string) => void
+  onComplete?: (text: string) => void
   autoFocus: boolean
 }
 
 export default function Component(props: InputProps) {
-  const { length, value, onChange, autoFocus } = props
+  const { length, value, onChange, onComplete, autoFocus } = props
 
   return (
     <Pin>
       <VerificationInput
+        onComplete={onComplete}
         onChange={onChange}
         length={length}
         autoFocus={autoFocus}

@@ -10,7 +10,7 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useEffect, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
@@ -25,7 +25,8 @@ import {
   Flex,
   Heading,
   Icon,
-  Text
+  Text,
+  BannerAlert
 } from '@/components/UI'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
@@ -41,10 +42,16 @@ import { useRouter } from 'next/navigation'
 import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
 import { copy } from '@/lib/share'
+import Link from 'next/link'
+import { checkClaimVoucher } from '@/lib/utils'
 
 export default function Page() {
   const { t } = useTranslation()
+  const [showBanner, setShowBanner] = useState<'voucher' | 'backup' | 'none'>(
+    'none'
+  )
 
   const router = useRouter()
   const {
@@ -71,6 +78,21 @@ export default function Page() {
     router.prefetch('/settings')
     router.prefetch('/scan')
   }, [router])
+
+  useEffect(() => {
+    const userMadeBackup: boolean = Boolean(
+      localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
+    )
+
+    const userClaimVoucher: boolean = checkClaimVoucher(
+      sortedTransactions,
+      identity.hexpub
+    )
+
+    setShowBanner(
+      !userClaimVoucher ? 'voucher' : !userMadeBackup ? 'backup' : 'none'
+    )
+  }, [sortedTransactions])
 
   return (
     <>
@@ -169,6 +191,31 @@ export default function Page() {
           </Button>
         </Flex>
         <Divider y={16} />
+
+        {showBanner === 'voucher' ? (
+          <>
+            <Link href="/voucher">
+              <BannerAlert
+                title={t('CLAIM_VOUCHER_TITLE')}
+                description={t('CLAIM_VOUCHER_DESC')}
+                color="warning"
+              />
+            </Link>
+            <Divider y={16} />
+          </>
+        ) : showBanner === 'backup' ? (
+          <>
+            <Link href="/settings/recovery">
+              <BannerAlert
+                title={t('RECOMMEND_BACKUP')}
+                description={t('RECOMMEND_BACKUP_REASON')}
+                color="error"
+              />
+            </Link>
+            <Divider y={16} />
+          </>
+        ) : null}
+
         {sortedTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
@@ -193,7 +240,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {sortedTransactions.slice(0, 10).map(transaction => (
+              {sortedTransactions.slice(0, 5).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}

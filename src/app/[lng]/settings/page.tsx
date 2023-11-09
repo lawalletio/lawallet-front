@@ -75,6 +75,19 @@ export default function Page() {
           </LinkSetting>
         </Flex>
         <Divider y={16} />
+        <Text size="small" color={theme.colors.gray50}>
+          {t('ABOUT_US')}
+        </Text>
+        <Divider y={8} />
+        <Flex direction="column" gap={4}>
+          <LinkSetting href="https://twitter.com/lawalletok" target="_blank">
+            Twitter
+          </LinkSetting>
+          <LinkSetting href="https://discord.gg/QESv76truh" target="_blank">
+            Discord
+          </LinkSetting>
+        </Flex>
+        <Divider y={16} />
         <Flex justify="center">
           <Text size="small" color={theme.colors.gray50}>
             LaWallet {LAWALLET_VERSION}
@@ -90,11 +103,11 @@ export default function Page() {
           <Divider y={16} />
         </Feedback>
 
-        <Flex>
+        {/* <Flex>
           <Button color="error" variant="bezeled" onClick={logoutSession}>
             {t('LOGOUT')}
           </Button>
-        </Flex>
+        </Flex> */}
         <Divider y={16} />
       </Container>
     </>

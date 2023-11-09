@@ -3,7 +3,7 @@ import {
   Flex,
   Text,
   Button,
-  CardAlertiPhone,
+  CardAlert,
   Feedback
 } from '@/components/UI'
 import Container from '@/components/Layout/Container'
@@ -16,15 +16,12 @@ import { checkIOS } from '@/lib/utils'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useMediaQuery } from '@uidotdev/usehooks'
 import { Loader } from '../Loader/Loader'
-import { useRouter } from 'next/navigation'
-import { IDENTITY_ENDPOINT } from '@/constants/config'
 import { LAWALLET_VERSION } from '@/constants/constants'
 
 const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
   const { t } = useTranslation()
   const isMobile = useMediaQuery('only screen and (max-width : 768px)')
   const [isIOS, setIsIOS] = useState<boolean>(false)
-  const router = useRouter()
 
   useEffect(() => {
     if (isValidNonce) setIsIOS(checkIOS(navigator))
@@ -50,7 +47,15 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
 
             {isMobile && isIOS && (
               <>
-                <CardAlertiPhone />
+                <CardAlert
+                  title={t('RECOMMEND_SAFARI_TITLE')}
+                  description={
+                    <>
+                      <strong>{t('RECOMMEND_SAFARI')}</strong>{' '}
+                      {t('RECOMMEND_SAFARI_REASON')}
+                    </>
+                  }
+                />
                 <Divider y={16} />
               </>
             )}
@@ -67,13 +72,13 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
               </Feedback>
             </Flex>
 
-            <Divider y={16} />
+            {/* <Divider y={16} /> */}
 
-            <Flex>
+            {/* <Flex>
               <Button onClick={() => router.replace(IDENTITY_ENDPOINT)}>
                 {t('BACK_TO_HOME')}
               </Button>
-            </Flex>
+            </Flex> */}
           </>
         )}
       </Flex>

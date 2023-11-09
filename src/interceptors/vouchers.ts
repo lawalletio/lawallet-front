@@ -26,14 +26,14 @@ export const requestVoucher = async (
 
 export const claimVoucher = async (
   name: string,
-  nonce: string
+  code: string
 ): Promise<VoucherResponse> => {
   return fetch(`${IDENTITY_ENDPOINT}/api/voucher/claim`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ name, nonce })
+    body: JSON.stringify({ name, code })
   })
     .then(res => res.json())
     .catch(() => {

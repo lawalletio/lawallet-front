@@ -11,15 +11,20 @@ import { LAWALLET_VERSION } from '@/constants/constants'
 const loggedRoutes: string[] = [
   'dashboard',
   'transfer',
+  'transferamount',
+  'transferfinish',
+  'transfersummary',
+  'transfererror',
   'deposit',
   'scan',
   'settings',
   'transactions',
   'card',
-  'voucher'
+  'voucher',
+  'voucherfinish'
 ]
 
-const unloggedRoutes: string[] = ['', 'start', 'login']
+const unloggedRoutes: string[] = ['', 'start', 'login', 'reset']
 
 const ProtectRoutes = ({ children }: { children: ReactNode }) => {
   const { identity, hydrated } = useContext(LaWalletContext)
@@ -29,10 +34,10 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (hydrated) {
-      const cleanedPath: string = pathname.replace(/\//g, '')
+      const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
       const userLogged: boolean = Boolean(identity.username.length)
       const nonce: string = params.get('i') || ''
-      const card: string = params.get('c') || ''
+      // const card: string = params.get('c') || ''
 
       switch (true) {
         case !userLogged && pathname == '/' && !nonce:
@@ -44,7 +49,8 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
           break
 
         case userLogged && unloggedRoutes.includes(cleanedPath):
-          router.push(card ? `/card?c=${card}` : '/dashboard')
+          // router.push(card ? `/card?c=${card}` : '/dashboard')
+          router.push('/dashboard')
           break
       }
     }

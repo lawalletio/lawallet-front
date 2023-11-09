@@ -141,9 +141,10 @@ export default function Component({ transaction }: ComponentProps) {
                   '*****'
                 ) : (
                   <>
-                    {!(transaction.status === TransactionStatus.ERROR) && (
-                      <>{!isFromMe ? '+ ' : '- '}</>
-                    )}
+                    {!(
+                      transaction.status === TransactionStatus.ERROR ||
+                      transaction.status === TransactionStatus.REVERTED
+                    ) && <>{!isFromMe ? '+ ' : '- '}</>}
                     {formatToPreference('SAT', satsAmount, lng)} SAT
                   </>
                 )}
