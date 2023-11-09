@@ -240,7 +240,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {sortedTransactions.slice(0, 4).map(transaction => (
+              {sortedTransactions.slice(0, 5).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}
