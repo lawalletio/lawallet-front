@@ -114,7 +114,7 @@
   "ACTIVATE_SUCCESS": "The card was activated and associated with your account",
   "ACTIVATE_ERROR": "An error occurred while activating the card",
   "RECOVERING_ACCOUNT": "Recovering account...",
-  "RECOMMEND_BACKUP": "We recommend backing up your account",
+  "RECOMMEND_BACKUP": "Back up your account.",
   "RECOMMEND_BACKUP_REASON": "so you can log in whenever you need.",
   "RECOMMEND_SAFARI": "We recommend using Safari",
   "RECOMMEND_SAFARI_REASON": "for better handling of the application.",
@@ -122,5 +122,5 @@
   "VOUCHER_SUCCESS_DESC": "You received a prize in your account...",
   "VOUCHER_CARD_INFO": "You can now use them with your card!",
   "ONLY_BACKUP_MISSING": "Now you just need to back up your account",
-     "ABOUT_US": "About us"
+  "ABOUT_US": "About us"
 }

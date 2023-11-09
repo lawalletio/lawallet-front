@@ -114,7 +114,7 @@
   "ACTIVATE_SUCCESS": "La tarjeta fue activada y asociada a tu cuenta",
   "ACTIVATE_ERROR": "Ocurrió un error al activar la tarjeta",
   "RECOVERING_ACCOUNT": "Recuperando cuenta...",
-  "RECOMMEND_BACKUP": "Recomendamos respaldar tu cuenta",
+  "RECOMMEND_BACKUP": "Respaldá tu cuenta.",
   "RECOMMEND_BACKUP_REASON": "para poder iniciar sesión siempre que lo necesites.",
   "RECOMMEND_SAFARI": "Recomendamos utilizar Safari",
   "RECOMMEND_SAFARI_REASON": "para un mejor manejo de la aplicacion.",
