@@ -96,7 +96,8 @@ const RequestVoucher = () => {
       //   })
 
       //TMP
-      setViewCode(false)
+      // setViewCode(false)
+      router.push('/voucher/finish')
     }
 
     setLoading(false)
@@ -122,6 +123,10 @@ const RequestVoucher = () => {
 
           {viewCode && (
             <>
+              <Feedback show={true} status={'success'}>
+                Recibiste un código en tu correo electrónico
+              </Feedback>
+
               <Divider y={24} />
 
               <Text>{t('INSERT_CODE')}</Text>
@@ -130,7 +135,7 @@ const RequestVoucher = () => {
 
               <Pin
                 onChange={handleChangeCode}
-                length={6}
+                length={4}
                 autoFocus={true}
                 value={claimCode}
               />

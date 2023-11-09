@@ -105,7 +105,7 @@
   "LOGIN_ACCOUNT": "Log in",
   "VOUCHER_REQUEST_TITLE": "Claim your voucher",
   "INSERT_EMAIL": "Enter your email",
-  "INSERT_CODE": "Enter the code you received in your email",
+  "INSERT_CODE": "Enter the code",
   "CONFIRM_LOGOUT": "Are you sure you want to log out?",
   "ERROR_MADE_BACKUP": "You must backup your account before logging out",
   "INVALID_EMAIL": "The entered email is not valid",
@@ -120,5 +120,7 @@
   "RECOMMEND_SAFARI_REASON": "for better handling of the application.",
   "RECOMMEND_SAFARI_TITLE": "iPhone User",
   "VOUCHER_SUCCESS_DESC": "You received a prize in your account...",
-  "VOUCHER_CARD_INFO": "You can now use them with your card!"
+  "VOUCHER_CARD_INFO": "You can now use them with your card!",
+  "ONLY_BACKUP_MISSING": "Now you just need to back up your account",
+     "ABOUT_US": "About us"
 }

@@ -105,7 +105,7 @@
   "LOGIN_ACCOUNT": "Iniciar sesión",
   "VOUCHER_REQUEST_TITLE": "Reclama tu voucher",
   "INSERT_EMAIL": "Escribe tu correo electronico",
-  "INSERT_CODE": "Ingresa el código que recibiste en tu correo",
+  "INSERT_CODE": "Ingresa el código",
   "CONFIRM_LOGOUT": "¿Estás seguro que quieres cerrar sesión?",
   "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión",
   "INVALID_EMAIL": "El correo ingresado no es válido",
@@ -120,5 +120,7 @@
   "RECOMMEND_SAFARI_REASON": "para un mejor manejo de la aplicacion.",
   "RECOMMEND_SAFARI_TITLE": "Usuario de iPhone",
   "VOUCHER_SUCCESS_DESC": "Recibiste un premio en tu cuenta de...",
-  "VOUCHER_CARD_INFO": "¡Ya puedes utilizarlos con tu tarjeta!"
+  "VOUCHER_CARD_INFO": "¡Ya puedes utilizarlos con tu tarjeta!",
+  "ONLY_BACKUP_MISSING": "Ahora solo te falta realizar un respaldo de tu cuenta",
+  "ABOUT_US": "Sobre nosotros"
 }

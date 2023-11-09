@@ -76,7 +76,7 @@ export default function Page() {
         </Flex>
         <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
-          Sobre nosotros
+          {t('ABOUT_US')}
         </Text>
         <Divider y={8} />
         <Flex direction="column" gap={4}>
