@@ -222,7 +222,7 @@ export const checkClaimVoucher = (
   const existTransferFromVoucher = transactions.map(tx => {
     if (tx.events.length) {
       const startEvent: NostrEvent = tx.events[0]
-      if (startEvent.pubkey === keys.voucherPubkey) return tx
+      if (startEvent.pubkey === keys.cardPubkey) return tx
     }
   })
 
