@@ -19,6 +19,7 @@ import useErrors from '@/hooks/useErrors'
 import { getUsername } from '@/interceptors/identity'
 import { UserIdentity } from '@/types/identity'
 import { BtnLoader } from '@/components/Loader/Loader'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
 
 export default function Page() {
   const { setUserIdentity } = useContext(LaWalletContext)
@@ -62,13 +63,14 @@ export default function Page() {
       }
 
       setUserIdentity(identity).then(() => {
+        localStorage.setItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`, '1')
         router.push('/dashboard')
       })
+
+      setLoading(false)
     } catch (err) {
       errors.modifyError('UNEXPECTED_RECEOVERY_ERROR')
     }
-
-    setLoading(false)
   }
 
   useEffect(() => {

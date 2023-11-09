@@ -90,13 +90,9 @@ export default function Page() {
     )
 
     setShowBanner(
-      !userClaimVoucher
-        ? 'voucher'
-        : !userMadeBackup && balance.amount > 0
-        ? 'backup'
-        : 'none'
+      !userClaimVoucher ? 'voucher' : !userMadeBackup ? 'backup' : 'none'
     )
-  }, [sortedTransactions, balance.amount])
+  }, [sortedTransactions])
 
   return (
     <>
