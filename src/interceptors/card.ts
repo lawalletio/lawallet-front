@@ -19,7 +19,9 @@ export const requestCardActivation = async (
     })
 }
 
-export const restartCardClaim = async (event: NostrEvent): Promise<boolean> => {
+export const cardResetCaim = async (
+  event: NostrEvent
+): Promise<Record<'name' | 'error', string>> => {
   return fetch(`${LAWALLET_ENDPOINT}/card/reset/claim`, {
     method: 'POST',
     headers: {
@@ -27,10 +29,8 @@ export const restartCardClaim = async (event: NostrEvent): Promise<boolean> => {
     },
     body: JSON.stringify(event)
   })
-    .then(res => {
-      return res.status === 200 || res.status === 204
-    })
+    .then(res => res.json())
     .catch(() => {
-      return false
+      return { error: 'ERROR_ON_RESET_ACCOUNT' }
     })
 }

@@ -129,5 +129,6 @@
   "FAILED_REQUEST_VOUCHER": "An error occurred while claiming the voucher",
   "CASH": "Cash",
   "ONLY_CASH": "Do you only have cash?",
-  "GO_TO_STAND": "No problem! Come to our stand and we will help you load your wallet."
+  "GO_TO_STAND": "No problem! Come to our stand and we will help you load your wallet.",
+  "ERROR_ON_RESET_ACCOUNT": "An error occurred while recovering the account"
 }

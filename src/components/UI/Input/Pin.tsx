@@ -18,6 +18,7 @@ export default function Component(props: InputProps) {
   return (
     <Pin>
       <VerificationInput
+        validChars={'0-9'}
         onComplete={onComplete}
         onChange={onChange}
         length={length}
