@@ -13,7 +13,7 @@ import { Input, InputBox, InputIcon } from './style'
 interface InputProps {
   placeholder: string
   value?: string
-  type?: 'text' | 'password' | 'number'
+  type?: 'text' | 'password' | 'number' | 'email'
   id?: string
   name?: string
   status?: 'success' | 'error'

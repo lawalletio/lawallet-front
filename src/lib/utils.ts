@@ -217,14 +217,15 @@ export const checkClaimVoucher = (
   const alreadyClaimed: boolean = Boolean(
     localStorage.getItem(`${CACHE_CLAIM_VOUCHER}_${hexpub}`) || ''
   )
-  if (alreadyClaimed) return true
 
-  const existTransferFromVoucher = transactions.map(tx => {
-    if (tx.events.length) {
-      const startEvent: NostrEvent = tx.events[0]
-      if (startEvent.pubkey === keys.cardPubkey) return tx
-    }
-  })
+  return alreadyClaimed
 
-  return Boolean(existTransferFromVoucher.length)
+  // const existTransferFromVoucher = transactions.map(tx => {
+  //   if (tx.events.length) {
+  //     const startEvent: NostrEvent = tx.events[0]
+  //     if (startEvent.pubkey === keys.cardPubkey) return tx
+  //   }
+  // })
+
+  // return Boolean(existTransferFromVoucher.length)
 }

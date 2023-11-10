@@ -75,9 +75,11 @@ const RequestVoucher = () => {
 
   const handleRequestVoucher = () => {
     setLoading(true)
-    const email = cleanupEmail(inputEmail)
+    const trimMail: string = inputEmail.trim()
+    const email = cleanupEmail(trimMail)
     if (!email || blacklistedDomains.includes(email.cleanDomain)) {
       errors.modifyError('INVALID_EMAIL')
+      setLoading(false)
       return
     }
 
@@ -122,8 +124,6 @@ const RequestVoucher = () => {
       identity.hexpub
     )
 
-    console.log(alreadyClaimed)
-
     alreadyClaimed
       ? router.push('/dashboard')
       : router.prefetch('/transfer/finish')
@@ -142,6 +142,7 @@ const RequestVoucher = () => {
 
           <Input
             placeholder={t('INSERT_EMAIL')}
+            type="email"
             onChange={handleChangeEmail}
             value={inputEmail}
             disabled={viewCode}
