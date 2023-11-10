@@ -35,7 +35,7 @@ export default function Page() {
             size="small"
             variant={viewLightning ? 'borderless' : 'bezeled'}
           >
-            Efectivo
+            {t('CASH')}
           </Button>
         </ButtonGroup>
       </Flex>

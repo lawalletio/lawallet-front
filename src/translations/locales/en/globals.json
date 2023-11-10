@@ -6,7 +6,7 @@
   "ACTIVITY": "Activity",
   "LAST_ACTIVITY": "Last Activity",
   "SEE_ALL": "See All",
-  "USER": "User",
+  "USER": "Address",
   "START_USE_CARD": "Start using your card with these",
   "FINISH_CARD_MODAL": "to finish it faster!",
   "CONFIGURE_CARD": "CONFIGURE YOUR CARD WILL TAKE LESS THAN",
@@ -115,7 +115,7 @@
   "ACTIVATE_ERROR": "An error occurred while activating the card",
   "RECOVERING_ACCOUNT": "Recovering account...",
   "RECOMMEND_BACKUP": "Back up your account.",
-  "RECOMMEND_BACKUP_REASON": "so you can log in whenever you need.",
+  "RECOMMEND_BACKUP_REASON": "So you can log in whenever you need.",
   "RECOMMEND_SAFARI": "We recommend using Safari",
   "RECOMMEND_SAFARI_REASON": "for better handling of the application.",
   "RECOMMEND_SAFARI_TITLE": "iPhone User",
@@ -126,5 +126,8 @@
   "RECEIVE_CODE_EMAIL": "You received a code in your email",
   "CLAIM_VOUCHER_TITLE": "Prize available",
   "CLAIM_VOUCHER_DESC": "Claim your SATs to enjoy Bitconf 23!",
-  "FAILED_REQUEST_VOUCHER": "An error occurred while claiming the voucher"
+  "FAILED_REQUEST_VOUCHER": "An error occurred while claiming the voucher",
+  "CASH": "Cash",
+  "ONLY_CASH": "Do you only have cash?",
+  "GO_TO_STAND": "No problem! Come to our stand and we will help you load your wallet."
 }
