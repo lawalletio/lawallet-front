@@ -3,11 +3,12 @@ import Container from '@/components/Layout/Container'
 import { Loader } from '@/components/Loader/Loader'
 import Logo from '@/components/Logo'
 
-import { Flex, Heading, Text } from '@/components/UI'
+import { Feedback, Flex, Heading, Text } from '@/components/UI'
 import { LAWALLET_VERSION } from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
+import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
-import { restartCardClaim } from '@/interceptors/card'
+import { cardResetCaim } from '@/interceptors/card'
 import { generateUserIdentity } from '@/interceptors/identity'
 import { cardActivationEvent } from '@/lib/events'
 import theme from '@/styles/theme'
@@ -17,29 +18,38 @@ import { useContext, useEffect } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const { identity, setUserIdentity } = useContext(LaWalletContext)
 
   const router = useRouter()
+  const errors = useErrors()
   const params = useSearchParams()
 
   useEffect(() => {
+    if (identity.hexpub.length) return
+
     const recoveryNonce: string = params.get('n') || ''
     if (!recoveryNonce) {
-      // router.push('/')
+      router.push('/')
       return
     }
 
-    const username: string = 'test'
-    generateUserIdentity(recoveryNonce, username).then(generatedIdentity => {
-      setUserIdentity(generatedIdentity).then(() => {
-        cardActivationEvent(recoveryNonce, generatedIdentity.privateKey)
-          .then((cardEvent: NostrEvent) => {
-            restartCardClaim(cardEvent).then(() => {
-              router.push('/dashboard')
-            })
+    generateUserIdentity(recoveryNonce, '').then(generatedIdentity => {
+      cardActivationEvent(recoveryNonce, generatedIdentity.privateKey)
+        .then((cardEvent: NostrEvent) => {
+          cardResetCaim(cardEvent).then(res => {
+            if (res.error) errors.modifyError(res.error)
+
+            if (res.name) {
+              setUserIdentity({
+                ...generatedIdentity,
+                username: res.name
+              }).then(() => router.push('/dashboard'))
+            } else {
+              errors.modifyError('ERROR_ON_RESET_ACCOUNT')
+            }
           })
-          .catch(() => router.push('/'))
-      })
+        })
+        .catch(() => router.push('/'))
     })
   }, [])
 
@@ -58,6 +68,12 @@ export default function Page() {
 
       <Flex flex={1} justify="center" align="center">
         <Loader />
+      </Flex>
+
+      <Flex flex={1} justify="center" align="center">
+        <Feedback show={errors.errorInfo.visible} status={'error'}>
+          {errors.errorInfo.text}
+        </Feedback>
       </Flex>
     </Container>
   )
