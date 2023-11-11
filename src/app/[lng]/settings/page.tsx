@@ -103,11 +103,11 @@ export default function Page() {
           <Divider y={16} />
         </Feedback>
 
-        {/* <Flex>
+        <Flex>
           <Button color="error" variant="bezeled" onClick={logoutSession}>
             {t('LOGOUT')}
           </Button>
-        </Flex> */}
+        </Flex>
         <Divider y={16} />
       </Container>
     </>
