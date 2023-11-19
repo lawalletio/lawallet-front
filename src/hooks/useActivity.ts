@@ -220,7 +220,11 @@ export const useActivity = ({
           isRefundEvent ? refundEvents.push(e) : startedEvents.push(e)
           return
         } else {
-          startedEvents.push(e)
+          const existTransaction: boolean = Boolean(
+            startedEvents.find(startEvent => startEvent.id === e.id)
+          )
+
+          if (!existTransaction) startedEvents.push(e)
           return
         }
       }
