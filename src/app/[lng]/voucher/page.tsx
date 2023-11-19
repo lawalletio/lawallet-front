@@ -56,7 +56,7 @@ const RequestVoucher = () => {
   const [inputEmail, setInputEmail] = useState<string>('')
   const [claimCode, setClaimCode] = useState<string>('')
 
-  const { identity, sortedTransactions } = useContext(LaWalletContext)
+  const { identity } = useContext(LaWalletContext)
 
   const { t } = useTranslation()
   const router = useRouter()
@@ -119,10 +119,7 @@ const RequestVoucher = () => {
   }
 
   useEffect(() => {
-    const alreadyClaimed: boolean = checkClaimVoucher(
-      sortedTransactions,
-      identity.hexpub
-    )
+    const alreadyClaimed: boolean = checkClaimVoucher(identity.hexpub)
 
     alreadyClaimed
       ? router.push('/dashboard')
