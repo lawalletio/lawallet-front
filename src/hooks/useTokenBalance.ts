@@ -7,6 +7,7 @@ import { NDKEvent, NDKKind, NostrEvent } from '@nostr-dev-kit/ndk'
 import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
+import { LaWalletKinds } from '@/lib/events'
 
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
@@ -35,7 +36,7 @@ export const useTokenBalance = ({
     filters: [
       {
         authors: [ledgerPubkey],
-        kinds: [31111 as NDKKind],
+        kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
         '#d': [`balance:${tokenId}:${pubkey}`]
       }
     ],
@@ -49,7 +50,7 @@ export const useTokenBalance = ({
   const loadBalance = async () => {
     const event: NDKEvent | null = await ndk.fetchEvent({
       authors: [ledgerPubkey],
-      kinds: [31111 as NDKKind],
+      kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
       '#d': [`balance:${tokenId}:${pubkey}`]
     })
 

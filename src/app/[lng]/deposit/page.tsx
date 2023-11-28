@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-
-import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import { Button, ButtonGroup, Flex, Heading, Divider } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'

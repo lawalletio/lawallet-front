@@ -84,15 +84,12 @@ export default function Page() {
       localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
     )
 
-    const userClaimVoucher: boolean = checkClaimVoucher(
-      sortedTransactions,
-      identity.hexpub
-    )
+    const userClaimVoucher: boolean = checkClaimVoucher(identity.hexpub)
 
     setShowBanner(
       !userClaimVoucher ? 'voucher' : !userMadeBackup ? 'backup' : 'none'
     )
-  }, [sortedTransactions])
+  }, [])
 
   return (
     <>

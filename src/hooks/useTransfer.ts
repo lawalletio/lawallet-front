@@ -5,7 +5,7 @@ import {
   defaultTransfer,
   requestInvoice
 } from '@/interceptors/transaction'
-import { generateTxStart, getTag } from '@/lib/events'
+import { LaWalletKinds, generateTxStart, getTag } from '@/lib/events'
 import { addQueryParameter, formatTransferData } from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import {
@@ -46,7 +46,7 @@ const useTransfer = (): TransferContextType => {
     filters: [
       {
         authors: [keys.ledgerPubkey],
-        kinds: [1112 as NDKKind],
+        kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         since: startEvent ? startEvent.created_at - 60000 : undefined,
         '#e': startEvent?.id ? [startEvent.id] : []
       }
@@ -166,7 +166,7 @@ const useTransfer = (): TransferContextType => {
 
       if (subkind.includes('ok')) {
         const refundEvent = await ndk.fetchEvent({
-          kinds: [1112 as NDKKind],
+          kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
           authors: [keys.urlxPubkey],
           '#t': ['internal-transaction-start'],
           '#e': [startEvent.id!]

@@ -15,7 +15,7 @@ import {
 
 import { useSubscription } from './useSubscription'
 import keys from '@/constants/keys'
-import { getMultipleTags, getTag } from '@/lib/events'
+import { LaWalletKinds, getMultipleTags, getTag } from '@/lib/events'
 import { nip26 } from 'nostr-tools'
 import { Event } from 'nostr-tools'
 import { CACHE_TXS_KEY } from '@/constants/constants'
@@ -90,7 +90,7 @@ export const useActivity = ({
     filters: [
       {
         authors: [pubkey, keys.cardPubkey],
-        kinds: [1112 as NDKKind],
+        kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#t': ['internal-transaction-start'],
         since: activityInfo.lastCached,
         limit
@@ -98,13 +98,13 @@ export const useActivity = ({
       {
         '#p': [pubkey],
         '#t': startTags,
-        kinds: [1112 as NDKKind],
+        kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         since: activityInfo.lastCached,
         limit
       },
       {
         authors: [keys.ledgerPubkey],
-        kinds: [1112 as NDKKind],
+        kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#p': [pubkey, keys.cardPubkey],
         '#t': statusTags,
         since: activityInfo.lastCached,
@@ -220,7 +220,11 @@ export const useActivity = ({
           isRefundEvent ? refundEvents.push(e) : startedEvents.push(e)
           return
         } else {
-          startedEvents.push(e)
+          const existTransaction: boolean = Boolean(
+            startedEvents.find(startEvent => startEvent.id === e.id)
+          )
+
+          if (!existTransaction) startedEvents.push(e)
           return
         }
       }

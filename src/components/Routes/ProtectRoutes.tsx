@@ -37,7 +37,7 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
       const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
       const userLogged: boolean = Boolean(identity.username.length)
       const nonce: string = params.get('i') || ''
-      // const card: string = params.get('c') || ''
+      const card: string = params.get('c') || ''
 
       switch (true) {
         case !userLogged && pathname == '/' && !nonce:
@@ -49,8 +49,7 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
           break
 
         case userLogged && unloggedRoutes.includes(cleanedPath):
-          // router.push(card ? `/card?c=${card}` : '/dashboard')
-          router.push('/dashboard')
+          card ? router.push(`/card?c=${card}`) : router.push('/dashboard')
           break
       }
     }

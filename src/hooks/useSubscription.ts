@@ -8,7 +8,7 @@ import {
 import { useCallback, useContext, useEffect, useState } from 'react'
 
 export interface IUseSubscription {
-  subscription: NDKSubscription
+  subscription: NDKSubscription | undefined
   events: NDKEvent[]
 }
 
@@ -29,34 +29,46 @@ export const useSubscription = ({
   const [events, setEvents] = useState<NDKEvent[]>([])
 
   const startSubscription = useCallback(() => {
-    if (ndk) {
+    if (ndk && enabled && !subscription) {
       const newSubscription = ndk.subscribe(filters, options)
-      setSubscription(newSubscription)
-      return
-    }
-  }, [subscription, ndk, enabled])
-
-  const stopSubscription = (sub: NDKSubscription) => {
-    sub?.stop()
-    sub?.removeAllListeners()
-  }
-
-  useEffect(() => {
-    if (enabled) {
-      if (events.length) setEvents([])
-      startSubscription()
-    }
-  }, [enabled, ndk])
-
-  useEffect(() => {
-    if (subscription && enabled) {
-      const readEvents = subscription?.on('event', async (event: NDKEvent) =>
+      newSubscription.on('event', async (event: NDKEvent) =>
         setEvents(prev => [...prev, event])
       )
 
-      return () => stopSubscription(readEvents)
+      setSubscription(newSubscription)
+      return
     }
-  }, [subscription, enabled])
+  }, [ndk, enabled, subscription])
+
+  const stopSubscription = () => {
+    if (subscription) {
+      subscription.stop()
+      subscription.removeAllListeners()
+      setSubscription(undefined)
+    }
+  }
+
+  useEffect(() => {
+    if (enabled && !subscription) {
+      if (events.length) setEvents([])
+      startSubscription()
+
+      return () => stopSubscription()
+    }
+  }, [enabled, subscription])
+
+  const removeSubscription = () => setSubscription(undefined)
+
+  useEffect(() => {
+    ndk.pool.on('relay:connect', startSubscription)
+    ndk.pool.on('relay:disconnect', removeSubscription)
+
+    return () => {
+      ndk.pool.removeListener('relay:connect', startSubscription)
+      ndk.pool.removeListener('relay:disconnect', removeSubscription)
+      ndk.pool.removeAllListeners()
+    }
+  }, [ndk])
 
   return {
     subscription,

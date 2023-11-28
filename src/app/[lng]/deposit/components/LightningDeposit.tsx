@@ -90,7 +90,7 @@ const LightningDeposit = () => {
     filters: [
       {
         authors: [keys.ledgerPubkey, keys.urlxPubkey],
-        kinds: [9735 as NDKKind],
+        kinds: [NDKKind.Zap],
         since: invoice.created_at
       }
     ],

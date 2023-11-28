@@ -5,13 +5,11 @@ import {
   defaultTransfer,
   getWalletService
 } from '@/interceptors/transaction'
-import { Transaction, TransferTypes } from '@/types/transaction'
+import { TransferTypes } from '@/types/transaction'
 import bolt11 from 'light-bolt11-decoder'
 import lnurl from './lnurl'
 import { validateEmail } from './email'
 import { CACHE_CLAIM_VOUCHER } from '@/constants/constants'
-import { NostrEvent } from '@nostr-dev-kit/ndk'
-import keys from '@/constants/keys'
 
 export const formatBigNumber = (number: number | string) => {
   return Number(number).toLocaleString('es-ES')
@@ -210,10 +208,7 @@ export function addQueryParameter(url: string, parameter: string) {
   }
 }
 
-export const checkClaimVoucher = (
-  transactions: Transaction[],
-  hexpub: string
-) => {
+export const checkClaimVoucher = (hexpub: string) => {
   const alreadyClaimed: boolean = Boolean(
     localStorage.getItem(`${CACHE_CLAIM_VOUCHER}_${hexpub}`) || ''
   )
