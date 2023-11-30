@@ -6,11 +6,11 @@ import {
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { NDKKind } from '@nostr-dev-kit/ndk'
 import { useMediaQuery } from '@uidotdev/usehooks'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
 
-import { formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
 import lnurl from '@/lib/lnurl'
 import { copy, share } from '@/lib/share'
 
@@ -191,47 +191,66 @@ const LightningDeposit = () => {
 
   useActionOnKeypress('Enter', handleClick, [numpadData.intAmount['SAT']])
 
+  const LNURLEncoded: string = useMemo(
+    () =>
+      lnurl
+        .encode(
+          `https://${WALLET_DOMAIN}/.well-known/lnurlp/${
+            identity.username ? identity.username : identity.npub
+          }`
+        )
+        .toUpperCase(),
+    [identity]
+  )
+
   return (
     <>
-      <QRCode
-        size={325}
-        value={(
-          'lightning:' +
-          lnurl.encode(
-            `https://${WALLET_DOMAIN}/.well-known/lnurlp/${identity.username}`
-          )
-        ).toUpperCase()}
-      />
+      {identity.username.length ? (
+        <>
+          <QRCode
+            size={325}
+            value={('lightning:' + LNURLEncoded).toUpperCase()}
+          />
 
-      <Flex>
-        <Container size="small">
-          <Divider y={16} />
-          <Flex align="center">
-            <Flex direction="column">
-              <Text size="small" color={theme.colors.gray50}>
-                {t('USER')}
-              </Text>
-              <Flex>
-                <Text>{identity.username}</Text>
-                <Text>@{WALLET_DOMAIN}</Text>
+          <Flex>
+            <Container size="small">
+              <Divider y={16} />
+
+              <Flex align="center">
+                <Flex direction="column">
+                  <Text size="small" color={theme.colors.gray50}>
+                    {t('USER')}
+                  </Text>
+                  <Flex>
+                    <Text>
+                      {identity.username
+                        ? `${identity.username}@${WALLET_DOMAIN}`
+                        : formatAddress(LNURLEncoded, 20)}
+                    </Text>
+                  </Flex>
+                </Flex>
+                <div>
+                  <Button
+                    size="small"
+                    variant="bezeled"
+                    onClick={() =>
+                      handleCopy(
+                        identity.username
+                          ? `${identity.username}@${WALLET_DOMAIN}`
+                          : LNURLEncoded
+                      )
+                    }
+                  >
+                    {t('COPY')}
+                  </Button>
+                </div>
               </Flex>
-            </Flex>
-            <div>
-              <Button
-                size="small"
-                variant="bezeled"
-                onClick={() =>
-                  handleCopy(`${identity.username}@${WALLET_DOMAIN}`)
-                }
-              >
-                {t('COPY')}
-              </Button>
-            </div>
-          </Flex>
 
-          <Divider y={16} />
-        </Container>
-      </Flex>
+              <Divider y={16} />
+            </Container>
+          </Flex>
+        </>
+      ) : null}
 
       <Flex>
         <Container size="small">
@@ -258,7 +277,7 @@ const LightningDeposit = () => {
             ? t('WAITING_PAYMENT')
             : t('PAYMENT_RECEIVED')
         }
-        isOpen={showSheet}
+        isOpen={showSheet || !identity.username.length}
         onClose={handleCloseSheet}
       >
         {sheetStep === 'amount' && (

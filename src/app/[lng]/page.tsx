@@ -32,6 +32,14 @@ export default function Page() {
         <Divider y={16} />
 
         <Flex>
+          <Button onClick={() => router.push('/start')}>
+            {t('CREATE_ACCOUNT')}
+          </Button>
+        </Flex>
+
+        <Divider y={16} />
+
+        <Flex>
           <Button onClick={() => router.push('/login')}>
             {t('LOGIN_ACCOUNT')}
           </Button>

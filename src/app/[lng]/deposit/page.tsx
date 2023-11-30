@@ -1,15 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Navbar from '@/components/Layout/Navbar'
-import { Button, ButtonGroup, Flex, Heading, Divider } from '@/components/UI'
+import { Flex, Heading } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'
 import LightningDeposit from './components/LightningDeposit'
-import CashDeposit from './components/CashDeposit'
 
 export default function Page() {
   const { t } = useTranslation()
-  const [viewLightning, setViewLightning] = useState<boolean>(true)
 
   return (
     <>
@@ -19,28 +16,7 @@ export default function Page() {
         </Flex>
       </Navbar>
 
-      <Flex justify="center">
-        <ButtonGroup>
-          <Button
-            onClick={() => setViewLightning(true)}
-            size="small"
-            variant={viewLightning ? 'bezeled' : 'borderless'}
-          >
-            Exchange
-          </Button>
-          <Button
-            onClick={() => setViewLightning(false)}
-            size="small"
-            variant={viewLightning ? 'borderless' : 'bezeled'}
-          >
-            {t('CASH')}
-          </Button>
-        </ButtonGroup>
-      </Flex>
-
-      <Divider y={24} />
-
-      {viewLightning ? <LightningDeposit /> : <CashDeposit />}
+      <LightningDeposit />
     </>
   )
 }

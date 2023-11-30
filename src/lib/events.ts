@@ -129,7 +129,8 @@ export const generateTxStart = async (
   internalEvent.kind = LaWalletKinds.REGULAR
 
   internalEvent.content = JSON.stringify({
-    tokens: { BTC: amount.toString() }
+    tokens: { BTC: amount.toString() },
+    memo: 'hola'
   })
 
   internalEvent.tags = [

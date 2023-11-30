@@ -105,6 +105,14 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     }
   }
 
+  const createNostrAccount = async () => {
+    const generatedIdentity: UserIdentity = await generateUserIdentity('', '')
+    if (generatedIdentity) {
+      setUserIdentity(generatedIdentity)
+      router.push('/dashboard')
+    }
+  }
+
   const createIdentity = async ({
     nonce,
     name
@@ -140,7 +148,11 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     if (loading) return
     const { nonce, name } = props
 
-    if (!nonce) return errors.modifyError('INVALID_NONCE')
+    if (!nonce) {
+      createNostrAccount()
+      return
+    }
+
     if (!name.length) return errors.modifyError('EMPTY_USERNAME')
     if (name.length > 15) return errors.modifyError('MAX_LENGTH_USERNAME')
 

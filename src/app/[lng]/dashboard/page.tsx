@@ -35,7 +35,7 @@ import theme from '@/styles/theme'
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
 import { useTranslation } from '@/hooks/useTranslations'
-import { formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations
@@ -45,13 +45,10 @@ import { BtnLoader } from '@/components/Loader/Loader'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
 import { copy } from '@/lib/share'
 import Link from 'next/link'
-import { checkClaimVoucher } from '@/lib/utils'
 
 export default function Page() {
   const { t } = useTranslation()
-  const [showBanner, setShowBanner] = useState<'voucher' | 'backup' | 'none'>(
-    'none'
-  )
+  const [showBanner, setShowBanner] = useState<'backup' | 'none'>('none')
 
   const router = useRouter()
   const {
@@ -84,11 +81,7 @@ export default function Page() {
       localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
     )
 
-    const userClaimVoucher: boolean = checkClaimVoucher(identity.hexpub)
-
-    setShowBanner(
-      !userClaimVoucher ? 'voucher' : !userMadeBackup ? 'backup' : 'none'
-    )
+    setShowBanner(!userMadeBackup ? 'backup' : 'none')
   }, [])
 
   return (
@@ -107,14 +100,17 @@ export default function Page() {
               </Text>
               <Flex
                 onClick={() => {
-                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                  if (identity.username)
+                    copy(`${identity.username}@${WALLET_DOMAIN}`)
                 }}
               >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
                   <Text>
-                    {identity.username}@{WALLET_DOMAIN}
+                    {identity.username
+                      ? `${identity.username}@${WALLET_DOMAIN}`
+                      : formatAddress(identity.npub, 10)}
                   </Text>
                 )}
               </Flex>
@@ -189,18 +185,7 @@ export default function Page() {
         </Flex>
         <Divider y={16} />
 
-        {showBanner === 'voucher' ? (
-          <>
-            <Link href="/voucher">
-              <BannerAlert
-                title={t('CLAIM_VOUCHER_TITLE')}
-                description={t('CLAIM_VOUCHER_DESC')}
-                color="warning"
-              />
-            </Link>
-            <Divider y={16} />
-          </>
-        ) : showBanner === 'backup' ? (
+        {showBanner === 'backup' ? (
           <>
             <Link href="/settings/recovery">
               <BannerAlert
