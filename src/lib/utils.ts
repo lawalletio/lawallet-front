@@ -9,7 +9,6 @@ import { TransferTypes } from '@/types/transaction'
 import bolt11 from 'light-bolt11-decoder'
 import lnurl from './lnurl'
 import { validateEmail } from './email'
-import { CACHE_CLAIM_VOUCHER } from '@/constants/constants'
 
 export const formatBigNumber = (number: number | string) => {
   return Number(number).toLocaleString('es-ES')
@@ -18,6 +17,10 @@ export const formatBigNumber = (number: number | string) => {
 export const decodeInvoice = (invoice: string) => {
   const decodedInvoice = bolt11.decode(invoice)
   return decodedInvoice
+}
+
+export const nowInSeconds = (): number => {
+  return Math.floor(Date.now() / 1000)
 }
 
 export const detectTransferType = (data: string): TransferTypes | false => {
@@ -158,8 +161,8 @@ export const removeLightningStandard = (str: string) => {
   return lowStr.startsWith('lightning://')
     ? lowStr.replace('lightning://', '')
     : lowStr.startsWith('lightning:')
-    ? lowStr.replace('lightning:', '')
-    : lowStr
+      ? lowStr.replace('lightning:', '')
+      : lowStr
 }
 
 export const formatTransferData = async (
@@ -206,21 +209,4 @@ export function addQueryParameter(url: string, parameter: string) {
   } else {
     return url + '&' + parameter
   }
-}
-
-export const checkClaimVoucher = (hexpub: string) => {
-  const alreadyClaimed: boolean = Boolean(
-    localStorage.getItem(`${CACHE_CLAIM_VOUCHER}_${hexpub}`) || ''
-  )
-
-  return alreadyClaimed
-
-  // const existTransferFromVoucher = transactions.map(tx => {
-  //   if (tx.events.length) {
-  //     const startEvent: NostrEvent = tx.events[0]
-  //     if (startEvent.pubkey === keys.cardPubkey) return tx
-  //   }
-  // })
-
-  // return Boolean(existTransferFromVoucher.length)
 }

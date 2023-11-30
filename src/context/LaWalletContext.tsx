@@ -58,22 +58,25 @@ export function LaWalletProvider({
 
   const preloadIdentity = async () => {
     const storageIdentity = localStorage.getItem(STORAGE_IDENTITY_KEY)
+
     if (storageIdentity) {
       const userIdentity: UserIdentity = JSON.parse(storageIdentity)
 
       if (userIdentity.privateKey) {
         const hexpub: string = getPublicKey(userIdentity.privateKey)
+        const username: string = await getUsername(hexpub)
 
-        if (hexpub === userIdentity.hexpub) {
+        if (
+          hexpub === userIdentity.hexpub &&
+          username == userIdentity.username
+        ) {
           setIdentity(userIdentity)
         } else {
-          const username: string = await getUsername(hexpub)
-          if (username)
-            setIdentity({
-              ...userIdentity,
-              hexpub,
-              username
-            })
+          setIdentity({
+            ...userIdentity,
+            hexpub,
+            username
+          })
         }
       }
     }
