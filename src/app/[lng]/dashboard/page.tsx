@@ -35,7 +35,7 @@ import theme from '@/styles/theme'
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
 import { useTranslation } from '@/hooks/useTranslations'
-import { formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations
@@ -100,14 +100,17 @@ export default function Page() {
               </Text>
               <Flex
                 onClick={() => {
-                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                  if (identity.username)
+                    copy(`${identity.username}@${WALLET_DOMAIN}`)
                 }}
               >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
                   <Text>
-                    {identity.username}@{WALLET_DOMAIN}
+                    {identity.username
+                      ? `${identity.username}@${WALLET_DOMAIN}`
+                      : formatAddress(identity.npub, 10)}
                   </Text>
                 )}
               </Flex>

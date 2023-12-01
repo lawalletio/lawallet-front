@@ -1,11 +1,4 @@
-import {
-  Divider,
-  Flex,
-  Text,
-  Button,
-  CardAlert,
-  Feedback
-} from '@/components/UI'
+import { Divider, Flex, Text, Button, CardAlert } from '@/components/UI'
 import Container from '@/components/Layout/Container'
 import Logo from '@/components/Logo'
 import HomeDescription from '@/components/HomeDescription'
@@ -40,9 +33,9 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
       <Flex direction="column">
         {verifyingNonce ? (
           <Loader />
-        ) : isValidNonce ? (
+        ) : (
           <>
-            <HomeDescription />
+            <HomeDescription hasNonce={isValidNonce} />
             <Divider y={16} />
 
             {isMobile && isIOS && (
@@ -63,22 +56,6 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
             <Flex>
               <Button onClick={onClick}>{t('START')}</Button>
             </Flex>
-          </>
-        ) : (
-          <>
-            <Flex align="center" justify="center">
-              <Feedback show={true} status={'error'}>
-                {t('INVALID_NONCE')}
-              </Feedback>
-            </Flex>
-
-            {/* <Divider y={16} /> */}
-
-            {/* <Flex>
-              <Button onClick={() => router.replace(IDENTITY_ENDPOINT)}>
-                {t('BACK_TO_HOME')}
-              </Button>
-            </Flex> */}
           </>
         )}
       </Flex>

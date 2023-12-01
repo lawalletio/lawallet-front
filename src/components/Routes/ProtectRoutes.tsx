@@ -35,7 +35,7 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (hydrated) {
       const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
-      const userLogged: boolean = Boolean(identity.username.length)
+      const userLogged: boolean = Boolean(identity.hexpub.length)
       const nonce: string = params.get('i') || ''
       const card: string = params.get('c') || ''
 

@@ -76,7 +76,11 @@ export default function Page() {
       <StartView
         verifyingNonce={accountInfo.loading}
         isValidNonce={accountInfo.isValidNonce}
-        onClick={() => setActiveStartView(false)}
+        onClick={() => {
+          accountInfo.isValidNonce
+            ? setActiveStartView(false)
+            : handleCreateIdentity(accountInfo)
+        }}
       />
     )
 
