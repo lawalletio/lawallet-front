@@ -6,7 +6,6 @@ export const IDENTITY_ENDPOINT: string =
 export const GOOGLE_TAG_ID: string = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID ?? ''
 
 export const RelaysList = ['wss://relay.damus.io', 'wss://relay.lawallet.ar']
-
 export const MAX_INVOICE_AMOUNT: number = 10 ** 7 // 10M
 
 //'wss://relay.snort.social',

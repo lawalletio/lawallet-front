@@ -10,7 +10,7 @@ import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
 import { cardResetCaim } from '@/interceptors/card'
 import { generateUserIdentity } from '@/interceptors/identity'
-import { cardActivationEvent } from '@/lib/events'
+import { buildCardActivationEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -34,7 +34,7 @@ export default function Page() {
     }
 
     generateUserIdentity(recoveryNonce, '').then(generatedIdentity => {
-      cardActivationEvent(recoveryNonce, generatedIdentity.privateKey)
+      buildCardActivationEvent(recoveryNonce, generatedIdentity.privateKey)
         .then((cardEvent: NostrEvent) => {
           cardResetCaim(cardEvent).then(res => {
             if (res.error) errors.modifyError(res.error)

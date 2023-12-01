@@ -44,7 +44,7 @@ import keys from '@/constants/keys'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { requestInvoice } from '@/interceptors/transaction'
-import { zapRequestEvent } from '@/lib/events'
+import { buildZapRequestEvent, getTag } from '@/lib/events'
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
 
@@ -60,6 +60,7 @@ const LightningDeposit = () => {
   const { t } = useTranslation()
   const {
     identity,
+    sortedTransactions,
     lng,
     notifications,
     userConfig: {
@@ -90,7 +91,7 @@ const LightningDeposit = () => {
     filters: [
       {
         authors: [keys.ledgerPubkey, keys.urlxPubkey],
-        kinds: [NDKKind.Zap],
+        kinds: [9735],
         since: invoice.created_at
       }
     ],
@@ -120,7 +121,7 @@ const LightningDeposit = () => {
 
     setInvoice({ ...invoice, loading: true })
     const invoice_mSats: number = amountSats * 1000
-    const zapRequest: string = await zapRequestEvent(
+    const zapRequest: string = await buildZapRequestEvent(
       invoice_mSats,
       identity.privateKey
     )
@@ -175,6 +176,17 @@ const LightningDeposit = () => {
       })
     }
   }, [events.length])
+
+  useEffect(() => {
+    if (sortedTransactions.length) {
+      const receivedTX = sortedTransactions.find(tx => {
+        const boltTag = getTag(tx.events[0].tags, 'bolt11')
+        return boltTag === invoice.bolt11
+      })
+
+      if (receivedTX) setSheetStep('finished')
+    }
+  }, [sortedTransactions.length])
 
   const handleCopy = (text: string) => {
     copy(text).then(res => {
@@ -255,8 +267,8 @@ const LightningDeposit = () => {
           sheetStep === 'amount'
             ? t('DEFINE_AMOUNT')
             : sheetStep === 'qr'
-            ? t('WAITING_PAYMENT')
-            : t('PAYMENT_RECEIVED')
+              ? t('WAITING_PAYMENT')
+              : t('PAYMENT_RECEIVED')
         }
         isOpen={showSheet}
         onClose={handleCloseSheet}

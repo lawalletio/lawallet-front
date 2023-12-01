@@ -1,5 +1,6 @@
 import { RelaysList } from '@/constants/config'
 import keys from '@/constants/keys'
+import { CardConfigPayload, ConfigTypes } from '@/types/card'
 import { UserIdentity } from '@/types/identity'
 import {
   NDKEvent,
@@ -8,7 +9,15 @@ import {
   NDKTag,
   NostrEvent
 } from '@nostr-dev-kit/ndk'
-import { getPublicKey, nip26 } from 'nostr-tools'
+import {
+  UnsignedEvent,
+  getEventHash,
+  getPublicKey,
+  getSignature,
+  nip26
+} from 'nostr-tools'
+import { nowInSeconds } from './utils'
+import { buildMultiNip04Event } from './nip04'
 
 export enum LaWalletKinds {
   REGULAR = 1112,
@@ -35,7 +44,7 @@ export const getMultipleTags = (tags: NDKTag[], keyTag: string) => {
   return values
 }
 
-export const identityEvent = async (
+export const buildIdentityEvent = async (
   nonce: string,
   identity: UserIdentity
 ): Promise<NostrEvent> => {
@@ -59,7 +68,7 @@ export const identityEvent = async (
   return event.toNostrEvent()
 }
 
-export const cardActivationEvent = async (
+export const buildCardActivationEvent = async (
   otc: string,
   privateKey: string
 ): Promise<NostrEvent> => {
@@ -94,7 +103,10 @@ export const cardActivationEvent = async (
   return event.toNostrEvent()
 }
 
-export const zapRequestEvent = async (amount: number, privateKey: string) => {
+export const buildZapRequestEvent = async (
+  amount: number,
+  privateKey: string
+) => {
   const signer = new NDKPrivateKeySigner(privateKey)
   const userPubkey: string = getPublicKey(privateKey)
 
@@ -116,7 +128,7 @@ export const zapRequestEvent = async (amount: number, privateKey: string) => {
   return requestEvent
 }
 
-export const generateTxStart = async (
+export const buildTxStartEvent = async (
   amount: number,
   receiver: string,
   signer: NDKPrivateKeySigner,
@@ -142,5 +154,50 @@ export const generateTxStart = async (
 
   await internalEvent.sign(signer!)
   const event: NostrEvent = await internalEvent.toNostrEvent()
+  return event
+}
+
+export const buildCardInfoRequest = async (
+  subkind: string,
+  privateKey: string
+) => {
+  const userPubkey: string = getPublicKey(privateKey)
+
+  const event: NostrEvent = {
+    content: '{}',
+    pubkey: userPubkey,
+    created_at: nowInSeconds(),
+    kind: LaWalletKinds.PARAMETRIZED_REPLACEABLE,
+    tags: [['t', subkind]]
+  }
+
+  event.id = getEventHash(event as UnsignedEvent)
+  event.sig = getSignature(event as UnsignedEvent, privateKey)
+
+  return event
+}
+
+export const buildCardConfigEvent = async (
+  cardConfig: Partial<CardConfigPayload>,
+  privateKey: string
+): Promise<NostrEvent> => {
+  const userPubkey: string = getPublicKey(privateKey)
+  const event: NostrEvent = await buildMultiNip04Event(
+    JSON.stringify(cardConfig),
+    privateKey,
+    userPubkey,
+    [keys.cardPubkey, userPubkey]
+  )
+
+  event.kind = LaWalletKinds.PARAMETRIZED_REPLACEABLE
+
+  event.tags = event.tags.concat([
+    ['t', ConfigTypes.CONFIG.valueOf()],
+    ['d', `${userPubkey}:${ConfigTypes.CONFIG.valueOf()}`]
+  ])
+
+  event.id = getEventHash(event as UnsignedEvent)
+  event.sig = getSignature(event as UnsignedEvent, privateKey)
+
   return event
 }

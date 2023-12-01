@@ -5,7 +5,7 @@ import {
   defaultTransfer,
   requestInvoice
 } from '@/interceptors/transaction'
-import { LaWalletKinds, generateTxStart, getTag } from '@/lib/events'
+import { LaWalletKinds, buildTxStartEvent, getTag } from '@/lib/events'
 import { addQueryParameter, formatTransferData } from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import {
@@ -126,7 +126,7 @@ const useTransfer = (): TransferContextType => {
       if (transferInfo.type === TransferTypes.LNURLW) {
         claimLNURLw(transferInfo)
       } else if (transferInfo.type === TransferTypes.INTERNAL) {
-        const txEvent: NostrEvent = await generateTxStart(
+        const txEvent: NostrEvent = await buildTxStartEvent(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,
@@ -145,7 +145,7 @@ const useTransfer = (): TransferContextType => {
 
         const eventTags: NDKTag[] = [['bolt11', bolt11]]
 
-        const txEvent: NostrEvent = await generateTxStart(
+        const txEvent: NostrEvent = await buildTxStartEvent(
           transferInfo.amount * 1000,
           transferInfo.receiverPubkey,
           signer,

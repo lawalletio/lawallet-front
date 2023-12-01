@@ -223,7 +223,6 @@ export async function buildMultiNip04Event(
   return {
     pubkey: senderPubKeyHex,
     created_at: nowInSeconds(),
-    kind: 4,
     tags: receiverPubKeysHex.map((pk: string) => ['p', pk]),
     content: JSON.stringify({
       mac: macBase64,

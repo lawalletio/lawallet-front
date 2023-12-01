@@ -27,6 +27,7 @@ import { useTransferContext } from '@/context/TransferContext'
 import { BtnLoader } from '@/components/Loader/Loader'
 import useErrors from '@/hooks/useErrors'
 import { TransferTypes } from '@/types/transaction'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -102,6 +103,8 @@ export default function Page() {
       numpadData.updateNumpadAmount(convertedAmount.toString())
     }
   }, [pricesData])
+
+  useActionOnKeypress('Enter', handleClick, [transferInfo])
 
   return (
     <>

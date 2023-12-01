@@ -8,7 +8,7 @@ import { useTranslation } from '@/hooks/useTranslations'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
-import { cardActivationEvent } from '@/lib/events'
+import { buildCardActivationEvent } from '@/lib/events'
 import { requestCardActivation } from '@/interceptors/card'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { LAWALLET_VERSION } from '@/constants/constants'
@@ -39,7 +39,7 @@ const ActivateCardPage = () => {
     if (loading) return
     setLoading(true)
 
-    cardActivationEvent(cardInfo.card, identity.privateKey)
+    buildCardActivationEvent(cardInfo.card, identity.privateKey)
       .then((cardEvent: NostrEvent) => {
         requestCardActivation(cardEvent).then(res => {
           const description: string = res

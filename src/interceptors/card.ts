@@ -11,12 +11,8 @@ export const requestCardActivation = async (
     },
     body: JSON.stringify(event)
   })
-    .then(res => {
-      return res.status >= 200 || res.status <= 204
-    })
-    .catch(() => {
-      return false
-    })
+    .then(res => res.status >= 200 || res.status <= 204)
+    .catch(() => false)
 }
 
 export const cardResetCaim = async (
@@ -32,5 +28,26 @@ export const cardResetCaim = async (
     .then(res => res.json())
     .catch(() => {
       return { error: 'ERROR_ON_RESET_ACCOUNT' }
+    })
+}
+
+export const cardInfoRequest = async (
+  type: string,
+  event: NostrEvent
+): Promise<any> => {
+  return fetch(`${LAWALLET_ENDPOINT}/card/${type}/request`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(event)
+  })
+    .then(res => {
+      console.log(res)
+      return res.json()
+    })
+    .catch(err => {
+      console.log(err)
+      return { error: 'UNEXPECTED_ERROR' }
     })
 }

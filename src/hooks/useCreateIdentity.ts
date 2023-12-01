@@ -5,7 +5,7 @@ import {
   existIdentity,
   generateUserIdentity
 } from '@/interceptors/identity'
-import { cardActivationEvent, identityEvent } from '@/lib/events'
+import { buildCardActivationEvent, buildIdentityEvent } from '@/lib/events'
 import { UserIdentity } from '@/types/identity'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter } from 'next/navigation'
@@ -115,7 +115,10 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     )
 
     try {
-      const event: NostrEvent = await identityEvent(nonce, generatedIdentity)
+      const event: NostrEvent = await buildIdentityEvent(
+        nonce,
+        generatedIdentity
+      )
       const createdAccount: IdentityResponse = await claimIdentity(event)
       if (!createdAccount.success)
         return {
@@ -160,7 +163,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
               setUserIdentity(identity!)
 
               if (props.card) {
-                cardActivationEvent(props.card, identity.privateKey)
+                buildCardActivationEvent(props.card, identity.privateKey)
                   .then((cardEvent: NostrEvent) => {
                     requestCardActivation(cardEvent).then(() => {
                       router.push('/dashboard')
