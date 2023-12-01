@@ -91,7 +91,9 @@ export default function Page() {
           <Flex align="center" gap={8}>
             <Avatar>
               <Text size="small">
-                {identity.username.substring(0, 2).toUpperCase()}
+                {identity.username
+                  ? identity.username.substring(0, 2).toUpperCase()
+                  : 'AN'}
               </Text>
             </Avatar>
             <Flex direction="column">
@@ -110,7 +112,7 @@ export default function Page() {
                   <Text>
                     {identity.username
                       ? `${identity.username}@${WALLET_DOMAIN}`
-                      : formatAddress(identity.npub, 10)}
+                      : t('ANONYMOUS')}
                   </Text>
                 )}
               </Flex>

@@ -1,9 +1,11 @@
 'use client'
 
 import Container from '@/components/Layout/Container'
+import { BtnLoader } from '@/components/Loader/Loader'
 import Logo from '@/components/Logo'
 import { Button, Divider, Flex, Text } from '@/components/UI'
 import { LAWALLET_VERSION } from '@/constants/constants'
+import { useCreateIdentity } from '@/hooks/useCreateIdentity'
 import { useTranslation } from '@/hooks/useTranslations'
 
 import theme from '@/styles/theme'
@@ -13,6 +15,8 @@ import { useEffect } from 'react'
 export default function Page() {
   const { t } = useTranslation()
   const router = useRouter()
+
+  const { handleCreateIdentity, loading } = useCreateIdentity()
 
   useEffect(() => {
     router.prefetch('/login')
@@ -32,7 +36,12 @@ export default function Page() {
         <Divider y={16} />
 
         <Flex>
-          <Button onClick={() => router.push('/start')}>
+          <Button
+            onClick={() =>
+              handleCreateIdentity({ name: '', card: '', nonce: '' })
+            }
+            loading={loading}
+          >
             {t('CREATE_ACCOUNT')}
           </Button>
         </Flex>

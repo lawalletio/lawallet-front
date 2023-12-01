@@ -180,8 +180,9 @@ export default function Page() {
               balance.amount === 0 ||
               numpadData.intAmount['SAT'] === 0
             }
+            loading={loading}
           >
-            {loading ? <BtnLoader /> : t('CONTINUE')}
+            {t('CONTINUE')}
           </Button>
         </Flex>
         <Divider y={24} />

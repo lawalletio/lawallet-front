@@ -106,10 +106,13 @@ export const useCreateIdentity = (): UseIdentityReturns => {
   }
 
   const createNostrAccount = async () => {
+    setLoading(true)
+
     const generatedIdentity: UserIdentity = await generateUserIdentity('', '')
     if (generatedIdentity) {
       setUserIdentity(generatedIdentity)
       router.push('/dashboard')
+      setLoading(false)
     }
   }
 

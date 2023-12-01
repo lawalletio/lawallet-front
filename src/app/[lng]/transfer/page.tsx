@@ -195,8 +195,9 @@ export default function Page() {
             <Button
               onClick={handleContinue}
               disabled={loading || inputText.length === 0}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('CONTINUE')}
+              {t('CONTINUE')}
             </Button>
           </Flex>
           <Divider y={32} />

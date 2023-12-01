@@ -3,6 +3,7 @@
 import theme from '@/styles/theme'
 import { ButtonCustom } from './style'
 import { ReactNode } from 'react'
+import { BtnLoader } from '@/components/Loader/Loader'
 
 type Color = 'primary' | 'secondary' | 'error'
 type Variant = 'filled' | 'bezeled' | 'bezeledGray' | 'borderless'
@@ -13,6 +14,7 @@ interface ButtonProps {
   color?: Color
   variant?: Variant
   size?: Size
+  loading?: boolean
   disabled?: boolean
   componentName?: string
   tabIndex?: number
@@ -52,6 +54,7 @@ export default function Button(props: ButtonProps) {
     color = 'primary',
     variant = 'filled',
     size = 'normal',
+    loading = false,
     disabled = false,
     tabIndex = 0,
     onClick,
@@ -69,12 +72,12 @@ export default function Button(props: ButtonProps) {
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
       tabIndex={tabIndex}
-      disabled={disabled}
+      disabled={disabled || loading}
       $isSmall={size === 'small'}
       $background={variantsList(variant, color)?.background}
       $color={variantsList(variant, color)?.color}
     >
-      {children}
+      {loading ? <BtnLoader /> : children}
     </ButtonCustom>
   )
 }

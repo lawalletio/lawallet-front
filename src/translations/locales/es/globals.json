@@ -133,5 +133,6 @@
   "CASH": "Efectivo",
   "ONLY_CASH": "¿Tenés solo efectivo?",
   "GO_TO_STAND": "¡No hay problema! Acercate a nuestro stand que vamos a ayudarte a cargar tu billetera.",
-  "ERROR_ON_RESET_ACCOUNT": "Ocurrió un error al recuperar la cuenta"
+  "ERROR_ON_RESET_ACCOUNT": "Ocurrió un error al recuperar la cuenta",
+  "ANONYMOUS": "Anonimo"
 }

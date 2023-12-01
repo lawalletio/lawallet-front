@@ -147,7 +147,7 @@ const LightningDeposit = () => {
   }
 
   const handleCloseSheet = () => {
-    if (sheetStep === 'finished') {
+    if (sheetStep === 'finished' || !identity.username.length) {
       router.push('/dashboard')
     } else {
       numpadData.resetAmount()
@@ -261,25 +261,25 @@ const LightningDeposit = () => {
               <Divider y={16} />
             </Container>
           </Flex>
+
+          <Flex>
+            <Container size="small">
+              <Divider y={16} />
+              <Flex gap={8}>
+                <Button
+                  variant="bezeled"
+                  onClick={() => {
+                    setShowSeet(true)
+                  }}
+                >
+                  {t('CREATE_INVOICE')}
+                </Button>
+              </Flex>
+              <Divider y={32} />
+            </Container>
+          </Flex>
         </>
       ) : null}
-
-      <Flex>
-        <Container size="small">
-          <Divider y={16} />
-          <Flex gap={8}>
-            <Button
-              variant="bezeled"
-              onClick={() => {
-                setShowSeet(true)
-              }}
-            >
-              {t('CREATE_INVOICE')}
-            </Button>
-          </Flex>
-          <Divider y={32} />
-        </Container>
-      </Flex>
 
       <Sheet
         title={

@@ -106,8 +106,9 @@ export default function Page() {
             <Button
               onClick={handleRecoveryAccount}
               disabled={!keyInput.length || loading}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('LOGIN')}
+              {t('LOGIN')}
             </Button>
           </Flex>
           <Divider y={32} />

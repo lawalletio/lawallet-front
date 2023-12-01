@@ -76,11 +76,7 @@ export default function Page() {
       <StartView
         verifyingNonce={accountInfo.loading}
         isValidNonce={accountInfo.isValidNonce}
-        onClick={() => {
-          accountInfo.isValidNonce
-            ? setActiveStartView(false)
-            : handleCreateIdentity(accountInfo)
-        }}
+        onClick={() => setActiveStartView(false)}
       />
     )
 
@@ -144,8 +140,9 @@ export default function Page() {
             <Button
               onClick={handleConfirm}
               disabled={loading || !accountInfo.nonce.length}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('CONFIRM')}
+              {t('CONFIRM')}
             </Button>
           </Flex>
           <Divider y={32} />
