@@ -82,8 +82,8 @@ export default function Page() {
         <Container size="small">
           <Divider y={16} />
           <Flex direction="column" align="center" gap={16}>
-            {ListCards.map(card => (
-              <DebitCard card={card} active={card.active} />
+            {ListCards.map((card, index) => (
+              <DebitCard card={card} active={card.active} key={index} />
             ))}
           </Flex>
           <Divider y={16} />
