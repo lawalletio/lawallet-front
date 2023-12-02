@@ -134,6 +134,9 @@
   "ONLY_CASH": "Do you only have cash?",
   "GO_TO_STAND": "No problem! Come to our stand and we will help you load your wallet.",
   "ERROR_ON_RESET_ACCOUNT": "An error occurred while recovering the account",
+  "SECURITY": "Security",
+  "ACCOUNT": "Account",
+  "MY_CARDS": "My cards"
   "ANONYMOUS": "Anonymous",
   "PRESS_TO_COPY": "Press me to copy!"
 }
