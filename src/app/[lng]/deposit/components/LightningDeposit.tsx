@@ -5,7 +5,6 @@ import {
   SatoshiV2Icon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { NDKKind } from '@nostr-dev-kit/ndk'
-import { useMediaQuery } from '@uidotdev/usehooks'
 import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
@@ -69,12 +68,6 @@ const LightningDeposit = () => {
     converter: { convertCurrency }
   } = useContext(LaWalletContext)
   const numpadData = useNumpad(currency)
-
-  const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)')
-
-  const isMediumDevice = useMediaQuery(
-    'only screen and (min-width : 769px) and (max-width : 992px)'
-  )
 
   const router = useRouter()
   const errors = useErrors()
@@ -184,7 +177,8 @@ const LightningDeposit = () => {
         return boltTag === invoice.bolt11
       })
 
-      if (receivedTX) setSheetStep('finished')
+      // POC: uncomment validation
+      // if (receivedTX) setSheetStep('finished')
     }
   }, [sortedTransactions.length])
 
@@ -219,11 +213,9 @@ const LightningDeposit = () => {
     <>
       {identity.username.length ? (
         <>
-          <QRCode
-            size={325}
-            value={('lightning:' + LNURLEncoded).toUpperCase()}
-          />
-
+          <Flex flex={1} justify="center" align="center">
+            <QRCode value={('lightning:' + LNURLEncoded).toUpperCase()} />
+          </Flex>
           <Flex>
             <Container size="small">
               <Divider y={16} />
@@ -286,8 +278,8 @@ const LightningDeposit = () => {
           sheetStep === 'amount'
             ? t('DEFINE_AMOUNT')
             : sheetStep === 'qr'
-              ? t('WAITING_PAYMENT')
-              : t('PAYMENT_RECEIVED')
+            ? t('WAITING_PAYMENT')
+            : t('PAYMENT_RECEIVED')
         }
         isOpen={showSheet || !identity.username.length}
         onClose={handleCloseSheet}
@@ -343,7 +335,9 @@ const LightningDeposit = () => {
 
         {sheetStep === 'qr' && (
           <>
-            <QRCode size={325} value={`${invoice.bolt11.toUpperCase()}`} />
+            <Flex flex={1} justify="center" align="center">
+              <QRCode value={`${invoice.bolt11.toUpperCase()}`} />
+            </Flex>
             <Divider y={24} />
             <Container size="small">
               <Flex
@@ -381,18 +375,12 @@ const LightningDeposit = () => {
                 <Button variant="bezeledGray" onClick={handleCloseSheet}>
                   {t('CANCEL')}
                 </Button>
-                {isSmallDevice || isMediumDevice ? (
-                  <Button variant="bezeled" onClick={handleShareInvoice}>
-                    {t('SHARE')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="bezeled"
-                    onClick={() => handleCopy(invoice.bolt11)}
-                  >
-                    {t('COPY')}
-                  </Button>
-                )}
+                <Button
+                  variant="bezeled"
+                  onClick={() => handleCopy(invoice.bolt11)}
+                >
+                  {t('COPY')}
+                </Button>
               </Flex>
             </Container>
           </>
