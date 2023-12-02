@@ -66,7 +66,15 @@ export default function Page() {
       <Container size="small">
         <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
-          {t('MY_WALLET')}
+          {t('ACCOUNT')}
+        </Text>
+        <Divider y={8} />
+        <Flex direction="column" gap={4}>
+          <LinkSetting href="/settings/cards">{t('MY_CARDS')}</LinkSetting>
+        </Flex>
+        <Divider y={16} />
+        <Text size="small" color={theme.colors.gray50}>
+          {t('SECURITY')}
         </Text>
         <Divider y={8} />
         <Flex direction="column" gap={4}>
@@ -74,7 +82,7 @@ export default function Page() {
             {t('BACKUP_ACCOUNT')}
           </LinkSetting>
         </Flex>
-        <Divider y={16} />
+        {/* <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
           {t('ABOUT_US')}
         </Text>
@@ -86,7 +94,7 @@ export default function Page() {
           <LinkSetting href="https://discord.gg/QESv76truh" target="_blank">
             Discord
           </LinkSetting>
-        </Flex>
+        </Flex> */}
         <Divider y={16} />
         <Flex justify="center">
           <Text size="small" color={theme.colors.gray50}>
