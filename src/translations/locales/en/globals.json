@@ -9,6 +9,8 @@
   "USER": "Address",
   "START_USE_CARD": "Start using your card with these",
   "FINISH_CARD_MODAL": "to finish it faster!",
+  "CREATE_NEW_ACCOUNT": "CREATING AN ACCOUNT WILL TAKE YOU LESS THAN",
+  "CONFIGURE_ACCOUNT_SECONDS": "5 SECONDS",
   "CONFIGURE_CARD": "CONFIGURE YOUR CARD WILL TAKE LESS THAN",
   "CONFIGURE_CARD_SECONDS": "60 SECONDS",
   "REGISTER_USER": "Register your user",
@@ -102,6 +104,7 @@
   "SUCCESS_CLAIM": "You successfully claimed the invoice",
   "CLAIM": "Claim",
   "CLAIM_THIS_INVOICE": "Claim this invoice",
+  "CREATE_ACCOUNT": "Create account",
   "LOGIN_ACCOUNT": "Log in",
   "VOUCHER_REQUEST_TITLE": "Claim your voucher",
   "INSERT_EMAIL": "Enter your email",
@@ -134,4 +137,6 @@
   "SECURITY": "Security",
   "ACCOUNT": "Account",
   "MY_CARDS": "My cards"
+  "ANONYMOUS": "Anonymous",
+  "PRESS_TO_COPY": "Press me to copy!"
 }

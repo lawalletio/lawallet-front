@@ -140,8 +140,9 @@ export default function Page() {
             <Button
               onClick={handleConfirm}
               disabled={loading || !accountInfo.nonce.length}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('CONFIRM')}
+              {t('CONFIRM')}
             </Button>
           </Flex>
           <Divider y={32} />

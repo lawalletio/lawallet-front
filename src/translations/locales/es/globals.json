@@ -9,6 +9,8 @@
   "USER": "Dirección",
   "START_USE_CARD": "Comienza a usar tu tarjeta con estos",
   "FINISH_CARD_MODAL": "por terminarlo antes!",
+  "CREATE_NEW_ACCOUNT": "CREAR UNA CUENTA TE VA A LLEVAR MENOS DE",
+  "CONFIGURE_ACCOUNT_SECONDS": "5 SEGUNDOS",
   "CONFIGURE_CARD": "CONFIGURAR LA TARJETA TE VA A LLEVAR MENOS DE",
   "CONFIGURE_CARD_SECONDS": "60 SEGUNDOS",
   "REGISTER_USER": "Registra tu usuario",
@@ -102,6 +104,7 @@
   "SUCCESS_CLAIM": "Reclamaste la factura con éxito",
   "CLAIM": "Reclamar",
   "CLAIM_THIS_INVOICE": "Reclama esta factura",
+  "CREATE_ACCOUNT": "Crear cuenta",
   "LOGIN_ACCOUNT": "Iniciar sesión",
   "VOUCHER_REQUEST_TITLE": "Reclama tu voucher",
   "INSERT_EMAIL": "Escribe tu correo electronico",
@@ -134,4 +137,6 @@
   "SECURITY": "Seguridad",
   "ACCOUNT": "Cuenta",
   "MY_CARDS": "Mis tarjetas"
+  "ANONYMOUS": "Anonimo",
+  "PRESS_TO_COPY": "Presioname para copiar!"
 }

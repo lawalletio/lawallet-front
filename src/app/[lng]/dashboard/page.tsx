@@ -35,7 +35,7 @@ import theme from '@/styles/theme'
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
 import { useTranslation } from '@/hooks/useTranslations'
-import { formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations
@@ -91,7 +91,9 @@ export default function Page() {
           <Flex align="center" gap={8}>
             <Avatar>
               <Text size="small">
-                {identity.username.substring(0, 2).toUpperCase()}
+                {identity.username
+                  ? identity.username.substring(0, 2).toUpperCase()
+                  : 'AN'}
               </Text>
             </Avatar>
             <Flex direction="column">
@@ -100,14 +102,17 @@ export default function Page() {
               </Text>
               <Flex
                 onClick={() => {
-                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                  if (identity.username)
+                    copy(`${identity.username}@${WALLET_DOMAIN}`)
                 }}
               >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
                   <Text>
-                    {identity.username}@{WALLET_DOMAIN}
+                    {identity.username
+                      ? `${identity.username}@${WALLET_DOMAIN}`
+                      : t('ANONYMOUS')}
                   </Text>
                 )}
               </Flex>

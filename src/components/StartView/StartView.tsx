@@ -17,11 +17,14 @@ import { useTranslation } from '@/hooks/useTranslations'
 import { useMediaQuery } from '@uidotdev/usehooks'
 import { Loader } from '../Loader/Loader'
 import { LAWALLET_VERSION } from '@/constants/constants'
+import { useRouter } from 'next/router'
 
 const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
   const { t } = useTranslation()
   const isMobile = useMediaQuery('only screen and (max-width : 768px)')
   const [isIOS, setIsIOS] = useState<boolean>(false)
+
+  const router = useRouter()
 
   useEffect(() => {
     if (isValidNonce) setIsIOS(checkIOS(navigator))
@@ -72,13 +75,13 @@ const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
               </Feedback>
             </Flex>
 
-            {/* <Divider y={16} /> */}
+            <Divider y={16} />
 
-            {/* <Flex>
-              <Button onClick={() => router.replace(IDENTITY_ENDPOINT)}>
+            <Flex>
+              <Button onClick={() => router.push('/')}>
                 {t('BACK_TO_HOME')}
               </Button>
-            </Flex> */}
+            </Flex>
           </>
         )}
       </Flex>

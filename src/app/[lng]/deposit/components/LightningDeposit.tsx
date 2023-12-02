@@ -4,15 +4,13 @@ import {
   CheckIcon,
   SatoshiV2Icon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { NDKKind } from '@nostr-dev-kit/ndk'
-import { useMediaQuery } from '@uidotdev/usehooks'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
 
-import { formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
 import lnurl from '@/lib/lnurl'
-import { copy, share } from '@/lib/share'
+import { copy } from '@/lib/share'
 
 import { useNumpad } from '@/hooks/useNumpad'
 import { useSubscription } from '@/hooks/useSubscription'
@@ -44,7 +42,7 @@ import keys from '@/constants/keys'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { requestInvoice } from '@/interceptors/transaction'
-import { buildZapRequestEvent, getTag } from '@/lib/events'
+import { buildZapRequestEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
 
@@ -60,7 +58,6 @@ const LightningDeposit = () => {
   const { t } = useTranslation()
   const {
     identity,
-    sortedTransactions,
     lng,
     notifications,
     userConfig: {
@@ -69,12 +66,6 @@ const LightningDeposit = () => {
     converter: { convertCurrency }
   } = useContext(LaWalletContext)
   const numpadData = useNumpad(currency)
-
-  const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)')
-
-  const isMediumDevice = useMediaQuery(
-    'only screen and (min-width : 769px) and (max-width : 992px)'
-  )
 
   const router = useRouter()
   const errors = useErrors()
@@ -147,7 +138,7 @@ const LightningDeposit = () => {
   }
 
   const handleCloseSheet = () => {
-    if (sheetStep === 'finished') {
+    if (sheetStep === 'finished' || !identity.username.length) {
       router.push('/dashboard')
     } else {
       numpadData.resetAmount()
@@ -157,16 +148,16 @@ const LightningDeposit = () => {
     }
   }
 
-  const handleShareInvoice = () => {
-    const shareData = {
-      title: t('SHARE_INVOICE_TITLE'),
-      description: t('SHARE_INVOICE'),
-      text: invoice.bolt11
-    }
+  // const handleShareInvoice = () => {
+  //   const shareData = {
+  //     title: t('SHARE_INVOICE_TITLE'),
+  //     description: t('SHARE_INVOICE'),
+  //     text: invoice.bolt11
+  //   }
 
-    const shared: boolean = share(shareData)
-    if (!shared) handleCopy(invoice.bolt11)
-  }
+  //   const shared: boolean = share(shareData)
+  //   if (!shared) handleCopy(invoice.bolt11)
+  // }
 
   useEffect(() => {
     if (events.length) {
@@ -176,17 +167,6 @@ const LightningDeposit = () => {
       })
     }
   }, [events.length])
-
-  useEffect(() => {
-    if (sortedTransactions.length) {
-      const receivedTX = sortedTransactions.find(tx => {
-        const boltTag = getTag(tx.events[0].tags, 'bolt11')
-        return boltTag === invoice.bolt11
-      })
-
-      if (receivedTX) setSheetStep('finished')
-    }
-  }, [sortedTransactions.length])
 
   const handleCopy = (text: string) => {
     copy(text).then(res => {
@@ -203,64 +183,86 @@ const LightningDeposit = () => {
 
   useActionOnKeypress('Enter', handleClick, [numpadData.intAmount['SAT']])
 
+  const LNURLEncoded: string = useMemo(
+    () =>
+      lnurl
+        .encode(
+          `https://${WALLET_DOMAIN}/.well-known/lnurlp/${
+            identity.username ? identity.username : identity.npub
+          }`
+        )
+        .toUpperCase(),
+    [identity]
+  )
+
   return (
     <>
-      <QRCode
-        size={325}
-        value={(
-          'lightning:' +
-          lnurl.encode(
-            `https://${WALLET_DOMAIN}/.well-known/lnurlp/${identity.username}`
-          )
-        ).toUpperCase()}
-      />
+      {identity.username.length ? (
+        <>
+          <Flex flex={1} justify="center" align="center">
+            <QRCode
+              size={300}
+              borderSize={30}
+              value={('lightning:' + LNURLEncoded).toUpperCase()}
+              textToCopy={`${identity.username}@${WALLET_DOMAIN}`}
+            />
+          </Flex>
+          <Flex>
+            <Container size="small">
+              <Divider y={16} />
 
-      <Flex>
-        <Container size="small">
-          <Divider y={16} />
-          <Flex align="center">
-            <Flex direction="column">
-              <Text size="small" color={theme.colors.gray50}>
-                {t('USER')}
-              </Text>
-              <Flex>
-                <Text>{identity.username}</Text>
-                <Text>@{WALLET_DOMAIN}</Text>
+              <Flex align="center">
+                <Flex direction="column">
+                  <Text size="small" color={theme.colors.gray50}>
+                    {t('USER')}
+                  </Text>
+                  <Flex>
+                    <Text>
+                      {identity.username
+                        ? `${identity.username}@${WALLET_DOMAIN}`
+                        : formatAddress(LNURLEncoded, 20)}
+                    </Text>
+                  </Flex>
+                </Flex>
+                <div>
+                  <Button
+                    size="small"
+                    variant="bezeled"
+                    onClick={() =>
+                      handleCopy(
+                        identity.username
+                          ? `${identity.username}@${WALLET_DOMAIN}`
+                          : LNURLEncoded
+                      )
+                    }
+                  >
+                    {t('COPY')}
+                  </Button>
+                </div>
               </Flex>
-            </Flex>
-            <div>
-              <Button
-                size="small"
-                variant="bezeled"
-                onClick={() =>
-                  handleCopy(`${identity.username}@${WALLET_DOMAIN}`)
-                }
-              >
-                {t('COPY')}
-              </Button>
-            </div>
+
+              <Divider y={16} />
+            </Container>
           </Flex>
 
-          <Divider y={16} />
-        </Container>
-      </Flex>
-
-      <Flex>
-        <Container size="small">
-          <Divider y={16} />
-          <Flex gap={8}>
-            <Button
-              variant="bezeled"
-              onClick={() => {
-                setShowSeet(true)
-              }}
-            >
-              {t('CREATE_INVOICE')}
-            </Button>
+          <Flex>
+            <Container size="small">
+              <Divider y={16} />
+              <Flex gap={8}>
+                <Button
+                  variant="bezeled"
+                  onClick={() => {
+                    setShowSeet(true)
+                  }}
+                >
+                  {t('CREATE_INVOICE')}
+                </Button>
+              </Flex>
+              <Divider y={32} />
+            </Container>
           </Flex>
-          <Divider y={32} />
-        </Container>
-      </Flex>
+        </>
+      ) : null}
 
       <Sheet
         title={
@@ -270,7 +272,7 @@ const LightningDeposit = () => {
               ? t('WAITING_PAYMENT')
               : t('PAYMENT_RECEIVED')
         }
-        isOpen={showSheet}
+        isOpen={showSheet || !identity.username.length}
         onClose={handleCloseSheet}
       >
         {sheetStep === 'amount' && (
@@ -324,7 +326,9 @@ const LightningDeposit = () => {
 
         {sheetStep === 'qr' && (
           <>
-            <QRCode size={325} value={`${invoice.bolt11.toUpperCase()}`} />
+            <Flex flex={1} justify="center" align="center">
+              <QRCode size={300} value={`${invoice.bolt11.toUpperCase()}`} />
+            </Flex>
             <Divider y={24} />
             <Container size="small">
               <Flex
@@ -362,18 +366,12 @@ const LightningDeposit = () => {
                 <Button variant="bezeledGray" onClick={handleCloseSheet}>
                   {t('CANCEL')}
                 </Button>
-                {isSmallDevice || isMediumDevice ? (
-                  <Button variant="bezeled" onClick={handleShareInvoice}>
-                    {t('SHARE')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="bezeled"
-                    onClick={() => handleCopy(invoice.bolt11)}
-                  >
-                    {t('COPY')}
-                  </Button>
-                )}
+                <Button
+                  variant="bezeled"
+                  onClick={() => handleCopy(invoice.bolt11)}
+                >
+                  {t('COPY')}
+                </Button>
               </Flex>
             </Container>
           </>

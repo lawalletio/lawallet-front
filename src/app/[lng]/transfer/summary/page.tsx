@@ -167,14 +167,11 @@ export default function Page() {
                 (transferInfo.type !== TransferTypes.LNURLW &&
                   insufficientBalance)
               }
+              loading={loading}
             >
-              {loading ? (
-                <BtnLoader />
-              ) : transferInfo.type === TransferTypes.LNURLW ? (
-                t('CLAIM')
-              ) : (
-                t('TRANSFER')
-              )}
+              {transferInfo.type === TransferTypes.LNURLW
+                ? t('CLAIM')
+                : t('TRANSFER')}
             </Button>
           </Flex>
           <Divider y={32} />
