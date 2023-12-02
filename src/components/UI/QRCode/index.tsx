@@ -1,28 +1,36 @@
 'use client'
 
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useState } from 'react'
 import ReactQRCode from 'react-qr-code'
-
-import { WALLET_DOMAIN } from '@/constants/config'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
 
 import { copy } from '@/lib/share'
-import lnurl from '@/lib/lnurl'
 
 import Text from '../Text'
 
 import theme from '@/styles/theme'
 import { QRCode, Toast } from './style'
+import { useTranslation } from '@/hooks/useTranslations'
 
 interface ComponentProps {
   value: string
+  size?: number
+  borderSize?: number
+  showCopy?: boolean
+  textToCopy?: string
 }
 
-export default function Component({ value }: ComponentProps) {
+export default function Component({
+  value,
+  size = 150,
+  borderSize = 40,
+  showCopy = true,
+  textToCopy
+}: ComponentProps) {
   const [showToast, setShowToast] = useState(true)
-
-  const { identity, notifications } = useContext(LaWalletContext)
+  const { notifications } = useContext(LaWalletContext)
+  const { t } = useTranslation()
 
   const handleCopy = (text: string) => {
     copy(text).then(res => {
@@ -34,36 +42,23 @@ export default function Component({ value }: ComponentProps) {
     })
   }
 
-  const LNURLEncoded: string = useMemo(
-    () =>
-      lnurl
-        .encode(
-          `https://${WALLET_DOMAIN}/.well-known/lnurlp/${
-            identity.username ? identity.username : identity.npub
-          }`
-        )
-        .toUpperCase(),
-    [identity]
-  )
-
   return (
     <QRCode
-      onClick={() =>
-        handleCopy(
-          identity.username
-            ? `${identity.username}@${WALLET_DOMAIN}`
-            : LNURLEncoded
-        )
-      }
+      size={size + borderSize}
+      onClick={() => {
+        if (showCopy) handleCopy(textToCopy ? textToCopy : value)
+      }}
     >
-      <Toast $isShow={showToast}>
-        <Text size="small">Presioname para copiar!</Text>
-        <span></span>
-      </Toast>
+      {showCopy ? (
+        <Toast $isShow={showToast}>
+          <Text size="small">{t('PRESS_TO_COPY')}</Text>
+          <span></span>
+        </Toast>
+      ) : null}
 
       <ReactQRCode
         value={value}
-        size={150}
+        size={size}
         fgColor={theme.colors.black}
         bgColor={theme.colors.white}
       />

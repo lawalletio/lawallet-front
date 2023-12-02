@@ -4,14 +4,13 @@ import {
   CheckIcon,
   SatoshiV2Icon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { NDKKind } from '@nostr-dev-kit/ndk'
 import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
 
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 import lnurl from '@/lib/lnurl'
-import { copy, share } from '@/lib/share'
+import { copy } from '@/lib/share'
 
 import { useNumpad } from '@/hooks/useNumpad'
 import { useSubscription } from '@/hooks/useSubscription'
@@ -43,7 +42,7 @@ import keys from '@/constants/keys'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { requestInvoice } from '@/interceptors/transaction'
-import { buildZapRequestEvent, getTag } from '@/lib/events'
+import { buildZapRequestEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
 
@@ -59,7 +58,6 @@ const LightningDeposit = () => {
   const { t } = useTranslation()
   const {
     identity,
-    sortedTransactions,
     lng,
     notifications,
     userConfig: {
@@ -150,16 +148,16 @@ const LightningDeposit = () => {
     }
   }
 
-  const handleShareInvoice = () => {
-    const shareData = {
-      title: t('SHARE_INVOICE_TITLE'),
-      description: t('SHARE_INVOICE'),
-      text: invoice.bolt11
-    }
+  // const handleShareInvoice = () => {
+  //   const shareData = {
+  //     title: t('SHARE_INVOICE_TITLE'),
+  //     description: t('SHARE_INVOICE'),
+  //     text: invoice.bolt11
+  //   }
 
-    const shared: boolean = share(shareData)
-    if (!shared) handleCopy(invoice.bolt11)
-  }
+  //   const shared: boolean = share(shareData)
+  //   if (!shared) handleCopy(invoice.bolt11)
+  // }
 
   useEffect(() => {
     if (events.length) {
@@ -169,18 +167,6 @@ const LightningDeposit = () => {
       })
     }
   }, [events.length])
-
-  useEffect(() => {
-    if (sortedTransactions.length) {
-      const receivedTX = sortedTransactions.find(tx => {
-        const boltTag = getTag(tx.events[0].tags, 'bolt11')
-        return boltTag === invoice.bolt11
-      })
-
-      // POC: uncomment validation
-      // if (receivedTX) setSheetStep('finished')
-    }
-  }, [sortedTransactions.length])
 
   const handleCopy = (text: string) => {
     copy(text).then(res => {
@@ -214,7 +200,12 @@ const LightningDeposit = () => {
       {identity.username.length ? (
         <>
           <Flex flex={1} justify="center" align="center">
-            <QRCode value={('lightning:' + LNURLEncoded).toUpperCase()} />
+            <QRCode
+              size={300}
+              borderSize={30}
+              value={('lightning:' + LNURLEncoded).toUpperCase()}
+              textToCopy={`${identity.username}@${WALLET_DOMAIN}`}
+            />
           </Flex>
           <Flex>
             <Container size="small">
@@ -278,8 +269,8 @@ const LightningDeposit = () => {
           sheetStep === 'amount'
             ? t('DEFINE_AMOUNT')
             : sheetStep === 'qr'
-            ? t('WAITING_PAYMENT')
-            : t('PAYMENT_RECEIVED')
+              ? t('WAITING_PAYMENT')
+              : t('PAYMENT_RECEIVED')
         }
         isOpen={showSheet || !identity.username.length}
         onClose={handleCloseSheet}
@@ -336,7 +327,7 @@ const LightningDeposit = () => {
         {sheetStep === 'qr' && (
           <>
             <Flex flex={1} justify="center" align="center">
-              <QRCode value={`${invoice.bolt11.toUpperCase()}`} />
+              <QRCode size={300} value={`${invoice.bolt11.toUpperCase()}`} />
             </Flex>
             <Divider y={24} />
             <Container size="small">

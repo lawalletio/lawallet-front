@@ -4,7 +4,9 @@ import { styled } from 'styled-components'
 
 import theme from '@/styles/theme'
 
-interface QRCodeProps {}
+interface QRCodeProps {
+  size: number
+}
 
 export const QRCode = styled.div<QRCodeProps>`
   position: relative;
@@ -12,9 +14,8 @@ export const QRCode = styled.div<QRCodeProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px;
-  height: 200px;
-
+  width: ${props => props.size ?? 200}px;
+  height: ${props => props.size ?? 200}px;
   background-color: ${theme.colors.white};
   border-radius: 12px;
 
