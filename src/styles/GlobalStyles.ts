@@ -13,11 +13,13 @@ const GlobalStyles = createGlobalStyle`
   }
 
   html {
+    overflow-x: hidden;
+
     font-size: 20px;
   }
 
   body {
-    overflow-x: hidden !important;
+    overflow-x: hidden;
 
     display: flex;
     flex-direction: column;
