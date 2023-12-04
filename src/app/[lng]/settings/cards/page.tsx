@@ -63,11 +63,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('MY_CARDS')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('MY_CARDS')} />
 
       {/* <Container size="small">
         <Divider y={16} />

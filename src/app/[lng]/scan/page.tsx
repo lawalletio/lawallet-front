@@ -35,11 +35,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('SCAN_QR')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('SCAN_QR')} />
 
       <Flex justify="center" align="center" flex={1}>
         <QrScanner
