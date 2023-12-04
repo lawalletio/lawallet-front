@@ -15,9 +15,13 @@ import {
 
 import { useSubscription } from './useSubscription'
 import keys from '@/constants/keys'
-import { LaWalletKinds, getMultipleTags, getTag } from '@/lib/events'
-import { nip26 } from 'nostr-tools'
-import { Event } from 'nostr-tools'
+import {
+  LaWalletKinds,
+  LaWalletTags,
+  getMultipleTags,
+  getTag
+} from '@/lib/events'
+import { nip26, Event } from 'nostr-tools'
 import { CACHE_TXS_KEY } from '@/constants/constants'
 
 export interface ActivitySubscriptionProps {
@@ -49,17 +53,17 @@ export const options: NDKSubscriptionOptions = {
 }
 
 const startTags: string[] = [
-  'internal-transaction-start',
-  'inbound-transaction-start'
+  LaWalletTags.INTERNAL_TRANSACTION_START,
+  LaWalletTags.INBOUND_TRANSACTION_START
 ]
 
 const statusTags: string[] = [
-  'internal-transaction-ok',
-  'internal-transaction-error',
-  'outbound-transaction-ok',
-  'outbound-transaction-error',
-  'inbound-transaction-ok',
-  'inbound-transaction-error'
+  LaWalletTags.INTERNAL_TRANSACTION_OK,
+  LaWalletTags.INTERNAL_TRANSACTION_ERROR,
+  LaWalletTags.OUTBOUND_TRANSACTION_OK,
+  LaWalletTags.OUTBOUND_TRANSACTION_ERROR,
+  LaWalletTags.INBOUND_TRANSACTION_OK,
+  LaWalletTags.INBOUND_TRANSACTION_ERROR
 ]
 
 let intervalGenerateTransactions: NodeJS.Timeout
@@ -91,7 +95,7 @@ export const useActivity = ({
       {
         authors: [pubkey, keys.cardPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
-        '#t': ['internal-transaction-start'],
+        '#t': [LaWalletTags.INTERNAL_TRANSACTION_START],
         since: activityInfo.lastCached,
         limit
       },

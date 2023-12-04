@@ -24,7 +24,6 @@ import { decimalsToUse, formatToPreference } from '@/lib/formatter'
 import { useNumpad } from '@/hooks/useNumpad'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
 import useErrors from '@/hooks/useErrors'
 import { TransferTypes } from '@/types/transaction'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
@@ -104,7 +103,7 @@ export default function Page() {
     }
   }, [pricesData])
 
-  useActionOnKeypress('Enter', handleClick, [transferInfo])
+  useActionOnKeypress('Enter', handleClick, [numpadData, transferInfo])
 
   return (
     <>

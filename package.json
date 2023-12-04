@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@bitcoin-design/bitcoin-icons-react": "^0.1.10",
+    "@ducanh2912/next-pwa": "9.7.2",
     "@formatjs/intl-localematcher": "^0.5.2",
     "@fortawesome/fontawesome-svg-core": "^6.5.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.0",
@@ -26,7 +27,6 @@
     "lottie-react": "^2.4.0",
     "negotiator": "^0.6.3",
     "next": "13.5.4",
-    "next-pwa": "^5.6.0",
     "nostr-tools": "^1.17.0",
     "postcss": "8.4.31",
     "qr-scanner": "^1.4.2",

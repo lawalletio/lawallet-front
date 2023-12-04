@@ -18,11 +18,25 @@ import {
 } from 'nostr-tools'
 import { nowInSeconds } from './utils'
 import { buildMultiNip04Event } from './nip04'
+import { TransferInformation } from '@/interceptors/transaction'
 
 export enum LaWalletKinds {
   REGULAR = 1112,
   EPHEMERAL = 21111,
   PARAMETRIZED_REPLACEABLE = 31111
+}
+
+export enum LaWalletTags {
+  INTERNAL_TRANSACTION_START = 'internal-transaction-start',
+  INTERNAL_TRANSACTION_OK = 'internal-transaction-ok',
+  INTERNAL_TRANSACTION_ERROR = 'internal-transaction-error',
+  INBOUND_TRANSACTION_START = 'inbound-transaction-start',
+  INBOUND_TRANSACTION_OK = 'inbound-transaction-ok',
+  INBOUND_TRANSACTION_ERROR = 'inbound-transaction-error',
+  OUTBOUND_TRANSACTION_OK = 'outbound-transaction-ok',
+  OUTBOUND_TRANSACTION_ERROR = 'outbound-transaction-error',
+  CREATE_IDENTITY = 'create-identity',
+  CARD_ACTIVATION_REQUEST = 'card-activation-request'
 }
 
 export type GenerateIdentityReturns = {
@@ -59,7 +73,7 @@ export const buildIdentityEvent = async (
   })
 
   event.tags = [
-    ['t', 'create-identity'],
+    ['t', LaWalletTags.CREATE_IDENTITY],
     ['name', identity.username],
     ['nonce', nonce]
   ]
@@ -96,7 +110,7 @@ export const buildCardActivationEvent = async (
 
   event.tags = [
     ['p', keys.cardPubkey],
-    ['t', 'card-activation-request']
+    ['t', LaWalletTags.CARD_ACTIVATION_REQUEST]
   ]
 
   await event.sign(signer)
@@ -129,26 +143,27 @@ export const buildZapRequestEvent = async (
 }
 
 export const buildTxStartEvent = async (
-  amount: number,
-  receiver: string,
-  signer: NDKPrivateKeySigner,
-  tags: NDKTag[]
+  tokenName: string,
+  transferInfo: TransferInformation,
+  tags: NDKTag[],
+  privateKey: string
 ): Promise<NostrEvent> => {
-  const userPubkey = getPublicKey(signer.privateKey!)
+  const signer = new NDKPrivateKeySigner(privateKey)
+  const userPubkey = getPublicKey(privateKey)
 
   const internalEvent: NDKEvent = new NDKEvent()
   internalEvent.pubkey = userPubkey
   internalEvent.kind = LaWalletKinds.REGULAR
 
   internalEvent.content = JSON.stringify({
-    tokens: { BTC: amount.toString() },
-    memo: 'hola'
+    tokens: { [tokenName]: (transferInfo.amount * 1000).toString() },
+    memo: transferInfo.comment
   })
 
   internalEvent.tags = [
-    ['t', 'internal-transaction-start'],
+    ['t', LaWalletTags.INTERNAL_TRANSACTION_START],
     ['p', keys.ledgerPubkey],
-    ['p', receiver]
+    ['p', transferInfo.receiverPubkey]
   ]
 
   if (tags.length) internalEvent.tags = [...internalEvent.tags, ...tags]

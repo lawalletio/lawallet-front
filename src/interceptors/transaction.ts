@@ -17,6 +17,7 @@ interface LNServiceResponse {
 export interface TransferInformation {
   data: string
   amount: number
+  comment: string
   receiverPubkey: string
   walletService: LNServiceResponse | null
   type: TransferTypes | false
@@ -26,6 +27,7 @@ export interface TransferInformation {
 export const defaultTransfer: TransferInformation = {
   data: '',
   amount: 0,
+  comment: '',
   receiverPubkey: keys.urlxPubkey,
   walletService: null,
   type: false

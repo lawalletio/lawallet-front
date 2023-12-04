@@ -17,14 +17,13 @@ import {
   Feedback
 } from '@/components/UI'
 
-import theme from '@/styles/theme'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { TransferTypes } from '@/types/transaction'
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -56,6 +55,11 @@ export default function Page() {
   }, [transferInfo.amount])
 
   const [transferUsername, transferDomain] = transferInfo.data.split('@')
+
+  useActionOnKeypress('Enter', () => executeTransfer(identity.privateKey), [
+    identity,
+    transferInfo
+  ])
 
   return (
     <>
