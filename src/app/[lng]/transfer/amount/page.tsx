@@ -172,9 +172,9 @@ export default function Page() {
           <Flex direction="column" align="end">
             {/* POC: integrate message */}
             <InputWithLabel
-              label="Mensaje"
+              label={t('MESSAGE')}
               name="message"
-              placeholder="Opcional"
+              placeholder={t('OPTIONAL')}
               onChange={() => null}
             />
           </Flex>
