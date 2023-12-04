@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 
-import { BtnLoader } from '@/components/Loader/Loader'
-import StartView from '@/components/StartView/StartView'
+import StartView from '@/app/[lng]/start/components/StartView'
 import {
   Button,
   Divider,

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslation } from '@/hooks/useTranslations'
-import { Flex, Heading, Text } from '../UI'
+import { Flex, Heading, Text } from '@/components/UI'
 
 import theme from '@/styles/theme'
 

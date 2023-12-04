@@ -9,7 +9,7 @@ import { fontSecondary } from '@/styles/fonts'
 import GlobalStyles from '@/styles/GlobalStyles'
 import { ReactNode } from 'react'
 import { LaWalletProvider } from '@/context/LaWalletContext'
-import ProtectRoutes from '@/components/Routes/ProtectRoutes'
+import AuthMiddleware from '@/components/Routes/AuthMiddleware'
 import { AvailableLanguages, defaultLocale } from '@/translations'
 import { GOOGLE_TAG_ID, RelaysList } from '@/constants/config'
 import Script from 'next/script'
@@ -76,9 +76,9 @@ const Providers = (props: ProviderProps) => {
             <GlobalStyles />
 
             <LaWalletProvider lng={params.lng}>
-              <ProtectRoutes>
+              <AuthMiddleware>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </ProtectRoutes>
+              </AuthMiddleware>
             </LaWalletProvider>
           </StyledComponentsRegistry>
         </NDKProvider>
