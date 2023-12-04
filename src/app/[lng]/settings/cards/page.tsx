@@ -4,7 +4,7 @@ import { useTranslation } from '@/hooks/useTranslations'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import { Divider, Flex, Heading } from '@/components/UI'
+import { Button, Divider, Flex, Heading, Modal, Text } from '@/components/UI'
 import DebitCard from './components/DebitCard'
 
 const ListCards = [
@@ -89,6 +89,23 @@ export default function Page() {
           <Divider y={16} />
         </Container>
       </Flex>
+
+      <Modal title="Nueva tarjeta" isOpen={true} onClose={() => null}>
+        <Text>
+          Hay una nueva tarjeta detectada llamada LaBitconf, ¿estás seguro de
+          querer agregarla a tu listado?
+        </Text>
+        <Flex direction="column" gap={4}>
+          <Flex>
+            <Button onClick={() => null}>Agregar</Button>
+          </Flex>
+          <Flex>
+            <Button variant="borderless" onClick={() => null}>
+              Cancelar
+            </Button>
+          </Flex>
+        </Flex>
+      </Modal>
     </>
   )
 }
