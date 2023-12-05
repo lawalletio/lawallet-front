@@ -20,7 +20,7 @@ export default function Component(props: ComponentProps) {
 
   const router = useRouter()
 
-  const onlyChildren = !!!children
+  const onlyChildren = !children
 
   return (
     <Navbar>
