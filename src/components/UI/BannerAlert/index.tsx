@@ -6,7 +6,7 @@ import Text from '../Text'
 import Icon from '../Icon'
 
 import theme from '@/styles/theme'
-import { BannerAlert, Asset } from './style'
+import { BannerAlert as Default, Asset } from './style'
 
 import Security from './Background/Security'
 import Voucher from './Background/Voucher'
@@ -18,11 +18,11 @@ interface ComponentProps {
   color?: 'success' | 'warning' | 'error'
 }
 
-export default function Component(props: ComponentProps) {
+export default function BannerAlert(props: ComponentProps) {
   const { title, description, color = 'success' } = props
 
   return (
-    <BannerAlert $color={theme.colors[color]}>
+    <Default $color={theme.colors[color]}>
       <div>
         <Flex direction="column" gap={4}>
           <Heading as="h6">{title}</Heading>
@@ -37,6 +37,6 @@ export default function Component(props: ComponentProps) {
         {color === 'warning' && <Voucher />}
         {color === 'error' && <Security />}
       </Asset>
-    </BannerAlert>
+    </Default>
   )
 }

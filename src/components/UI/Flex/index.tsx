@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { FlexCustom } from './style'
 
 interface FlexProps {
-  children: ReactNode
+  children?: ReactNode
   gap?: 0 | 2 | 4 | 8 | 16
   direction?: 'row' | 'column'
   flex?: 0 | 1 | 'initial'

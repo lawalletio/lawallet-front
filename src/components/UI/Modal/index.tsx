@@ -8,7 +8,7 @@ import Flex from '../Flex'
 import Divider from '../Divider'
 import Button from '../Button'
 
-import { Modal, ModalContent } from './style'
+import { Modal as Default, ModalContent } from './style'
 
 interface ComponentProps {
   children: ReactNode
@@ -16,7 +16,7 @@ interface ComponentProps {
   onClose: () => void
 }
 
-export default function Component(props: ComponentProps) {
+export default function Modal(props: ComponentProps) {
   const { children, isOpen, onClose } = props
 
   const [open, setOpen] = useState(false)
@@ -31,7 +31,7 @@ export default function Component(props: ComponentProps) {
   }
 
   return (
-    <Modal $isOpen={open}>
+    <Default $isOpen={open}>
       <ModalContent>
         <Container size="small">
           <Divider y={16} />
@@ -47,6 +47,6 @@ export default function Component(props: ComponentProps) {
           <Divider y={16} />
         </Container>
       </ModalContent>
-    </Modal>
+    </Default>
   )
 }

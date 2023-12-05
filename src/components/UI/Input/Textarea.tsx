@@ -1,5 +1,5 @@
 import { fontSecondary } from '@/styles/fonts'
-import { Textarea } from './style'
+import { Textarea as Default } from './style'
 
 interface ComponentProps {
   placeholder: string
@@ -11,7 +11,7 @@ interface ComponentProps {
   disabled?: boolean
 }
 
-export default function Component(props: ComponentProps) {
+export default function Textarea(props: ComponentProps) {
   const {
     placeholder,
     status,
@@ -23,7 +23,7 @@ export default function Component(props: ComponentProps) {
   } = props
 
   return (
-    <Textarea
+    <Default
       className={fontSecondary.className}
       name={name}
       id={id}
@@ -33,6 +33,6 @@ export default function Component(props: ComponentProps) {
       disabled={disabled}
       $showValidate={!status}
       $isSuccess={status && status === 'success'}
-    ></Textarea>
+    ></Default>
   )
 }

@@ -10,7 +10,7 @@ import theme from '@/styles/theme'
 import Text from '../Text'
 import Icon from '../Icon'
 
-import { Alert } from './style'
+import { Alert as Default } from './style'
 import { ReplacementParams, useTranslation } from '@/hooks/useTranslations'
 
 interface AlertProps {
@@ -21,14 +21,14 @@ interface AlertProps {
   params?: ReplacementParams
 }
 
-export default function Component(props: AlertProps) {
+export default function Alert(props: AlertProps) {
   const { title, description, type, isOpen = false, params = {} } = props
   const { t } = useTranslation()
 
   const isSuccess = type === 'success'
 
   return (
-    <Alert
+    <Default
       $background={theme.colors[`${type}15`]}
       $color={type && theme.colors[type]}
       $isOpen={!!isOpen}
@@ -45,6 +45,6 @@ export default function Component(props: AlertProps) {
         </div>
         <div className="progress"></div>
       </div>
-    </Alert>
+    </Default>
   )
 }

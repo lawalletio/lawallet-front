@@ -2,18 +2,21 @@
 
 import { fontSecondary } from '@/styles/fonts'
 
-import { Text } from './style'
+import { Text as Default } from './style'
 import { ReactNode } from 'react'
+
+type Size = 'small' | 'normal'
+type Align = 'left' | 'center' | 'right'
 
 interface TextProps {
   children: ReactNode
-  size?: 'small' | 'normal'
-  align?: 'left' | 'center' | 'right'
+  size?: Size
+  align?: Align
   isBold?: boolean
   color?: string
 }
 
-export default function Component(props: TextProps) {
+export default function Text(props: TextProps) {
   const {
     children,
     size = 'normal',
@@ -23,7 +26,7 @@ export default function Component(props: TextProps) {
   } = props
 
   return (
-    <Text
+    <Default
       $isSmall={size === 'small'}
       $align={align}
       $isBold={isBold}
@@ -31,6 +34,6 @@ export default function Component(props: TextProps) {
       className={fontSecondary.className}
     >
       {children}
-    </Text>
+    </Default>
   )
 }

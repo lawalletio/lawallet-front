@@ -8,24 +8,27 @@ import { BtnLoader } from '@/components/Loader/Loader'
 
 import theme from '@/styles/theme'
 
-import { Input, InputBox, InputIcon } from './style'
+import { Input as Default, InputBox, InputIcon } from './style'
+
+type Type = 'text' | 'password' | 'number' | 'email'
+type Status = 'success' | 'error'
 
 interface InputProps {
   placeholder: string
   value?: string
-  type?: 'text' | 'password' | 'number' | 'email'
+  type?: Type
   id?: string
   name?: string
-  status?: 'success' | 'error'
+  status?: Status
   autoFocus?: boolean
-  onChange?: (e: any) => void
+  onChange: (e: any) => void
   isLoading?: boolean
   isChecked?: boolean
   isError?: boolean
   disabled?: boolean
 }
 
-export default function Component(props: InputProps) {
+export default function Input(props: InputProps) {
   const {
     placeholder,
     value,
@@ -43,7 +46,7 @@ export default function Component(props: InputProps) {
 
   return (
     <InputBox $withIcon={isLoading}>
-      <Input
+      <Default
         onChange={onChange}
         placeholder={placeholder}
         type={type}
