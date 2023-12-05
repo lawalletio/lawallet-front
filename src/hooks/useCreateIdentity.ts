@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import useErrors, { IUseErrors } from './useErrors'
 import { requestCardActivation } from '@/interceptors/card'
+import { regexUserName } from '@/constants/constants'
 
 export interface AccountProps {
   nonce: string
@@ -39,20 +40,22 @@ export type UseIdentityReturns = {
   handleCreateIdentity: (props: AccountProps) => void
 }
 
-export const regexUserName: RegExp = /^[A-Za-z0123456789]+$/
 let checkExistUsername: NodeJS.Timeout
+
+const defaultAccount = {
+  nonce: '',
+  card: '',
+  name: '',
+  isValidNonce: false,
+  loading: true
+}
 
 export const useCreateIdentity = (): UseIdentityReturns => {
   const { setUserIdentity } = useContext(LaWalletContext)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [accountInfo, setAccountInfo] = useState<CreateIdentityParams>({
-    nonce: '',
-    card: '',
-    name: '',
-    isValidNonce: false,
-    loading: true
-  })
+  const [accountInfo, setAccountInfo] =
+    useState<CreateIdentityParams>(defaultAccount)
 
   const errors = useErrors()
   const router = useRouter()

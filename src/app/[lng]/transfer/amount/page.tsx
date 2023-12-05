@@ -27,12 +27,13 @@ import { useTransferContext } from '@/context/TransferContext'
 import useErrors from '@/hooks/useErrors'
 import { TransferTypes } from '@/types/transaction'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+import { regexComment } from '@/constants/constants'
 
 export default function Page() {
   const { t } = useTranslation()
 
   const [loading, setLoading] = useState<boolean>(false)
-  const { transferInfo, setAmountToPay } = useTransferContext()
+  const { transferInfo, setAmountToPay, setComment } = useTransferContext()
   const {
     balance,
     lng,
@@ -88,6 +89,21 @@ export default function Page() {
 
     setAmountToPay(satsAmount)
     router.push(`/transfer/summary?data=${transferInfo.data}`)
+  }
+
+  const handleChangeComment = (text: string) => {
+    if (!text.length) {
+      setComment('')
+      return
+    }
+
+    const isValidComment = regexComment.test(text)
+    if (!isValidComment) {
+      errors.modifyError('error de tipeo')
+      return
+    }
+
+    setComment(text)
   }
 
   useEffect(() => {
@@ -174,7 +190,8 @@ export default function Page() {
               label={t('MESSAGE')}
               name="message"
               placeholder={t('OPTIONAL')}
-              onChange={() => null}
+              onChange={e => handleChangeComment(e.target.value)}
+              value={transferInfo.comment}
             />
           </Flex>
           <Flex>

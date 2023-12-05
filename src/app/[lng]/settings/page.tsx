@@ -49,8 +49,8 @@ export default function Page() {
     const confirmation: boolean = confirm(t('CONFIRM_LOGOUT'))
 
     if (confirmation) {
-      setUserIdentity(defaultIdentity)
       localStorage.removeItem(STORAGE_IDENTITY_KEY)
+      setUserIdentity(defaultIdentity)
       router.push('/login')
     }
   }

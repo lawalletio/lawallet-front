@@ -18,7 +18,6 @@ import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
 import { getUsername } from '@/interceptors/identity'
 import { UserIdentity } from '@/types/identity'
-import { BtnLoader } from '@/components/Loader/Loader'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
 
 export default function Page() {

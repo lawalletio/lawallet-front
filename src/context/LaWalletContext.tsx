@@ -42,10 +42,9 @@ export function LaWalletProvider({
 
   const notifications = useAlert()
 
-  const { activityInfo, sortedTransactions } = useActivity({
+  const { activityInfo, sortedTransactions, resetActivity } = useActivity({
     pubkey: identity.hexpub,
-    enabled: Boolean(identity.hexpub.length),
-    limit: 100
+    enabled: Boolean(identity.hexpub.length)
   })
 
   const userConfig: ConfigReturns = useConfiguration()
@@ -86,6 +85,8 @@ export function LaWalletProvider({
   }
 
   const setUserIdentity = async (new_identity: UserIdentity) => {
+    resetActivity()
+
     setIdentity(new_identity)
     localStorage.setItem(STORAGE_IDENTITY_KEY, JSON.stringify(new_identity))
     return

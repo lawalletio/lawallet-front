@@ -52,9 +52,9 @@ export const useSubscription = ({
     if (enabled && !subscription) {
       if (events.length) setEvents([])
       startSubscription()
-
-      return () => stopSubscription()
     }
+
+    if (!enabled) stopSubscription()
   }, [enabled, subscription])
 
   const removeSubscription = () => setSubscription(undefined)

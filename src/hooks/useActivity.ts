@@ -23,6 +23,7 @@ import {
 } from '@/lib/events'
 import { nip26, Event } from 'nostr-tools'
 import { CACHE_TXS_KEY } from '@/constants/constants'
+import { parseContent } from '@/lib/utils'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -39,6 +40,7 @@ export type ActivityType = {
 export interface UseActivityReturn {
   activityInfo: ActivityType
   sortedTransactions: Transaction[]
+  resetActivity: () => void
 }
 
 export interface UseActivityProps {
@@ -68,27 +70,21 @@ const statusTags: string[] = [
 
 let intervalGenerateTransactions: NodeJS.Timeout
 
-const parseContent = (content: string) => {
-  try {
-    const parsed = JSON.parse(content)
-    return parsed
-  } catch {
-    return {}
-  }
+const defaultActivity = {
+  loading: true,
+  lastCached: 0,
+  cached: [],
+  suscription: [],
+  idsLoaded: []
 }
 
 export const useActivity = ({
   pubkey,
   enabled,
-  limit = 100
+  limit = 5000
 }: UseActivityProps): UseActivityReturn => {
-  const [activityInfo, setActivityInfo] = useState<ActivityType>({
-    loading: true,
-    lastCached: 0,
-    cached: [],
-    suscription: [],
-    idsLoaded: []
-  })
+  const [activityInfo, setActivityInfo] =
+    useState<ActivityType>(defaultActivity)
 
   const { events: walletEvents } = useSubscription({
     filters: [
@@ -109,7 +105,7 @@ export const useActivity = ({
       {
         authors: [keys.ledgerPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
-        '#p': [pubkey, keys.cardPubkey],
+        '#p': [pubkey],
         '#t': statusTags,
         since: activityInfo.lastCached,
         limit
@@ -238,6 +234,7 @@ export const useActivity = ({
   }
 
   async function generateTransactions(events: NDKEvent[]) {
+    // console.log(events)
     const userTransactions: Transaction[] = []
     const [startedEvents, statusEvents, refundEvents] =
       filterEventsByTxType(events)
@@ -295,20 +292,6 @@ export const useActivity = ({
     })
   }
 
-  useEffect(() => {
-    if (walletEvents.length) {
-      if (intervalGenerateTransactions)
-        clearTimeout(intervalGenerateTransactions)
-
-      intervalGenerateTransactions = setTimeout(
-        () => generateTransactions(walletEvents),
-        350
-      )
-    }
-
-    return () => clearTimeout(intervalGenerateTransactions)
-  }, [walletEvents])
-
   const loadCachedTransactions = () => {
     if (pubkey.length) {
       const storagedData: string =
@@ -337,10 +320,6 @@ export const useActivity = ({
     }
   }
 
-  useEffect(() => {
-    loadCachedTransactions()
-  }, [pubkey])
-
   const sortedTransactions: Transaction[] = useMemo(() => {
     const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
       tx => {
@@ -357,6 +336,26 @@ export const useActivity = ({
     )
   }, [activityInfo])
 
+  const resetActivity = () => setActivityInfo(defaultActivity)
+
+  useEffect(() => {
+    if (walletEvents.length) {
+      if (intervalGenerateTransactions)
+        clearTimeout(intervalGenerateTransactions)
+
+      intervalGenerateTransactions = setTimeout(
+        () => generateTransactions(walletEvents),
+        350
+      )
+    }
+
+    return () => clearTimeout(intervalGenerateTransactions)
+  }, [walletEvents])
+
+  useEffect(() => {
+    loadCachedTransactions()
+  }, [pubkey])
+
   useEffect(() => {
     if (sortedTransactions.length)
       localStorage.setItem(
@@ -367,6 +366,7 @@ export const useActivity = ({
 
   return {
     activityInfo,
-    sortedTransactions
+    sortedTransactions,
+    resetActivity
   }
 }

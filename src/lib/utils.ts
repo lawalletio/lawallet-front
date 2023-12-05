@@ -210,3 +210,12 @@ export function addQueryParameter(url: string, parameter: string) {
     return url + '&' + parameter
   }
 }
+
+export function parseContent(content: string) {
+  try {
+    const parsed = JSON.parse(content)
+    return parsed
+  } catch {
+    return {}
+  }
+}
