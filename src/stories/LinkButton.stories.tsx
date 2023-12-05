@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Button } from '@/components/UI'
+import { LinkButton } from '@/components/UI'
 
 const meta = {
-  title: 'Atoms/Button',
-  component: Button,
+  title: 'Atoms/LinkButton',
+  component: LinkButton,
   tags: ['autodocs'],
   argTypes: {
-    color: {
+    href: {
       description: '',
-      defaultValue: 'primary'
+      defaultValue: '#',
+      type: 'string'
     },
     variant: {
       description: '',
@@ -20,7 +21,7 @@ const meta = {
       defaultValue: 'normal'
     }
   }
-} satisfies Meta<typeof Button>
+} satisfies Meta<typeof LinkButton>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -30,62 +31,71 @@ export const primaryColor: Story = {
     children: 'Button',
     color: 'primary',
     variant: 'filled',
-    size: 'normal'
+    size: 'normal',
+    href: ''
   }
 }
 
 export const secondaryColor: Story = {
   args: {
     children: 'Button',
-    color: 'secondary'
+    color: 'secondary',
+    href: ''
   }
 }
 
 export const errorColor: Story = {
   args: {
     children: 'Button',
-    color: 'error'
+    color: 'error',
+    href: ''
   }
 }
 
 export const filledVariant: Story = {
   args: {
     children: 'Button',
-    variant: 'filled'
+    variant: 'filled',
+    href: ''
   }
 }
 
 export const bezeledVariant: Story = {
   args: {
     children: 'Button',
-    variant: 'bezeled'
+    variant: 'bezeled',
+    href: ''
   }
 }
 
 export const bezeledGrayVariant: Story = {
   args: {
     children: 'Button',
-    variant: 'bezeledGray'
+    variant: 'bezeledGray',
+    href: ''
   }
 }
 
 export const borderlessVariant: Story = {
   args: {
     children: 'Button',
-    variant: 'borderless'
+    variant: 'borderless',
+    href: ''
   }
 }
 
 export const smallSize: Story = {
   args: {
     children: 'Button',
-    size: 'small'
+    size: 'small',
+    href: ''
   }
 }
 
 export const normalSize: Story = {
   args: {
     children: 'Button',
-    size: 'normal'
+    size: 'normal',
+    href: ''
   }
 }
