@@ -17,6 +17,6 @@ const config: StorybookConfig = {
     autodocs: 'tag',
     defaultName: 'Documentation'
   },
-  staticDirs: ['../src/styles', '../public']
+  staticDirs: ['../src/styles/fonts', '../public']
 }
 export default config
