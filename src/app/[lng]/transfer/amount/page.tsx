@@ -13,10 +13,10 @@ import {
   Flex,
   Heading,
   Text,
-  LinkButton,
   Keyboard,
   Icon,
-  Feedback
+  Feedback,
+  InputWithLabel
 } from '@/components/UI'
 import theme from '@/styles/theme'
 import { LaWalletContext } from '@/context/LaWalletContext'
@@ -167,22 +167,29 @@ export default function Page() {
         </Feedback>
 
         <Divider y={24} />
-        <Flex gap={8}>
-          <LinkButton variant="bezeledGray" href="/dashboard">
-            {t('CANCEL')}
-          </LinkButton>
-
-          <Button
-            onClick={handleClick}
-            disabled={
-              loading ||
-              balance.amount === 0 ||
-              numpadData.intAmount['SAT'] === 0
-            }
-            loading={loading}
-          >
-            {t('CONTINUE')}
-          </Button>
+        <Flex gap={16} align="end">
+          <Flex direction="column" align="end">
+            {/* POC: integrate message */}
+            <InputWithLabel
+              label={t('MESSAGE')}
+              name="message"
+              placeholder={t('OPTIONAL')}
+              onChange={() => null}
+            />
+          </Flex>
+          <Flex>
+            <Button
+              onClick={handleClick}
+              disabled={
+                loading ||
+                balance.amount === 0 ||
+                numpadData.intAmount['SAT'] === 0
+              }
+              loading={loading}
+            >
+              {t('CONTINUE')}
+            </Button>
+          </Flex>
         </Flex>
         <Divider y={24} />
 

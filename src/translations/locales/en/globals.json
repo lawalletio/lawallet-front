@@ -138,5 +138,7 @@
   "ACCOUNT": "Account",
   "MY_CARDS": "My cards",
   "ANONYMOUS": "Anonymous",
-  "PRESS_TO_COPY": "Press me to copy!"
+  "PRESS_TO_COPY": "Press me to copy!",
+  "MESSAGE": "Message",
+  "OPTIONAL": "Optional"
 }
