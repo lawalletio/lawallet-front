@@ -7,6 +7,7 @@ interface LNServiceResponse {
   tag: string
   callback: string
   metadata: string
+  commentAllowed: number
   minSendable?: number
   maxSendable?: number
   k1?: string
@@ -22,6 +23,13 @@ export interface TransferInformation {
   walletService: LNServiceResponse | null
   type: TransferTypes | false
   expired?: boolean
+}
+
+export type CheckInvoiceReturns = {
+  handled: boolean
+  comment: string
+  zapRequest: string
+  pubkey: string
 }
 
 export const defaultTransfer: TransferInformation = {
@@ -42,6 +50,20 @@ export const getWalletService = (url: string): Promise<LNServiceResponse> =>
     .then(walletInfo => {
       if (!walletInfo) return null
       return walletInfo
+    })
+    .catch(() => null)
+
+export const isInternalInvoice = (
+  invoiceHash: string
+): Promise<CheckInvoiceReturns | null> =>
+  fetch(`${LAWALLET_ENDPOINT}/invoice/${invoiceHash}`)
+    .then(res => {
+      if (res.status !== 200) return null
+      return res.json()
+    })
+    .then(invoiceResponse => {
+      if (!invoiceResponse) return null
+      return invoiceResponse
     })
     .catch(() => null)
 

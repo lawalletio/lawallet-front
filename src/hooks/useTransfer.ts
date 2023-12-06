@@ -5,6 +5,7 @@ import {
   TransferInformation,
   broadcastTransaction,
   defaultTransfer,
+  isInternalInvoice,
   requestInvoice
 } from '@/interceptors/transaction'
 import {
@@ -20,6 +21,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { getPublicKey, nip19 } from 'nostr-tools'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
+import { createHash } from 'crypto'
 
 export interface TransferContextType {
   loading: boolean
@@ -147,11 +149,6 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
   }
 
   const execOutboundTransfer = async (privateKey: string) => {
-    // **
-    // si bolt11 es un invoice interno, realizar executeInternal
-    // **
-    // si no:
-
     const bolt11: string = transferInfo.walletService
       ? await requestInvoice(
           `${transferInfo.walletService?.callback}?amount=${
@@ -160,16 +157,32 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
         )
       : transferInfo.data
 
-    const eventTags: NDKTag[] = [['bolt11', bolt11]]
+    const invoiceHash: string = createHash('sha256')
+      .update(bolt11)
+      .digest('hex')
 
-    const txEvent: NostrEvent = await buildTxStartEvent(
-      tokenName,
-      transferInfo,
-      eventTags,
-      privateKey
-    )
+    const internalInvoice = await isInternalInvoice(invoiceHash)
 
-    publishTransfer(txEvent)
+    if (internalInvoice) {
+      execInternalTransfer(privateKey, {
+        data: transferInfo.data,
+        amount: transferInfo.amount,
+        comment: internalInvoice.comment,
+        receiverPubkey: internalInvoice.pubkey,
+        type: TransferTypes.INTERNAL,
+        walletService: null
+      })
+    } else {
+      const eventTags: NDKTag[] = [['bolt11', bolt11]]
+      const txEvent: NostrEvent = await buildTxStartEvent(
+        tokenName,
+        transferInfo,
+        eventTags,
+        privateKey
+      )
+
+      publishTransfer(txEvent)
+    }
   }
 
   const executeTransfer = (privateKey: string) => {

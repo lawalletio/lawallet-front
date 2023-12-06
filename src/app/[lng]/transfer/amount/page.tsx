@@ -97,9 +97,18 @@ export default function Page() {
       return
     }
 
+    if (
+      text.length > 255 ||
+      (transferInfo.walletService &&
+        text.length > transferInfo.walletService.commentAllowed)
+    ) {
+      errors.modifyError('COMMENT_MAX_LENGHT')
+      return
+    }
+
     const isValidComment = regexComment.test(text)
     if (!isValidComment) {
-      errors.modifyError('error de tipeo')
+      errors.modifyError('ERROR_ON_COMMENT')
       return
     }
 

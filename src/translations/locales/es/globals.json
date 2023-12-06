@@ -140,5 +140,7 @@
   "ANONYMOUS": "Anonimo",
   "PRESS_TO_COPY": "Presioname para copiar!",
   "MESSAGE": "Mensaje",
-  "OPTIONAL": "Opcional"
+  "OPTIONAL": "Opcional",
+  "ERROR_ON_COMMENT": "No puedes poner ese simbolo en el comentario.",
+  "COMMENT_MAX_LENGHT": "Puedes escribir un máximo de {{ chars }} caracteres"
 }

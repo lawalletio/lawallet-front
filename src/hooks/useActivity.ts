@@ -137,7 +137,7 @@ export const useActivity = ({
     const newTransaction: Transaction = {
       id: event.id!,
       status: TransactionStatus.PENDING,
-      memo: eventContent,
+      memo: eventContent.memo ?? '',
       direction,
       type: AuthorIsCard ? TransactionType.CARD : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
@@ -234,7 +234,6 @@ export const useActivity = ({
   }
 
   async function generateTransactions(events: NDKEvent[]) {
-    // console.log(events)
     const userTransactions: Transaction[] = []
     const [startedEvents, statusEvents, refundEvents] =
       filterEventsByTxType(events)
