@@ -132,11 +132,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('DEFINE_AMOUNT')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('DEFINE_AMOUNT')} />
 
       <Container size="small">
         <Divider y={16} />

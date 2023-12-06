@@ -63,11 +63,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('VALIDATE_INFO')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('VALIDATE_INFO')} />
 
       <HeroCard>
         <Container>

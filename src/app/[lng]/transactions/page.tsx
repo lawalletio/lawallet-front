@@ -17,11 +17,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('ACTIVITY')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('ACTIVITY')} />
 
       <Container size="small">
         {/* <Divider y={12} /> */}

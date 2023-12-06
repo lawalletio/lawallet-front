@@ -110,11 +110,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('TRANSFER_MONEY')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('TRANSFER_MONEY')} />
 
       <Container size="small">
         <Divider y={16} />
