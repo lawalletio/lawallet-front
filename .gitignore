@@ -42,3 +42,6 @@ public/workbox-*.js.map
 
 # Sentry Auth Token
 .sentryclirc
+
+# Storybook
+storybook-static
