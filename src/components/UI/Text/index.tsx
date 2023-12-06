@@ -1,7 +1,5 @@
 'use client'
 
-import { fontSecondary } from '@/styles/fonts'
-
 import { Text as Default } from './style'
 import { ReactNode } from 'react'
 
@@ -31,7 +29,6 @@ export default function Text(props: TextProps) {
       $align={align}
       $isBold={isBold}
       $color={color}
-      className={fontSecondary.className}
     >
       {children}
     </Default>

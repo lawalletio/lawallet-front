@@ -5,7 +5,6 @@ import { ThemeProvider } from 'styled-components'
 import StyledComponentsRegistry from '@/lib/registry'
 
 import theme from '@/styles/theme'
-import { fontSecondary } from '@/styles/fonts'
 import GlobalStyles from '@/styles/GlobalStyles'
 import { ReactNode } from 'react'
 import { LaWalletProvider } from '@/context/LaWalletContext'
@@ -28,10 +27,7 @@ const Providers = (props: ProviderProps) => {
   const { children, params } = props
 
   return (
-    <html
-      lang={params.lng ?? defaultLocale}
-      className={fontSecondary.className}
-    >
+    <html lang={params.lng ?? defaultLocale}>
       <head>
         <title>{APP_NAME}</title>
         <meta name="application-name" content={APP_NAME} />
