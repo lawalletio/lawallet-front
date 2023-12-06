@@ -31,6 +31,7 @@ const GlobalStyles = createGlobalStyle`
     color: ${theme.colors.text};
     font-size: 1em;
     font-weight: 400;
+    font-family: 'SF Pro Text';
   }
 
   ul {
@@ -43,7 +44,16 @@ const GlobalStyles = createGlobalStyle`
 
   a, 
   button {
-    font-family: var(--font-primary);
+    font-family: 'SF Pro Text';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'IAAB3-Mono';
   }
 `
 
