@@ -38,7 +38,7 @@ export default function Page() {
     balance,
     lng,
     userConfig: {
-      props: { currency: userCurrency }
+      props: { currency: userCurrency, hideBalance }
     },
     converter: { pricesData, convertCurrency }
   } = useContext(LaWalletContext)
@@ -156,13 +156,16 @@ export default function Page() {
             </Heading>
           </Flex>
 
-          <Flex justify="center" align="center" gap={4}>
-            <Heading as="h6" color={theme.colors.gray50}>
-              {userCurrency !== 'SAT' && '$'}
-              {formatToPreference(userCurrency, maxAvailableAmount, lng)}{' '}
-              {t('AVAILABLE')}.
-            </Heading>
-          </Flex>
+          {!hideBalance && (
+            <Flex justify="center" align="center" gap={4}>
+              <Heading as="h6" color={theme.colors.gray50}>
+                {userCurrency !== 'SAT' && '$'}
+                {formatToPreference(userCurrency, maxAvailableAmount, lng)}{' '}
+                {t('AVAILABLE')}.
+              </Heading>
+            </Flex>
+          )}
+
           <TokenList />
 
           {transferInfo.walletService && (
