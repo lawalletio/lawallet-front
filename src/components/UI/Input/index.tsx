@@ -19,6 +19,8 @@ interface InputProps {
   status?: 'success' | 'error'
   autoFocus?: boolean
   onChange?: (e: any) => void
+  onFocus?: (e: any) => void
+  onBlur?: (e: any) => void
   isLoading?: boolean
   isChecked?: boolean
   isError?: boolean
@@ -35,6 +37,8 @@ export default function Component(props: InputProps) {
     status,
     autoFocus = false,
     onChange,
+    onFocus,
+    onBlur,
     isLoading = false,
     isChecked = false,
     isError = false,
@@ -45,6 +49,8 @@ export default function Component(props: InputProps) {
     <InputBox $withIcon={isLoading}>
       <Input
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
         placeholder={placeholder}
         type={type}
         id={id}

@@ -1,5 +1,4 @@
-import { LAWALLET_ENDPOINT } from '@/constants/config'
-import keys from '@/constants/keys'
+import { LAWALLET_ENDPOINT, LaWalletPubkeys } from '@/constants/config'
 import { TransferTypes } from '@/types/transaction'
 
 interface LNServiceResponse {
@@ -35,7 +34,7 @@ export const defaultTransfer: TransferInformation = {
   data: '',
   amount: 0,
   comment: '',
-  receiverPubkey: keys.urlxPubkey,
+  receiverPubkey: LaWalletPubkeys.urlxPubkey,
   walletService: null,
   type: false
 }

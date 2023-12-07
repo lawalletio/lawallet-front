@@ -32,6 +32,7 @@ import { TransferTypes } from '@/types/transaction'
 export default function Page() {
   const { t } = useTranslation()
 
+  const [commentFocus, setCommentFocus] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const { transferInfo, setAmountToPay, setComment } = useTransferContext()
   const {
@@ -202,6 +203,8 @@ export default function Page() {
               placeholder={t('OPTIONAL')}
               onChange={e => handleChangeComment(e.target.value)}
               value={transferInfo.comment}
+              onFocus={() => setCommentFocus(true)}
+              onBlur={() => setCommentFocus(false)}
             />
           </Flex>
           <Flex>
@@ -220,7 +223,7 @@ export default function Page() {
         </Flex>
         <Divider y={24} />
 
-        <Keyboard numpadData={numpadData} />
+        <Keyboard numpadData={numpadData} disableKeydown={commentFocus} />
 
         <Divider y={32} />
       </Container>

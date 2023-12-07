@@ -35,10 +35,10 @@ import {
 
 import {
   LAWALLET_ENDPOINT,
+  LaWalletPubkeys,
   MAX_INVOICE_AMOUNT,
   WALLET_DOMAIN
 } from '@/constants/config'
-import keys from '@/constants/keys'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { requestInvoice } from '@/interceptors/transaction'
@@ -81,7 +81,7 @@ const LightningDeposit = () => {
   const { events } = useSubscription({
     filters: [
       {
-        authors: [keys.ledgerPubkey, keys.urlxPubkey],
+        authors: [LaWalletPubkeys.ledgerPubkey, LaWalletPubkeys.urlxPubkey],
         kinds: [9735],
         since: invoice.created_at
       }

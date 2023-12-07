@@ -1,13 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
 
-import keys from '@/constants/keys'
-const { ledgerPubkey } = keys
-
 import { NDKEvent, NDKKind, NostrEvent } from '@nostr-dev-kit/ndk'
 import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
 import { LaWalletKinds } from '@/lib/events'
+import { LaWalletPubkeys } from '@/constants/config'
 
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
@@ -35,7 +33,7 @@ export const useTokenBalance = ({
   const { events: balanceEvents } = useSubscription({
     filters: [
       {
-        authors: [ledgerPubkey],
+        authors: [LaWalletPubkeys.ledgerPubkey],
         kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
         '#d': [`balance:${tokenId}:${pubkey}`]
       }
@@ -49,7 +47,7 @@ export const useTokenBalance = ({
 
   const loadBalance = async () => {
     const event: NDKEvent | null = await ndk.fetchEvent({
-      authors: [ledgerPubkey],
+      authors: [LaWalletPubkeys.ledgerPubkey],
       kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
       '#d': [`balance:${tokenId}:${pubkey}`]
     })

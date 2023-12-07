@@ -14,7 +14,6 @@ import {
 } from '@nostr-dev-kit/ndk'
 
 import { useSubscription } from './useSubscription'
-import keys from '@/constants/keys'
 import {
   LaWalletKinds,
   LaWalletTags,
@@ -24,6 +23,7 @@ import {
 import { nip26, Event } from 'nostr-tools'
 import { CACHE_TXS_KEY } from '@/constants/constants'
 import { parseContent } from '@/lib/utils'
+import { LaWalletPubkeys } from '@/constants/config'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -89,7 +89,7 @@ export const useActivity = ({
   const { events: walletEvents } = useSubscription({
     filters: [
       {
-        authors: [pubkey, keys.cardPubkey],
+        authors: [pubkey, LaWalletPubkeys.cardPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#t': [LaWalletTags.INTERNAL_TRANSACTION_START],
         since: activityInfo.lastCached,
@@ -103,7 +103,7 @@ export const useActivity = ({
         limit
       },
       {
-        authors: [keys.ledgerPubkey],
+        authors: [LaWalletPubkeys.ledgerPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#p': [pubkey],
         '#t': statusTags,
@@ -117,7 +117,7 @@ export const useActivity = ({
 
   const formatStartTransaction = async (event: NDKEvent) => {
     const nostrEvent: NostrEvent = await event.toNostrEvent()
-    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
+    const AuthorIsCard: boolean = event.pubkey === LaWalletPubkeys.cardPubkey
 
     const DelegatorIsUser: boolean =
       AuthorIsCard && nip26.getDelegator(nostrEvent as Event) === pubkey

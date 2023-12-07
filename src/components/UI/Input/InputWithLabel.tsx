@@ -10,7 +10,9 @@ interface InputWithLabelProps {
   placeholder: string
   type?: 'text' | 'password' | 'number'
   value?: string
-  onChange: (e: any) => void
+  onChange?: (e: any) => void
+  onFocus?: (e: any) => void
+  onBlur?: (e: any) => void
 }
 
 export default function Component(props: InputWithLabelProps) {
