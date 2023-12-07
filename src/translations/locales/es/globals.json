@@ -142,5 +142,6 @@
   "MESSAGE": "Mensaje",
   "OPTIONAL": "Opcional",
   "ERROR_ON_COMMENT": "No puedes poner ese simbolo en el comentario.",
-  "COMMENT_MAX_LENGHT": "Puedes escribir un máximo de {{ chars }} caracteres"
+  "COMMENT_MAX_LENGHT": "Puedes escribir un máximo de {{ chars }} caracteres",
+  "NO_HAVE_CARDS": "Todavía no tienes ninguna tarjeta asociada a tu cuenta"
 }

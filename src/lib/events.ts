@@ -180,7 +180,7 @@ export const buildCardInfoRequest = async (
   const userPubkey: string = getPublicKey(privateKey)
 
   const event: NostrEvent = {
-    content: '{}',
+    content: '',
     pubkey: userPubkey,
     created_at: nowInSeconds(),
     kind: LaWalletKinds.PARAMETRIZED_REPLACEABLE,
@@ -194,7 +194,7 @@ export const buildCardInfoRequest = async (
 }
 
 export const buildCardConfigEvent = async (
-  cardConfig: Partial<CardConfigPayload>,
+  cardConfig: CardConfigPayload,
   privateKey: string
 ): Promise<NostrEvent> => {
   const userPubkey: string = getPublicKey(privateKey)

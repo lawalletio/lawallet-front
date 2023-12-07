@@ -7,7 +7,6 @@ import {
   Divider,
   Feedback,
   Flex,
-  Heading,
   LinkSetting,
   Text
 } from '@/components/UI'

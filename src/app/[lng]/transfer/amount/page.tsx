@@ -1,8 +1,8 @@
 'use client'
 
-import { useContext, useEffect, useMemo, useState } from 'react'
 import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { useRouter } from 'next/navigation'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -10,24 +10,24 @@ import TokenList from '@/components/TokenList'
 import {
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
-  Text,
-  Keyboard,
   Icon,
-  Feedback,
-  InputWithLabel
+  InputWithLabel,
+  Keyboard,
+  Text
 } from '@/components/UI'
-import theme from '@/styles/theme'
+import { regexComment } from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
-import { decimalsToUse, formatToPreference } from '@/lib/formatter'
+import { useTransferContext } from '@/context/TransferContext'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+import useErrors from '@/hooks/useErrors'
 import { useNumpad } from '@/hooks/useNumpad'
 import { useTranslation } from '@/hooks/useTranslations'
-import { useTransferContext } from '@/context/TransferContext'
-import useErrors from '@/hooks/useErrors'
+import { decimalsToUse, formatToPreference } from '@/lib/formatter'
+import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
-import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
-import { regexComment } from '@/constants/constants'
 
 export default function Page() {
   const { t } = useTranslation()
@@ -102,7 +102,9 @@ export default function Page() {
       (transferInfo.walletService &&
         text.length > transferInfo.walletService.commentAllowed)
     ) {
-      errors.modifyError('COMMENT_MAX_LENGHT')
+      errors.modifyError('COMMENT_MAX_LENGTH', {
+        chars: (transferInfo.walletService?.commentAllowed ?? 255).toString()
+      })
       return
     }
 

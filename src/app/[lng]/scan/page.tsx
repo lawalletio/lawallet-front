@@ -1,7 +1,7 @@
 'use client'
 
 import Navbar from '@/components/Layout/Navbar'
-import { Flex, Heading } from '@/components/UI'
+import { Flex } from '@/components/UI'
 import QrScanner from '@/components/UI/Scanner/Scanner'
 import { useTranslation } from '@/hooks/useTranslations'
 import { detectTransferType, removeLightningStandard } from '@/lib/utils'

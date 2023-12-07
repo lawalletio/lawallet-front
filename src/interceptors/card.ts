@@ -1,5 +1,8 @@
 import { LAWALLET_ENDPOINT } from '@/constants/config'
+import { buildCardConfigEvent } from '@/lib/events'
+import { CardConfigPayload, CardDataPayload } from '@/types/card'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
+import { broadcastEvent } from './publish'
 
 export const requestCardActivation = async (
   event: NostrEvent
@@ -31,10 +34,15 @@ export const cardResetCaim = async (
     })
 }
 
+export type CardRequestResponse =
+  | CardConfigPayload
+  | CardDataPayload
+  | Record<'error', string>
+
 export const cardInfoRequest = async (
   type: string,
   event: NostrEvent
-): Promise<any> => {
+): Promise<CardRequestResponse> => {
   return fetch(`${LAWALLET_ENDPOINT}/card/${type}/request`, {
     method: 'POST',
     headers: {
@@ -42,9 +50,20 @@ export const cardInfoRequest = async (
     },
     body: JSON.stringify(event)
   })
-    .then(res => {
-      console.log(res)
-      return res.json()
+    .then(res => res.json())
+    .catch(err => {
+      console.log(err)
+      return { error: 'UNEXPECTED_ERROR' }
+    })
+}
+
+export const buildAndBroadcastCardConfig = (
+  config: CardConfigPayload,
+  privateKey: string
+) => {
+  buildCardConfigEvent(config, privateKey)
+    .then(configEvent => {
+      return broadcastEvent(configEvent)
     })
     .catch(err => {
       console.log(err)

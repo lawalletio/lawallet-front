@@ -142,5 +142,6 @@
   "MESSAGE": "Message",
   "OPTIONAL": "Optional",
   "ERROR_ON_COMMENT": "You cannot put this symbol in the comment.",
-  "COMMENT_MAX_LENGTH": "You can write a maximum of {{ chars }} characters"
+  "COMMENT_MAX_LENGTH": "You can write a maximum of {{ chars }} characters",
+  "NO_HAVE_CARDS": "You do not have any cards associated with your account yet"
 }

@@ -3,9 +3,7 @@ import keys from '@/constants/keys'
 import { NDKContext } from '@/context/NDKContext'
 import {
   TransferInformation,
-  broadcastTransaction,
   defaultTransfer,
-  isInternalInvoice,
   requestInvoice
 } from '@/interceptors/transaction'
 import {
@@ -21,7 +19,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { getPublicKey, nip19 } from 'nostr-tools'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
-import { createHash } from 'crypto'
+import { broadcastEvent } from '@/interceptors/publish'
 
 export interface TransferContextType {
   loading: boolean
@@ -130,7 +128,7 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
 
   const publishTransfer = (event: NostrEvent) => {
     setStartEvent(event)
-    broadcastTransaction(event).then(published => {
+    broadcastEvent(event).then(published => {
       if (!published) router.push('/transfer/error')
     })
   }
@@ -157,32 +155,15 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
         )
       : transferInfo.data
 
-    const invoiceHash: string = createHash('sha256')
-      .update(bolt11)
-      .digest('hex')
+    const eventTags: NDKTag[] = [['bolt11', bolt11]]
+    const txEvent: NostrEvent = await buildTxStartEvent(
+      tokenName,
+      transferInfo,
+      eventTags,
+      privateKey
+    )
 
-    const internalInvoice = await isInternalInvoice(invoiceHash)
-
-    if (internalInvoice) {
-      execInternalTransfer(privateKey, {
-        data: transferInfo.data,
-        amount: transferInfo.amount,
-        comment: internalInvoice.comment,
-        receiverPubkey: internalInvoice.pubkey,
-        type: TransferTypes.INTERNAL,
-        walletService: null
-      })
-    } else {
-      const eventTags: NDKTag[] = [['bolt11', bolt11]]
-      const txEvent: NostrEvent = await buildTxStartEvent(
-        tokenName,
-        transferInfo,
-        eventTags,
-        privateKey
-      )
-
-      publishTransfer(txEvent)
-    }
+    publishTransfer(txEvent)
   }
 
   const executeTransfer = (privateKey: string) => {

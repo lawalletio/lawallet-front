@@ -1,7 +1,6 @@
 'use client'
 
 import Navbar from '@/components/Layout/Navbar'
-import { Flex, Heading } from '@/components/UI'
 import { useTranslation } from '@/hooks/useTranslations'
 import LightningDeposit from './components/LightningDeposit'
 
