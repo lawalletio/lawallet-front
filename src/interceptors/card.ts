@@ -14,7 +14,7 @@ export const requestCardActivation = async (
     },
     body: JSON.stringify(event)
   })
-    .then(res => res.status >= 200 || res.status <= 204)
+    .then(res => res.status >= 200 && res.status < 300)
     .catch(() => false)
 }
 
