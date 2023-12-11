@@ -1,7 +1,5 @@
 'use client'
 
-import { fontPrimary } from '@/styles/fonts'
-
 import { HeadingBox, HeadingCustom } from './style'
 import { ReactNode } from 'react'
 
@@ -16,7 +14,7 @@ export default function Heading(props: HeadingProps) {
   const { children, as = 'h1', align = 'left', color } = props
 
   return (
-    <HeadingBox className={fontPrimary.className}>
+    <HeadingBox>
       <HeadingCustom as={as} $align={align} $color={color}>
         {children}
       </HeadingCustom>

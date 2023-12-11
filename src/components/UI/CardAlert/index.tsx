@@ -7,7 +7,7 @@ import { CardAlertiPhone } from './style'
 import { ReactNode } from 'react'
 import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
-export default function Component({
+export default function CardAlert({
   title,
   description,
   isHome = true

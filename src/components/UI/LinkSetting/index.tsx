@@ -4,7 +4,7 @@ import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import Icon from '../Icon'
 
 import theme from '@/styles/theme'
-import { LinkSetting } from './style'
+import { LinkSetting as Default } from './style'
 import { ReactNode } from 'react'
 
 interface ComponentProps {
@@ -13,17 +13,17 @@ interface ComponentProps {
   target?: '_self' | '_blank'
 }
 
-export default function Component(props: ComponentProps) {
+export default function LinkSetting(props: ComponentProps) {
   const { children, href, target = '_self' } = props
 
   return (
-    <LinkSetting>
+    <Default>
       <Link href={href} target={target}>
         {children}
         <Icon size="small" color={theme.colors.gray40}>
           <CaretRightIcon />
         </Icon>
       </Link>
-    </LinkSetting>
+    </Default>
   )
 }

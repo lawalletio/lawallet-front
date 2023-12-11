@@ -12,7 +12,7 @@ interface InputWithLabelProps {
   onChange: (e: any) => void
 }
 
-export default function Component(props: InputWithLabelProps) {
+export default function InputWithLabel(props: InputWithLabelProps) {
   const { label, name } = props
 
   return (

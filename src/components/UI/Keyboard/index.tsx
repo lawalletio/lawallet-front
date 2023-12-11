@@ -9,7 +9,7 @@ type KeyboardProps = {
   numpadData: IUseNumpad
 }
 
-export default function Component({ numpadData }: KeyboardProps) {
+export default function Keyboard({ numpadData }: KeyboardProps) {
   const { handleNumpad, intAmount, resetAmount, concatNumber, deleteNumber } =
     numpadData
 

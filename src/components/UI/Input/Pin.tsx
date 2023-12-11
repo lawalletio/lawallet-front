@@ -2,21 +2,21 @@
 
 import VerificationInput from 'react-verification-input'
 
-import { Pin } from './style'
+import { Pin as Default } from './style'
 
 interface InputProps {
   length: number
   value: string
   onChange: (text: string) => void
   onComplete?: (text: string) => void
-  autoFocus: boolean
+  autoFocus?: boolean
 }
 
-export default function Component(props: InputProps) {
-  const { length, value, onChange, onComplete, autoFocus } = props
+export default function Pin(props: InputProps) {
+  const { length = 4, value, onChange, onComplete, autoFocus } = props
 
   return (
-    <Pin>
+    <Default>
       <VerificationInput
         validChars={'0-9'}
         onComplete={onComplete}
@@ -25,6 +25,6 @@ export default function Component(props: InputProps) {
         autoFocus={autoFocus}
         value={value}
       />
-    </Pin>
+    </Default>
   )
 }
