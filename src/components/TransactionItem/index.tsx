@@ -24,6 +24,7 @@ import { getUsername } from '@/interceptors/identity'
 import { WALLET_DOMAIN } from '@/constants/config'
 import { BtnLoader } from '../Loader/Loader'
 import { getMultipleTags } from '@/lib/events'
+import { unescapingText } from '@/lib/utils'
 
 interface ComponentProps {
   transaction: Transaction
@@ -203,7 +204,7 @@ export default function Component({ transaction }: ComponentProps) {
                   <Text size="small" color={theme.colors.gray50}>
                     {t('MESSAGE')}
                   </Text>
-                  <Text>{transaction.memo}</Text>
+                  <Text>{unescapingText(transaction.memo)}</Text>
                 </Flex>
               </li>
             ) : null}

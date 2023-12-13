@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
+import { useRouter } from 'next/navigation'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -10,28 +10,26 @@ import {
   Divider,
   Feedback,
   Flex,
-  Heading,
+  Icon,
   Input,
   InputGroup,
   InputGroupRight,
   LinkButton,
-  Text,
-  Icon
+  Text
 } from '@/components/UI'
 
+import { WALLET_DOMAIN } from '@/constants/config'
+import { LaWalletContext } from '@/context/LaWalletContext'
+import { useTransferContext } from '@/context/TransferContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useTranslation } from '@/hooks/useTranslations'
-import { useContext, useEffect, useState } from 'react'
-import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { TransactionDirection, TransactionType } from '@/types/transaction'
-import RecipientElement from './components/RecipientElement'
-import theme from '@/styles/theme'
 import { getUsername } from '@/interceptors/identity'
-import { WALLET_DOMAIN } from '@/constants/config'
 import { getMultipleTags } from '@/lib/events'
+import theme from '@/styles/theme'
+import { TransactionDirection, TransactionType } from '@/types/transaction'
+import { useContext, useEffect, useState } from 'react'
+import RecipientElement from './components/RecipientElement'
 
 export default function Page() {
   const { t } = useTranslation()

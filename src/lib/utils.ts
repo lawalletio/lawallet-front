@@ -219,3 +219,22 @@ export function parseContent(content: string) {
     return {}
   }
 }
+
+export function escapingBrackets(text: string) {
+  return text.replace(/\[/g, '\\[\\').replace(/]/g, '\\]\\')
+}
+
+export function unescapingText(text: string) {
+  return text.replace(/\\/g, '')
+}
+
+export function extractEscappedMessage(text: string) {
+  const regex = /(?<!\\)\[([^\]]+)]/g
+  const fragments = text.split(regex)
+
+  const escappedMessage = fragments
+    .filter((_, index) => index % 2 === 0)
+    .join('')
+
+  return escappedMessage
+}

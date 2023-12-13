@@ -32,7 +32,6 @@ export const useSubscription = ({
 
   const startSubscription = useCallback(() => {
     if (ndk && enabled && !subscription) {
-      console.log('sub started')
       const filtersToUse = customSince
         ? filters.map(filter => {
             return { ...filter, since: customSince }
@@ -59,7 +58,6 @@ export const useSubscription = ({
 
   useEffect(() => {
     if (enabled && !subscription) {
-      console.log('sub initialize')
       if (events.length && !customSince) setEvents([])
       startSubscription()
     }
@@ -68,7 +66,6 @@ export const useSubscription = ({
   }, [enabled, subscription])
 
   const removeSubscription = () => {
-    console.log('sub removed')
     setSubscription(undefined)
     setCustomSince(nowInSeconds())
   }

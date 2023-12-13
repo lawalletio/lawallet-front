@@ -11,7 +11,11 @@ import {
   buildTxStartEvent,
   getTag
 } from '@/lib/events'
-import { addQueryParameter, formatTransferData } from '@/lib/utils'
+import {
+  addQueryParameter,
+  escapingBrackets,
+  formatTransferData
+} from '@/lib/utils'
 import { TransferTypes } from '@/types/transaction'
 import { NDKEvent, NDKKind, NDKTag, NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -150,7 +154,7 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
       ? await requestInvoice(
           `${transferInfo.walletService?.callback}?amount=${
             transferInfo.amount * 1000
-          }&comment=${transferInfo.comment}`
+          }&comment=${escapingBrackets(transferInfo.comment)}`
         )
       : transferInfo.data
 

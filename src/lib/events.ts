@@ -15,7 +15,7 @@ import {
   getSignature,
   nip26
 } from 'nostr-tools'
-import { nowInSeconds } from './utils'
+import { escapingBrackets, nowInSeconds } from './utils'
 import { buildMultiNip04Event } from './nip04'
 import { TransferInformation } from '@/interceptors/transaction'
 
@@ -156,7 +156,7 @@ export const buildTxStartEvent = async (
 
   internalEvent.content = JSON.stringify({
     tokens: { [tokenName]: (transferInfo.amount * 1000).toString() },
-    memo: transferInfo.comment
+    memo: escapingBrackets(transferInfo.comment)
   })
 
   internalEvent.tags = [
