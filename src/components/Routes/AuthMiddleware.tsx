@@ -44,7 +44,9 @@ const AuthMiddleware = ({ children }: { children: ReactNode }) => {
           break
 
         case userLogged && unloggedRoutes.includes(cleanedPath):
-          card ? router.push(`/card?c=${card}`) : router.push('/dashboard')
+          card
+            ? router.push(`/settings/cards?c=${card}`)
+            : router.push('/dashboard')
           break
       }
     }

@@ -113,7 +113,7 @@
   "ERROR_MADE_BACKUP": "You must backup your account before logging out",
   "INVALID_EMAIL": "The entered email is not valid",
   "NEW_CARD": "New card",
-  "DETECT_NEW_CARD": "A new card was detected, are you sure you want to add it to your list?",
+  "DETECT_NEW_CARD": "A new card was detected, are you sure you want to associate it with your account?",
   "ACTIVATE_CARD": "Activate card",
   "ACTIVATE_SUCCESS": "The card was activated and associated with your account",
   "ACTIVATE_ERROR": "An error occurred while activating the card",
