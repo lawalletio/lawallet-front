@@ -89,7 +89,7 @@ export const useActivity = ({
   const { events: walletEvents } = useSubscription({
     filters: [
       {
-        authors: [pubkey, LaWalletPubkeys.cardPubkey],
+        authors: [pubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#t': [LaWalletTags.INTERNAL_TRANSACTION_START],
         since: activityInfo.lastCached,
@@ -295,6 +295,7 @@ export const useActivity = ({
     if (pubkey.length) {
       const storagedData: string =
         localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
+
       if (!storagedData) {
         setActivityInfo({
           ...activityInfo,
@@ -339,6 +340,7 @@ export const useActivity = ({
 
   useEffect(() => {
     if (walletEvents.length) {
+      console.log(walletEvents.length)
       if (intervalGenerateTransactions)
         clearTimeout(intervalGenerateTransactions)
 
