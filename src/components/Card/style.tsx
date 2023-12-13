@@ -6,10 +6,16 @@ interface CardProp {
 }
 
 export const Card = styled.div<CardProp>`
+  overflow: hidden;
+  opacity: ${props => (props.$isActive ? 1 : 0.65)};
+
   width: 280px;
   height: 176px;
 
   border-radius: 12px;
   background-color: ${props =>
     props.$isActive ? theme.colors.primary : theme.colors.gray25};
+
+  mix-blend-mode: ${props => (props.$isActive ? 'normal' : 'luminosity')};
+  transition-duration: 0.4s;
 `
