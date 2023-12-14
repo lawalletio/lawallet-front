@@ -1,23 +1,24 @@
 import Image from 'next/image'
 
 import { Card } from './style'
+import { Design } from '@/types/card'
 
 interface ComponentProps {
-  card: any
+  data: { design: Design }
   active: boolean
 }
 
 export default function Component(props: ComponentProps) {
-  const { card, active } = props
+  const { data, active } = props
 
   return (
     <Card $isActive={active}>
-      {/* <Image
-        src={`/images/${card.image}.png`}
-        alt={card.name}
+      <Image
+        src={`/cards/${data.design.uuid}.png`}
+        alt={data.design.uuid}
         width={280}
         height={176}
-      /> */}
+      />
     </Card>
   )
 }

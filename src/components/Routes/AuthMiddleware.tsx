@@ -1,12 +1,7 @@
-import Logo from '@/components/Logo'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode, useContext, useEffect } from 'react'
-import { Loader } from '../Loader/Loader'
-import { Divider, Flex, Text } from '../UI'
-import Container from '../Layout/Container'
-import theme from '@/styles/theme'
-import { LAWALLET_VERSION } from '@/constants/constants'
+import { ReactNode, useContext, useLayoutEffect } from 'react'
+import SpinnerView from './SpinnerView'
 
 const loggedRoutes: string[] = [
   'dashboard',
@@ -26,13 +21,13 @@ const loggedRoutes: string[] = [
 
 const unloggedRoutes: string[] = ['', 'start', 'login', 'reset']
 
-const ProtectRoutes = ({ children }: { children: ReactNode }) => {
+const AuthMiddleware = ({ children }: { children: ReactNode }) => {
   const { identity, hydrated } = useContext(LaWalletContext)
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hydrated) {
       const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
       const userLogged: boolean = Boolean(identity.hexpub.length)
@@ -49,36 +44,15 @@ const ProtectRoutes = ({ children }: { children: ReactNode }) => {
           break
 
         case userLogged && unloggedRoutes.includes(cleanedPath):
-          card ? router.push(`/card?c=${card}`) : router.push('/dashboard')
+          card
+            ? router.push(`/settings/cards?c=${card}`)
+            : router.push('/dashboard')
           break
       }
     }
   }, [pathname, identity, hydrated])
 
-  if (!hydrated)
-    return (
-      <Container size="medium">
-        <Divider y={16} />
-        <Flex
-          direction="column"
-          align="center"
-          justify="center"
-          gap={8}
-          flex={1}
-        >
-          <Logo />
-          <Text align="center" color={theme.colors.gray50}>
-            {LAWALLET_VERSION}
-          </Text>
-        </Flex>
-
-        <Flex flex={1} justify="center" align="center">
-          <Loader />
-        </Flex>
-      </Container>
-    )
-
-  return children
+  return !hydrated ? <SpinnerView /> : children
 }
 
-export default ProtectRoutes
+export default AuthMiddleware

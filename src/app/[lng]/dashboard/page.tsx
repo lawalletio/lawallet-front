@@ -20,13 +20,13 @@ import TokenList from '@/components/TokenList'
 import TransactionItem from '@/components/TransactionItem'
 import {
   Avatar,
+  BannerAlert,
   Button,
   Divider,
   Flex,
   Heading,
   Icon,
-  Text,
-  BannerAlert
+  Text
 } from '@/components/UI'
 
 import { LaWalletContext } from '@/context/LaWalletContext'
@@ -35,7 +35,7 @@ import theme from '@/styles/theme'
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
 import { useTranslation } from '@/hooks/useTranslations'
-import { formatAddress, formatToPreference } from '@/lib/formatter'
+import { formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations

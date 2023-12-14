@@ -14,6 +14,9 @@ export const Navbar = styled.div<NavbarProps>`
 `
 
 export const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+
   background-color: transparent;
   border: none;
 
@@ -21,3 +24,11 @@ export const BackButton = styled.button`
 
   cursor: pointer;
 `
+
+const BoxIcons = styled.div`
+  width: 70px;
+`
+
+export const Left = styled(BoxIcons)``
+
+export const Right = styled(BoxIcons)``

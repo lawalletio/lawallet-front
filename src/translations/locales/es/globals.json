@@ -112,7 +112,8 @@
   "CONFIRM_LOGOUT": "¿Estás seguro que quieres cerrar sesión?",
   "ERROR_MADE_BACKUP": "Debes realizar un respaldo de tu cuenta antes de cerrar sesión",
   "INVALID_EMAIL": "El correo ingresado no es válido",
-  "DETECT_NEW_CARD": "Se detectó una nueva tarjeta, presiona el botón a continuación si quieres asociarla a tu cuenta.",
+  "NEW_CARD": "Nueva tarjeta",
+  "DETECT_NEW_CARD": "Se detectó una nueva tarjeta ¿estás seguro de querer asociarla en tu cuenta?",
   "ACTIVATE_CARD": "Activar tarjeta",
   "ACTIVATE_SUCCESS": "La tarjeta fue activada y asociada a tu cuenta",
   "ACTIVATE_ERROR": "Ocurrió un error al activar la tarjeta",
@@ -138,5 +139,13 @@
   "ACCOUNT": "Cuenta",
   "MY_CARDS": "Mis tarjetas",
   "ANONYMOUS": "Anonimo",
-  "PRESS_TO_COPY": "Presioname para copiar!"
+  "PRESS_TO_COPY": "Presioname para copiar!",
+  "MESSAGE": "Mensaje",
+  "OPTIONAL": "Opcional",
+  "ERROR_ON_COMMENT": "No puedes poner ese simbolo en el comentario.",
+  "COMMENT_MAX_LENGHT": "Puedes escribir un máximo de {{ chars }} caracteres",
+  "NO_HAVE_CARDS": "Todavía no tienes ninguna tarjeta asociada a tu cuenta",
+  "URL_SCANNED_TITLE": "Enlace escaneado",
+  "URL_SCANNED_DESC": "Escaneaste el enlace {{ url }} ¿Deseas abrirlo en el navegador?",
+  "OPEN_URL": "Abrir enlace"
 }

@@ -4,91 +4,49 @@ import { useTranslation } from '@/hooks/useTranslations'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import { Divider, Flex, Heading } from '@/components/UI'
+import { MainLoader } from '@/components/Loader/Loader'
+import { Divider, Flex, Text } from '@/components/UI'
+import useCardConfig from '@/hooks/useCardConfig'
 import DebitCard from './components/DebitCard'
-
-const ListCards = [
-  {
-    image: 'LaBitconf',
-    name: 'LaBitconf',
-    description: '',
-    active: true
-  },
-  {
-    image: 'Revolucion',
-    name: 'Revolucion',
-    description: '',
-    active: false
-  },
-  {
-    image: 'LunarPunk',
-    name: 'LunarPunk',
-    description: '',
-    active: false
-  },
-  {
-    image: 'HoneyBadger',
-    name: 'HoneyBadger',
-    description: '',
-    active: true
-  },
-  {
-    image: 'SolarPunk',
-    name: 'SolarPunk',
-    description: '',
-    active: true
-  },
-  {
-    image: 'ToTheMoon',
-    name: 'ToTheMoon',
-    description: '',
-    active: false
-  },
-  {
-    image: 'HalvingIsComing',
-    name: 'HalvingIsComing',
-    description: '',
-    active: false
-  },
-  {
-    image: 'LightningNetwork',
-    name: 'LightningNetwork',
-    description: '',
-    active: false
-  }
-]
+import AddNewCardModal from './components/AddCard'
 
 export default function Page() {
+  const { cards, toggleCardStatus } = useCardConfig()
   const { t } = useTranslation()
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('MY_CARDS')}</Heading>
-        </Flex>
-      </Navbar>
-
-      {/* <Container size="small">
-        <Divider y={16} />
-        <Flex direction="column">
-          <Text isBold>LaBitconf</Text>
-          <Text size="small">Descripcion.</Text>
-        </Flex>
-        <Divider y={16} />
-      </Container> */}
+      <Navbar showBackPage={true} title={t('MY_CARDS')} />
 
       <Flex>
         <Container size="small">
           <Divider y={16} />
-          <Flex direction="column" align="center" gap={16}>
-            {ListCards.map((card, index) => (
-              <DebitCard card={card} active={card.active} key={index} />
-            ))}
-          </Flex>
+          {cards.loading ? (
+            <MainLoader />
+          ) : Object.keys(cards.data).length ? (
+            <Flex direction="column" align="center" gap={16}>
+              {Object.entries(cards.data).map(([key, value]) => {
+                return (
+                  <DebitCard
+                    card={{
+                      uuid: key,
+                      data: value,
+                      config: cards.config.cards?.[key]
+                    }}
+                    toggleCardStatus={toggleCardStatus}
+                    key={key}
+                  />
+                )
+              })}
+            </Flex>
+          ) : (
+            <Text>{t('NO_HAVE_CARDS')}</Text>
+          )}
           <Divider y={16} />
         </Container>
       </Flex>
+
+      <AddNewCardModal />
     </>
   )
 }

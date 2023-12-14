@@ -1,5 +1,4 @@
-import { RelaysList } from '@/constants/config'
-import keys from '@/constants/keys'
+import { LaWalletPubkeys, RelaysList } from '@/constants/config'
 import { CardConfigPayload, ConfigTypes } from '@/types/card'
 import { UserIdentity } from '@/types/identity'
 import {
@@ -16,13 +15,27 @@ import {
   getSignature,
   nip26
 } from 'nostr-tools'
-import { nowInSeconds } from './utils'
+import { escapingBrackets, nowInSeconds } from './utils'
 import { buildMultiNip04Event } from './nip04'
+import { TransferInformation } from '@/interceptors/transaction'
 
 export enum LaWalletKinds {
   REGULAR = 1112,
   EPHEMERAL = 21111,
   PARAMETRIZED_REPLACEABLE = 31111
+}
+
+export enum LaWalletTags {
+  INTERNAL_TRANSACTION_START = 'internal-transaction-start',
+  INTERNAL_TRANSACTION_OK = 'internal-transaction-ok',
+  INTERNAL_TRANSACTION_ERROR = 'internal-transaction-error',
+  INBOUND_TRANSACTION_START = 'inbound-transaction-start',
+  INBOUND_TRANSACTION_OK = 'inbound-transaction-ok',
+  INBOUND_TRANSACTION_ERROR = 'inbound-transaction-error',
+  OUTBOUND_TRANSACTION_OK = 'outbound-transaction-ok',
+  OUTBOUND_TRANSACTION_ERROR = 'outbound-transaction-error',
+  CREATE_IDENTITY = 'create-identity',
+  CARD_ACTIVATION_REQUEST = 'card-activation-request'
 }
 
 export type GenerateIdentityReturns = {
@@ -59,7 +72,7 @@ export const buildIdentityEvent = async (
   })
 
   event.tags = [
-    ['t', 'create-identity'],
+    ['t', LaWalletTags.CREATE_IDENTITY],
     ['name', identity.username],
     ['nonce', nonce]
   ]
@@ -76,7 +89,7 @@ export const buildCardActivationEvent = async (
   const userPubkey: string = getPublicKey(privateKey)
 
   const delegation = nip26.createDelegation(privateKey, {
-    pubkey: keys.cardPubkey,
+    pubkey: LaWalletPubkeys.cardPubkey,
     kind: LaWalletKinds.REGULAR,
     since: Math.floor(Date.now() / 1000) - 36000,
     until: Math.floor(Date.now() / 1000) + 3600 * 24 * 30 * 12
@@ -95,8 +108,8 @@ export const buildCardActivationEvent = async (
   })
 
   event.tags = [
-    ['p', keys.cardPubkey],
-    ['t', 'card-activation-request']
+    ['p', LaWalletPubkeys.cardPubkey],
+    ['t', LaWalletTags.CARD_ACTIVATION_REQUEST]
   ]
 
   await event.sign(signer)
@@ -129,26 +142,27 @@ export const buildZapRequestEvent = async (
 }
 
 export const buildTxStartEvent = async (
-  amount: number,
-  receiver: string,
-  signer: NDKPrivateKeySigner,
-  tags: NDKTag[]
+  tokenName: string,
+  transferInfo: TransferInformation,
+  tags: NDKTag[],
+  privateKey: string
 ): Promise<NostrEvent> => {
-  const userPubkey = getPublicKey(signer.privateKey!)
+  const signer = new NDKPrivateKeySigner(privateKey)
+  const userPubkey = getPublicKey(privateKey)
 
   const internalEvent: NDKEvent = new NDKEvent()
   internalEvent.pubkey = userPubkey
   internalEvent.kind = LaWalletKinds.REGULAR
 
   internalEvent.content = JSON.stringify({
-    tokens: { BTC: amount.toString() },
-    memo: 'hola'
+    tokens: { [tokenName]: (transferInfo.amount * 1000).toString() },
+    memo: escapingBrackets(transferInfo.comment)
   })
 
   internalEvent.tags = [
-    ['t', 'internal-transaction-start'],
-    ['p', keys.ledgerPubkey],
-    ['p', receiver]
+    ['t', LaWalletTags.INTERNAL_TRANSACTION_START],
+    ['p', LaWalletPubkeys.ledgerPubkey],
+    ['p', transferInfo.receiverPubkey]
   ]
 
   if (tags.length) internalEvent.tags = [...internalEvent.tags, ...tags]
@@ -165,7 +179,7 @@ export const buildCardInfoRequest = async (
   const userPubkey: string = getPublicKey(privateKey)
 
   const event: NostrEvent = {
-    content: '{}',
+    content: '',
     pubkey: userPubkey,
     created_at: nowInSeconds(),
     kind: LaWalletKinds.PARAMETRIZED_REPLACEABLE,
@@ -179,7 +193,7 @@ export const buildCardInfoRequest = async (
 }
 
 export const buildCardConfigEvent = async (
-  cardConfig: Partial<CardConfigPayload>,
+  cardConfig: CardConfigPayload,
   privateKey: string
 ): Promise<NostrEvent> => {
   const userPubkey: string = getPublicKey(privateKey)
@@ -187,7 +201,7 @@ export const buildCardConfigEvent = async (
     JSON.stringify(cardConfig),
     privateKey,
     userPubkey,
-    [keys.cardPubkey, userPubkey]
+    [LaWalletPubkeys.cardPubkey, userPubkey]
   )
 
   event.kind = LaWalletKinds.PARAMETRIZED_REPLACEABLE

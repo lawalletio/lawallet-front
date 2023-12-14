@@ -1,3 +1,4 @@
+'use client'
 import {
   Divider,
   Flex,
@@ -8,16 +9,16 @@ import {
 } from '@/components/UI'
 import Container from '@/components/Layout/Container'
 import Logo from '@/components/Logo'
-import HomeDescription from '@/components/HomeDescription'
+import HomeDescription from '@/app/[lng]/start/components/HomeDescription'
 
 import theme from '@/styles/theme'
 import { useEffect, useState } from 'react'
 import { checkIOS } from '@/lib/utils'
 import { useTranslation } from '@/hooks/useTranslations'
 import { useMediaQuery } from '@uidotdev/usehooks'
-import { Loader } from '../Loader/Loader'
+import { Loader } from '@/components/Loader/Loader'
 import { LAWALLET_VERSION } from '@/constants/constants'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 const StartView = ({ onClick, verifyingNonce, isValidNonce }) => {
   const { t } = useTranslation()

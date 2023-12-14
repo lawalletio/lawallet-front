@@ -7,7 +7,6 @@ import {
   Divider,
   Feedback,
   Flex,
-  Heading,
   LinkSetting,
   Text
 } from '@/components/UI'
@@ -49,19 +48,15 @@ export default function Page() {
     const confirmation: boolean = confirm(t('CONFIRM_LOGOUT'))
 
     if (confirmation) {
-      setUserIdentity(defaultIdentity)
       localStorage.removeItem(STORAGE_IDENTITY_KEY)
+      setUserIdentity(defaultIdentity)
       router.push('/login')
     }
   }
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('SETTINGS')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('SETTINGS')} />
 
       <Container size="small">
         <Divider y={16} />

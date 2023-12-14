@@ -24,6 +24,7 @@ import { getUsername } from '@/interceptors/identity'
 import { WALLET_DOMAIN } from '@/constants/config'
 import { BtnLoader } from '../Loader/Loader'
 import { getMultipleTags } from '@/lib/events'
+import { unescapingText } from '@/lib/utils'
 
 interface ComponentProps {
   transaction: Transaction
@@ -110,16 +111,16 @@ export default function Component({ transaction }: ComponentProps) {
                 {transaction.status === TransactionStatus.REVERTED
                   ? t('TX_REVERTED')
                   : transaction.status === TransactionStatus.ERROR
-                  ? t('FAILED_TRANSACTION')
-                  : transaction.status === TransactionStatus.PENDING
-                  ? t(
-                      `PENDING_${
-                        !isFromMe ? 'INBOUND' : 'OUTBOUND'
-                      }_TRANSACTION`
-                    )
-                  : isFromMe
-                  ? listTypes[type].label
-                  : t('YOU_RECEIVE')}
+                    ? t('FAILED_TRANSACTION')
+                    : transaction.status === TransactionStatus.PENDING
+                      ? t(
+                          `PENDING_${
+                            !isFromMe ? 'INBOUND' : 'OUTBOUND'
+                          }_TRANSACTION`
+                        )
+                      : isFromMe
+                        ? listTypes[type].label
+                        : t('YOU_RECEIVE')}
               </Text>
             </Flex>
             <Flex direction="column" align="end">
@@ -128,13 +129,13 @@ export default function Component({ transaction }: ComponentProps) {
                   hideBalance
                     ? theme.colors.text
                     : transaction.status === TransactionStatus.ERROR ||
-                      transaction.status === TransactionStatus.REVERTED
-                    ? theme.colors.error
-                    : transaction.status === TransactionStatus.PENDING
-                    ? theme.colors.warning
-                    : isFromMe
-                    ? theme.colors.text
-                    : theme.colors.success
+                        transaction.status === TransactionStatus.REVERTED
+                      ? theme.colors.error
+                      : transaction.status === TransactionStatus.PENDING
+                        ? theme.colors.warning
+                        : isFromMe
+                          ? theme.colors.text
+                          : theme.colors.success
                 }
               >
                 {hideBalance ? (
@@ -196,6 +197,18 @@ export default function Component({ transaction }: ComponentProps) {
                 </Flex>
               </Flex>
             </li>
+
+            {transaction.memo ? (
+              <li>
+                <Flex align="center" justify="space-between">
+                  <Text size="small" color={theme.colors.gray50}>
+                    {t('MESSAGE')}
+                  </Text>
+                  <Text>{unescapingText(transaction.memo)}</Text>
+                </Flex>
+              </li>
+            ) : null}
+
             <li>
               <Flex align="center" justify="space-between">
                 <Text size="small" color={theme.colors.gray50}>

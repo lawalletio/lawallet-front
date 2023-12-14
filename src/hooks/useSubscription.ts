@@ -1,4 +1,5 @@
 import { NDKContext } from '@/context/NDKContext'
+import { nowInSeconds } from '@/lib/utils'
 import {
   NDKEvent,
   NDKFilter,
@@ -27,10 +28,17 @@ export const useSubscription = ({
 
   const [subscription, setSubscription] = useState<NDKSubscription>()
   const [events, setEvents] = useState<NDKEvent[]>([])
+  const [customSince, setCustomSince] = useState<number>(0)
 
   const startSubscription = useCallback(() => {
     if (ndk && enabled && !subscription) {
-      const newSubscription = ndk.subscribe(filters, options)
+      const filtersToUse = customSince
+        ? filters.map(filter => {
+            return { ...filter, since: customSince }
+          })
+        : filters
+
+      const newSubscription = ndk.subscribe(filtersToUse, options)
       newSubscription.on('event', async (event: NDKEvent) =>
         setEvents(prev => [...prev, event])
       )
@@ -50,21 +58,24 @@ export const useSubscription = ({
 
   useEffect(() => {
     if (enabled && !subscription) {
-      if (events.length) setEvents([])
+      if (events.length && !customSince) setEvents([])
       startSubscription()
-
-      return () => stopSubscription()
     }
+
+    if (!enabled) stopSubscription()
   }, [enabled, subscription])
 
-  const removeSubscription = () => setSubscription(undefined)
+  const removeSubscription = () => {
+    setSubscription(undefined)
+    setCustomSince(nowInSeconds())
+  }
 
   useEffect(() => {
-    ndk.pool.on('relay:connect', startSubscription)
+    // ndk.pool.on('relay:connect', startSubscription)
     ndk.pool.on('relay:disconnect', removeSubscription)
 
     return () => {
-      ndk.pool.removeListener('relay:connect', startSubscription)
+      // ndk.pool.removeListener('relay:connect', startSubscription)
       ndk.pool.removeListener('relay:disconnect', removeSubscription)
       ndk.pool.removeAllListeners()
     }

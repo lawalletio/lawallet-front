@@ -112,7 +112,8 @@
   "CONFIRM_LOGOUT": "Are you sure you want to log out?",
   "ERROR_MADE_BACKUP": "You must backup your account before logging out",
   "INVALID_EMAIL": "The entered email is not valid",
-  "DETECT_NEW_CARD": "A new card was detected. Press the button below if you want to associate it with your account.",
+  "NEW_CARD": "New card",
+  "DETECT_NEW_CARD": "A new card was detected, are you sure you want to associate it with your account?",
   "ACTIVATE_CARD": "Activate card",
   "ACTIVATE_SUCCESS": "The card was activated and associated with your account",
   "ACTIVATE_ERROR": "An error occurred while activating the card",
@@ -138,5 +139,13 @@
   "ACCOUNT": "Account",
   "MY_CARDS": "My cards",
   "ANONYMOUS": "Anonymous",
-  "PRESS_TO_COPY": "Press me to copy!"
+  "PRESS_TO_COPY": "Press me to copy!",
+  "MESSAGE": "Message",
+  "OPTIONAL": "Optional",
+  "ERROR_ON_COMMENT": "You cannot put this symbol in the comment.",
+  "COMMENT_MAX_LENGTH": "You can write a maximum of {{ chars }} characters",
+  "NO_HAVE_CARDS": "You do not have any cards associated with your account yet",
+  "URL_SCANNED_TITLE": "Scanned link",
+  "URL_SCANNED_DESC": "You scanned the link {{ url }} do you want to open it in the browser?",
+  "OPEN_URL": "Open link"
 }

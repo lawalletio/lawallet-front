@@ -39,11 +39,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('BACKUP_ACCOUNT')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('BACKUP_ACCOUNT')} />
 
       {showRecovery ? (
         <>

@@ -1,12 +1,11 @@
-import { LAWALLET_ENDPOINT } from '@/constants/config'
-import keys from '@/constants/keys'
+import { LAWALLET_ENDPOINT, LaWalletPubkeys } from '@/constants/config'
 import { TransferTypes } from '@/types/transaction'
-import { NostrEvent } from '@nostr-dev-kit/ndk'
 
 interface LNServiceResponse {
   tag: string
   callback: string
   metadata: string
+  commentAllowed: number
   minSendable?: number
   maxSendable?: number
   k1?: string
@@ -17,16 +16,25 @@ interface LNServiceResponse {
 export interface TransferInformation {
   data: string
   amount: number
+  comment: string
   receiverPubkey: string
   walletService: LNServiceResponse | null
   type: TransferTypes | false
   expired?: boolean
 }
 
+export type CheckInvoiceReturns = {
+  handled: boolean
+  comment: string
+  zapRequest: string
+  pubkey: string
+}
+
 export const defaultTransfer: TransferInformation = {
   data: '',
   amount: 0,
-  receiverPubkey: keys.urlxPubkey,
+  comment: '',
+  receiverPubkey: LaWalletPubkeys.urlxPubkey,
   walletService: null,
   type: false
 }
@@ -43,6 +51,20 @@ export const getWalletService = (url: string): Promise<LNServiceResponse> =>
     })
     .catch(() => null)
 
+export const isInternalInvoice = (
+  invoiceHash: string
+): Promise<CheckInvoiceReturns | null> =>
+  fetch(`${LAWALLET_ENDPOINT}/invoice/${invoiceHash}`)
+    .then(res => {
+      if (res.status !== 200) return null
+      return res.json()
+    })
+    .then(invoiceResponse => {
+      if (!invoiceResponse) return null
+      return invoiceResponse
+    })
+    .catch(() => null)
+
 export const requestInvoice = (callback: string) =>
   fetch(callback)
     .then(res => res.json())
@@ -50,17 +72,3 @@ export const requestInvoice = (callback: string) =>
       invoiceInfo && invoiceInfo.pr ? invoiceInfo.pr.toLowerCase() : ''
     )
     .catch(() => '')
-
-export const broadcastTransaction = async (
-  event: NostrEvent
-): Promise<boolean> => {
-  return fetch(`${LAWALLET_ENDPOINT}/nostr/publish`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(event)
-  })
-    .then(res => res.status === 200 || res.status === 202)
-    .catch(() => false)
-}
