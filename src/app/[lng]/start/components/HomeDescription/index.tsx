@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { Flex, Heading, Text } from '@/components/UI'
 
 import theme from '@/styles/theme'

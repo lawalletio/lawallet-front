@@ -14,6 +14,7 @@ import { AvailableLanguages, defaultLocale } from '@/translations'
 import { GOOGLE_TAG_ID, RelaysList } from '@/constants/config'
 import Script from 'next/script'
 import { NDKProvider } from '@/context/NDKContext'
+import { TranslateProvider } from '@/context/TranslateContext'
 
 interface ProviderProps {
   children: ReactNode
@@ -71,17 +72,19 @@ const Providers = (props: ProviderProps) => {
       </head>
 
       <body>
-        <NDKProvider explicitRelayUrls={RelaysList}>
-          <StyledComponentsRegistry>
-            <GlobalStyles />
+        <TranslateProvider lng={params.lng}>
+          <NDKProvider explicitRelayUrls={RelaysList}>
+            <StyledComponentsRegistry>
+              <GlobalStyles />
 
-            <LaWalletProvider lng={params.lng}>
-              <AuthMiddleware>
-                <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </AuthMiddleware>
-            </LaWalletProvider>
-          </StyledComponentsRegistry>
-        </NDKProvider>
+              <LaWalletProvider>
+                <AuthMiddleware>
+                  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                </AuthMiddleware>
+              </LaWalletProvider>
+            </StyledComponentsRegistry>
+          </NDKProvider>
+        </TranslateProvider>
       </body>
     </html>
   )

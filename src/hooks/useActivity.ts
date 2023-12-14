@@ -340,7 +340,6 @@ export const useActivity = ({
 
   useEffect(() => {
     if (walletEvents.length) {
-      console.log(walletEvents.length)
       if (intervalGenerateTransactions)
         clearTimeout(intervalGenerateTransactions)
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'

@@ -10,7 +10,7 @@ import Button from '../Button'
 import Heading from '../Heading'
 
 import { Sheet, SheetContent } from './style'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   children: ReactNode

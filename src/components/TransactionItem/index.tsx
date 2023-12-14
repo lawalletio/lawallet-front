@@ -17,7 +17,7 @@ import {
 } from '@/types/transaction'
 import { useContext, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { dateFormatter, formatToPreference } from '@/lib/formatter'
 import { defaultCurrency } from '@/types/config'
 import { getUsername } from '@/interceptors/identity'
@@ -38,10 +38,9 @@ type LudInfoProps = {
 export default function Component({ transaction }: ComponentProps) {
   if (!transaction) return null
 
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const { status, type } = transaction
   const {
-    lng,
     userConfig: {
       props: { hideBalance, currency }
     },

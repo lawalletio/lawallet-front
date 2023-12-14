@@ -4,7 +4,7 @@ import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import { Divider, Flex, Heading, LinkButton, Text } from '@/components/UI'
 import { useTransferContext } from '@/context/TransferContext'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 import { useRouter } from 'next/navigation'
 

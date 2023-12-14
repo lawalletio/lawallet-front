@@ -2,7 +2,7 @@
 import { Button, Flex, Modal, Text } from '@/components/UI'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { AlertTypes } from '@/hooks/useAlerts'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { requestCardActivation } from '@/interceptors/card'
 import { buildCardActivationEvent } from '@/lib/events'
 import { NostrEvent } from '@nostr-dev-kit/ndk'

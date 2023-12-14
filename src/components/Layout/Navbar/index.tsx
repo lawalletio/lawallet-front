@@ -8,7 +8,7 @@ import Container from '../Container'
 
 import { Navbar, BackButton, Left, Right } from './style'
 import { ReactNode } from 'react'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   children?: ReactNode

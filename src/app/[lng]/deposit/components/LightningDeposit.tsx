@@ -14,7 +14,7 @@ import { copy } from '@/lib/share'
 
 import { useNumpad } from '@/hooks/useNumpad'
 import { useSubscription } from '@/hooks/useSubscription'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 import Container from '@/components/Layout/Container'
 import { BtnLoader } from '@/components/Loader/Loader'
@@ -55,10 +55,9 @@ type InvoiceProps = {
 type SheetTypes = 'amount' | 'qr' | 'finished'
 
 const LightningDeposit = () => {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const {
     identity,
-    lng,
     notifications,
     userConfig: {
       props: { currency }

@@ -20,7 +20,7 @@ import {
 import { WALLET_DOMAIN } from '@/constants/config'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { useCreateIdentity } from '@/hooks/useCreateIdentity'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { validateNonce } from '@/interceptors/identity'
 import { ChangeEvent, useEffect, useState } from 'react'
 

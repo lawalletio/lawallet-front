@@ -8,7 +8,6 @@ import useCurrencyConverter, {
 } from '@/hooks/useCurrencyConverter'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { getUsername } from '@/interceptors/identity'
-import { AvailableLanguages } from '@/translations'
 import { TokenBalance } from '@/types/balance'
 import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
@@ -17,7 +16,6 @@ import { getPublicKey } from 'nostr-tools'
 import { createContext, useEffect, useState } from 'react'
 
 interface LaWalletContextType {
-  lng: AvailableLanguages
   identity: UserIdentity
   setUserIdentity: (new_identity: UserIdentity) => Promise<void>
   balance: TokenBalance
@@ -30,13 +28,7 @@ interface LaWalletContextType {
 
 export const LaWalletContext = createContext({} as LaWalletContextType)
 
-export function LaWalletProvider({
-  children,
-  lng
-}: {
-  children: React.ReactNode
-  lng: AvailableLanguages
-}) {
+export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState<boolean>(false)
   const [identity, setIdentity] = useState<UserIdentity>(defaultIdentity)
 
@@ -127,7 +119,6 @@ export function LaWalletProvider({
   }, [sortedTransactions.length])
 
   const value = {
-    lng,
     identity,
     setUserIdentity,
     balance,

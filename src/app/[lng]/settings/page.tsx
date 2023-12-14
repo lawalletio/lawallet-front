@@ -17,7 +17,7 @@ import {
 } from '@/constants/constants'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 import theme from '@/styles/theme'
 import { defaultIdentity } from '@/types/identity'

@@ -1,7 +1,7 @@
 'use client'
 
 import Navbar from '@/components/Layout/Navbar'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import LightningDeposit from './components/LightningDeposit'
 
 export default function Page() {

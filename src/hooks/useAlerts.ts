@@ -1,5 +1,5 @@
+import { ReplacementParams } from '@/context/TranslateContext'
 import { useState } from 'react'
-import { ReplacementParams } from './useTranslations'
 
 export type AlertTypes = 'success' | 'warning' | 'error'
 

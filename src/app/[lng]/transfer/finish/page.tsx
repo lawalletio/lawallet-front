@@ -16,18 +16,16 @@ import {
 } from '@/components/UI'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 
-import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
 import { useRouter } from 'next/navigation'
 import { useContext, useMemo } from 'react'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const {
-    lng,
     userConfig: {
       props: { currency }
     },

@@ -11,7 +11,7 @@ import Text from '../Text'
 
 import theme from '@/styles/theme'
 import { QRCode, Toast } from './style'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   value: string

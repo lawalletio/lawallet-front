@@ -1,5 +1,5 @@
+import { ReplacementParams, useTranslation } from '@/context/TranslateContext'
 import { useState } from 'react'
-import { ReplacementParams, useTranslation } from './useTranslations'
 
 export interface IError {
   visible: boolean

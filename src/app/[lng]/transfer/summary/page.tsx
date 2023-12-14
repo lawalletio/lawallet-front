@@ -21,17 +21,16 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { LaWalletContext } from '@/context/LaWalletContext'
 import { TransferTypes } from '@/types/transaction'
 import { formatAddress, formatToPreference } from '@/lib/formatter'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { useTransferContext } from '@/context/TransferContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const [insufficientBalance, setInsufficientBalance] = useState<boolean>(false)
 
   const { loading, transferInfo, executeTransfer } = useTransferContext()
   const {
-    lng,
     identity,
     balance,
     userConfig: {

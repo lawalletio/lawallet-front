@@ -4,7 +4,8 @@ import Container from '@/components/Layout/Container'
 import Logo from '@/components/Logo'
 import { Button, Divider, Flex, Text } from '@/components/UI'
 import { LAWALLET_VERSION } from '@/constants/constants'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
+
 // import { useCreateIdentity } from '@/hooks/useCreateIdentity'
 
 import theme from '@/styles/theme'

@@ -11,7 +11,7 @@ import Text from '../Text'
 import Icon from '../Icon'
 
 import { Alert } from './style'
-import { ReplacementParams, useTranslation } from '@/hooks/useTranslations'
+import { ReplacementParams, useTranslation } from '@/context/TranslateContext'
 
 interface AlertProps {
   title: string | undefined

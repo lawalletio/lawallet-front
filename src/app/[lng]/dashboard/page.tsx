@@ -34,7 +34,7 @@ import theme from '@/styles/theme'
 
 // Harcode data
 import { WALLET_DOMAIN } from '@/constants/config'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
 
@@ -47,12 +47,11 @@ import { copy } from '@/lib/share'
 import Link from 'next/link'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { t, lng } = useTranslation()
   const [showBanner, setShowBanner] = useState<'backup' | 'none'>('none')
 
   const router = useRouter()
   const {
-    lng,
     identity,
     balance,
     sortedTransactions,

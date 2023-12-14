@@ -24,20 +24,19 @@ import { useTransferContext } from '@/context/TransferContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useNumpad } from '@/hooks/useNumpad'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { decimalsToUse, formatToPreference } from '@/lib/formatter'
 import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
 
   const [commentFocus, setCommentFocus] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const { transferInfo, setAmountToPay, setComment } = useTransferContext()
   const {
     balance,
-    lng,
     userConfig: {
       props: { currency: userCurrency, hideBalance }
     },
