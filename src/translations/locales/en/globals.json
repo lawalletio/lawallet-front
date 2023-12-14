@@ -147,5 +147,6 @@
   "NO_HAVE_CARDS": "You do not have any cards associated with your account yet",
   "URL_SCANNED_TITLE": "Scanned link",
   "URL_SCANNED_DESC": "You scanned the link {{ url }} do you want to open it in the browser?",
-  "OPEN_URL": "Open link"
+  "OPEN_URL": "Open link",
+  "BACK": "Back"
 }

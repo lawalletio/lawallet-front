@@ -8,6 +8,7 @@ import Container from '../Container'
 
 import { Navbar, BackButton, Left, Right } from './style'
 import { ReactNode } from 'react'
+import { useTranslation } from '@/hooks/useTranslations'
 
 interface ComponentProps {
   children?: ReactNode
@@ -19,6 +20,7 @@ export default function Component(props: ComponentProps) {
   const { children, showBackPage = false, title } = props
 
   const router = useRouter()
+  const { t } = useTranslation()
 
   const onlyChildren = !children
 
@@ -33,7 +35,7 @@ export default function Component(props: ComponentProps) {
                   <Icon size="small">
                     <CaretLeftIcon />
                   </Icon>
-                  Volver
+                  {t('BACK')}
                 </BackButton>
               )}
             </Left>
