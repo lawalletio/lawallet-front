@@ -65,11 +65,11 @@ export default function Page() {
         localStorage.setItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`, '1')
         router.push('/dashboard')
       })
-
-      setLoading(false)
     } catch (err) {
       errors.modifyError('UNEXPECTED_RECEOVERY_ERROR')
     }
+
+    setLoading(false)
   }
 
   useEffect(() => {
