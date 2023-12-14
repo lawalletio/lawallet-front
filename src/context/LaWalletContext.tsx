@@ -1,3 +1,4 @@
+import SpinnerView from '@/components/Loader/SpinnerView'
 import { Alert } from '@/components/UI'
 import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { useActivity } from '@/hooks/useActivity'
@@ -12,8 +13,9 @@ import { TokenBalance } from '@/types/balance'
 import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
 import { differenceInSeconds } from 'date-fns'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { getPublicKey } from 'nostr-tools'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useLayoutEffect, useState } from 'react'
 
 interface LaWalletContextType {
   identity: UserIdentity
@@ -23,8 +25,25 @@ interface LaWalletContextType {
   userConfig: ConfigReturns
   notifications: UseAlertReturns
   converter: UseConverterReturns
-  hydrated: boolean
 }
+
+const loggedRoutes: string[] = [
+  'dashboard',
+  'transfer',
+  'transferamount',
+  'transferfinish',
+  'transfersummary',
+  'transfererror',
+  'deposit',
+  'scan',
+  'settings',
+  'transactions',
+  'card',
+  'voucher',
+  'voucherfinish'
+]
+
+const unloggedRoutes: string[] = ['', 'start', 'login', 'reset']
 
 export const LaWalletContext = createContext({} as LaWalletContextType)
 
@@ -32,6 +51,9 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState<boolean>(false)
   const [identity, setIdentity] = useState<UserIdentity>(defaultIdentity)
 
+  const router = useRouter()
+  const pathname = usePathname()
+  const params = useSearchParams()
   const notifications = useAlert()
 
   const { activityInfo, sortedTransactions, resetActivity } = useActivity({
@@ -118,6 +140,31 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
     if (sortedTransactions.length) notifyReceivedTransaction()
   }, [sortedTransactions.length])
 
+  useLayoutEffect(() => {
+    if (hydrated) {
+      const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
+      const userLogged: boolean = Boolean(identity.hexpub.length)
+      const nonce: string = params.get('i') || ''
+      const card: string = params.get('c') || ''
+
+      switch (true) {
+        case !userLogged && pathname == '/' && !nonce:
+          router.push('/')
+          break
+
+        case !userLogged && loggedRoutes.includes(cleanedPath):
+          router.push('/')
+          break
+
+        case userLogged && unloggedRoutes.includes(cleanedPath):
+          card
+            ? router.push(`/settings/cards?c=${card}`)
+            : router.push('/dashboard')
+          break
+      }
+    }
+  }, [pathname, identity, hydrated])
+
   const value = {
     identity,
     setUserIdentity,
@@ -125,8 +172,7 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
     sortedTransactions,
     userConfig,
     notifications,
-    converter,
-    hydrated
+    converter
   }
 
   return (
@@ -139,7 +185,7 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
         params={notifications.alert?.params}
       />
 
-      {children}
+      {!hydrated ? <SpinnerView /> : children}
     </LaWalletContext.Provider>
   )
 }
