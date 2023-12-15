@@ -1,4 +1,5 @@
-import { ReplacementParams, useTranslation } from '@/context/TranslateContext'
+import { useTranslation } from '@/context/TranslateContext'
+import { ReplacementParams } from '@/translations/types'
 import { useState } from 'react'
 
 export interface IError {

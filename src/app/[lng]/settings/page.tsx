@@ -25,6 +25,7 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useRouter } from 'next/navigation'
 
 export default function Page() {
+  // const { lng, t, changeLanguage } = useTranslation()
   const { t } = useTranslation()
   const { identity, setUserIdentity } = useLaWalletContext()
   const router: AppRouterInstance = useRouter()

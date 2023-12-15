@@ -5,7 +5,7 @@ import {
   AvailableLanguages,
   LanguagesList,
   defaultLocale
-} from '@/translations'
+} from '@/translations/types'
 
 const cookieName = 'localeTranslation'
 

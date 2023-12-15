@@ -9,11 +9,11 @@ import { fontSecondary } from '@/styles/fonts'
 import GlobalStyles from '@/styles/GlobalStyles'
 import { ReactNode } from 'react'
 import { LaWalletProvider } from '@/context/LaWalletContext'
-import { AvailableLanguages, defaultLocale } from '@/translations'
 import { GOOGLE_TAG_ID, RelaysList } from '@/constants/config'
 import Script from 'next/script'
 import { NDKProvider } from '@/context/NDKContext'
 import { TranslateProvider } from '@/context/TranslateContext'
+import { AvailableLanguages, defaultLocale } from '@/translations/types'
 
 interface ProviderProps {
   children: ReactNode
@@ -71,17 +71,16 @@ const Providers = (props: ProviderProps) => {
       </head>
 
       <body>
-        <TranslateProvider lng={params.lng}>
-          <NDKProvider explicitRelayUrls={RelaysList}>
-            <StyledComponentsRegistry>
-              <GlobalStyles />
-
+        <StyledComponentsRegistry>
+          <GlobalStyles />
+          <TranslateProvider lng={params.lng}>
+            <NDKProvider explicitRelayUrls={RelaysList}>
               <LaWalletProvider>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
               </LaWalletProvider>
-            </StyledComponentsRegistry>
-          </NDKProvider>
-        </TranslateProvider>
+            </NDKProvider>
+          </TranslateProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   )

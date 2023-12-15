@@ -1,10 +1,12 @@
+import SpinnerView from '@/components/Loader/SpinnerView'
 import {
   AvailableLanguages,
+  DictionaryEntry,
   LanguagesList,
-  defaultLocale,
-  dictionaries
-} from '@/translations'
-import { createContext, useContext, useState } from 'react'
+  ReplacementParams,
+  defaultLocale
+} from '@/translations/types'
+import { createContext, useContext, useLayoutEffect, useState } from 'react'
 
 interface IUseTranslation {
   lng: AvailableLanguages
@@ -12,9 +14,21 @@ interface IUseTranslation {
   changeLanguage: (lng: AvailableLanguages) => void
 }
 
-export type ReplacementParams = Record<string, string>
-
 const TranslateContext = createContext({} as IUseTranslation)
+
+async function dynamicLoadMessages(locale: AvailableLanguages) {
+  try {
+    const dictionary = await import(
+      `../translations/locales/${locale}/globals.json`
+    )
+
+    return dictionary
+  } catch (error: unknown) {
+    console.error(new Error(`Unable to load locale (${locale}): ${error}`))
+
+    return false
+  }
+}
 
 export function TranslateProvider({
   children,
@@ -23,22 +37,38 @@ export function TranslateProvider({
   children: React.ReactNode
   lng: AvailableLanguages
 }) {
-  const translations = useTranslate(lng)
+  const [dictionary, setDictionary] = useState<DictionaryEntry>({})
+  const translations = useTranslate(lng, dictionary)
+
+  useLayoutEffect(() => {
+    dynamicLoadMessages(lng)
+      .then(res => {
+        res
+          ? setDictionary(res)
+          : dynamicLoadMessages(defaultLocale).then(res => setDictionary(res))
+      })
+      .catch(() => {
+        throw new Error('Error loading translation')
+      })
+  }, [])
 
   return (
     <TranslateContext.Provider value={translations}>
-      {children}
+      {!Object.keys(dictionary).length ? <SpinnerView /> : children}
     </TranslateContext.Provider>
   )
 }
 
-export const useTranslate = (usedLng: AvailableLanguages): IUseTranslation => {
+export const useTranslate = (
+  usedLng: AvailableLanguages,
+  dictionary: DictionaryEntry
+): IUseTranslation => {
   const [lng, setLng] = useState(
     LanguagesList.includes(usedLng) ? usedLng : defaultLocale
   )
 
   const t = (key: string, params?: ReplacementParams): string => {
-    let text: string = dictionaries[lng][key] ?? key
+    let text: string = dictionary[key] ?? key
 
     if (params)
       Object.keys(params).map(key => {
@@ -66,5 +96,10 @@ export const useTranslate = (usedLng: AvailableLanguages): IUseTranslation => {
 }
 
 export const useTranslation = () => {
-  return useContext(TranslateContext)
+  const context = useContext(TranslateContext)
+  if (!context) {
+    throw new Error('useTranslation must be used within TranslateProvider')
+  }
+
+  return context
 }
