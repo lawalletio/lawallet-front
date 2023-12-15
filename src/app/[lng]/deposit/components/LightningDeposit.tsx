@@ -4,17 +4,17 @@ import {
   CheckIcon,
   SatoshiV2Icon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 import lnurl from '@/lib/lnurl'
 import { copy } from '@/lib/share'
 
+import { useTranslation } from '@/context/TranslateContext'
 import { useNumpad } from '@/hooks/useNumpad'
 import { useSubscription } from '@/hooks/useSubscription'
-import { useTranslation } from '@/context/TranslateContext'
 
 import Container from '@/components/Layout/Container'
 import { BtnLoader } from '@/components/Loader/Loader'
@@ -63,7 +63,7 @@ const LightningDeposit = () => {
       props: { currency }
     },
     converter: { convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
   const numpadData = useNumpad(currency)
 
   const router = useRouter()

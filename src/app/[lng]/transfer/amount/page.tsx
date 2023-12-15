@@ -2,7 +2,7 @@
 
 import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { useRouter } from 'next/navigation'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -19,12 +19,12 @@ import {
   Text
 } from '@/components/UI'
 import { regexComment } from '@/constants/constants'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
+import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useNumpad } from '@/hooks/useNumpad'
-import { useTranslation } from '@/context/TranslateContext'
 import { decimalsToUse, formatToPreference } from '@/lib/formatter'
 import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
@@ -41,7 +41,7 @@ export default function Page() {
       props: { currency: userCurrency, hideBalance }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const maxAvailableAmount: number = useMemo(() => {
     const convertedAmount: number = convertCurrency(

@@ -1,22 +1,22 @@
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { NDKContext } from '@/context/NDKContext'
+import {
+  CardRequestResponse,
+  buildAndBroadcastCardConfig,
+  cardInfoRequest
+} from '@/interceptors/card'
+import { LaWalletKinds, buildCardInfoRequest, getTag } from '@/lib/events'
+import { parseMultiNip04Event } from '@/lib/nip04'
+import { nowInSeconds } from '@/lib/utils'
 import {
   CardConfigPayload,
   CardDataPayload,
   CardStatus,
   ConfigTypes
 } from '@/types/card'
+import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk'
-import { LaWalletKinds, buildCardInfoRequest, getTag } from '@/lib/events'
-import { NDKContext } from '@/context/NDKContext'
-import { parseMultiNip04Event } from '@/lib/nip04'
-import { nowInSeconds } from '@/lib/utils'
-import {
-  CardRequestResponse,
-  buildAndBroadcastCardConfig,
-  cardInfoRequest
-} from '@/interceptors/card'
 
 export type CardConfigReturns = {
   cards: ICards
@@ -39,7 +39,7 @@ const useCardConfig = (): CardConfigReturns => {
   })
 
   const { ndk } = useContext(NDKContext)
-  const { identity } = useContext(LaWalletContext)
+  const { identity } = useLaWalletContext()
 
   const { events } = useSubscription({
     filters: [
@@ -85,11 +85,9 @@ const useCardConfig = (): CardConfigReturns => {
 
   const handleRequestData = () => {
     try {
-      requestCardInfo(ConfigTypes.DATA.valueOf()).then(res => {
-        console.log(res)
+      requestCardInfo(ConfigTypes.DATA.valueOf()).then(() => {
         requestCardInfo(ConfigTypes.CONFIG.valueOf()).then(
           async (res: CardRequestResponse | false) => {
-            console.log(res)
             if (res)
               buildAndBroadcastCardConfig(
                 res as CardConfigPayload,

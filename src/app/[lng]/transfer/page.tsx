@@ -19,21 +19,21 @@ import {
 } from '@/components/UI'
 
 import { WALLET_DOMAIN } from '@/constants/config'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
+import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
-import { useTranslation } from '@/context/TranslateContext'
 import { getUsername } from '@/interceptors/identity'
 import { getMultipleTags } from '@/lib/events'
 import theme from '@/styles/theme'
 import { TransactionDirection, TransactionType } from '@/types/transaction'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import RecipientElement from './components/RecipientElement'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, sortedTransactions } = useContext(LaWalletContext)
+  const { identity, sortedTransactions } = useLaWalletContext()
   const { prepareTransaction, transferInfo } = useTransferContext()
 
   const [lastDestinations, setLastDestinations] = useState<string[]>([])

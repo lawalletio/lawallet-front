@@ -1,13 +1,13 @@
 'use client'
 import { Button, Flex, Modal, Text } from '@/components/UI'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { AlertTypes } from '@/hooks/useAlerts'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
+import { AlertTypes } from '@/hooks/useAlerts'
 import { requestCardActivation } from '@/interceptors/card'
 import { buildCardActivationEvent } from '@/lib/events'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useSearchParams } from 'next/navigation'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export type NewCard = {
   card: string
@@ -25,7 +25,7 @@ const AddNewCardModal = () => {
   const { t } = useTranslation()
   const params = useSearchParams()
 
-  const { identity, notifications } = useContext(LaWalletContext)
+  const { identity, notifications } = useLaWalletContext()
 
   const handleResponse = (alertDescription: string, alertType: AlertTypes) => {
     notifications.showAlert({

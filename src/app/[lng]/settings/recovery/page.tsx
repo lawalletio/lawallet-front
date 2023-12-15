@@ -1,33 +1,31 @@
 'use client'
 
-import { useContext, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { useTranslation } from '@/context/TranslateContext'
 
+import Container from '@/components/Layout/Container'
+import Navbar from '@/components/Layout/Navbar'
 import {
   Button,
   Divider,
   Flex,
-  Heading,
+  InfoCopy,
   Text,
-  ToggleSwitch,
-  InfoCopy
+  ToggleSwitch
 } from '@/components/UI'
-import Container from '@/components/Layout/Container'
-import Navbar from '@/components/Layout/Navbar'
 
-import theme from '@/styles/theme'
-import { LaWalletContext } from '@/context/LaWalletContext'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import theme from '@/styles/theme'
 
 export default function Page() {
   const { t } = useTranslation()
   const router: AppRouterInstance = useRouter()
 
-  const { identity } = useContext(LaWalletContext)
-
+  const { identity } = useLaWalletContext()
   const [switchOne, setSwitchOne] = useState<boolean>(false)
   const [switchTwo, setSwitchTwo] = useState<boolean>(false)
 

@@ -2,29 +2,29 @@
 
 import {
   CreditCardIcon,
-  TransferIcon,
-  LightningIcon
+  LightningIcon,
+  TransferIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 
-import { Flex, Text, Accordion, AccordionBody } from '@/components/UI'
+import { Accordion, AccordionBody, Flex, Text } from '@/components/UI'
 
+import { WALLET_DOMAIN } from '@/constants/config'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
+import { getUsername } from '@/interceptors/identity'
+import { getMultipleTags } from '@/lib/events'
+import { dateFormatter, formatToPreference } from '@/lib/formatter'
+import { unescapingText } from '@/lib/utils'
 import theme from '@/styles/theme'
+import { defaultCurrency } from '@/types/config'
 import {
   Transaction,
   TransactionDirection,
   TransactionStatus,
   TransactionType
 } from '@/types/transaction'
-import { useContext, useMemo, useState } from 'react'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { useTranslation } from '@/context/TranslateContext'
-import { dateFormatter, formatToPreference } from '@/lib/formatter'
-import { defaultCurrency } from '@/types/config'
-import { getUsername } from '@/interceptors/identity'
-import { WALLET_DOMAIN } from '@/constants/config'
+import { useMemo, useState } from 'react'
 import { BtnLoader } from '../Loader/Loader'
-import { getMultipleTags } from '@/lib/events'
-import { unescapingText } from '@/lib/utils'
 
 interface ComponentProps {
   transaction: Transaction
@@ -45,7 +45,7 @@ export default function Component({ transaction }: ComponentProps) {
       props: { hideBalance, currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const isFromMe = transaction?.direction === 'OUTGOING'
   const satsAmount = transaction.tokens?.BTC / 1000 || 0

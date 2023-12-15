@@ -81,7 +81,7 @@ const defaultActivity = {
 export const useActivity = ({
   pubkey,
   enabled,
-  limit = 5000
+  limit = 1000
 }: UseActivityProps): UseActivityReturn => {
   const [activityInfo, setActivityInfo] =
     useState<ActivityType>(defaultActivity)

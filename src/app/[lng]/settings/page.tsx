@@ -15,19 +15,18 @@ import {
   LAWALLET_VERSION,
   STORAGE_IDENTITY_KEY
 } from '@/constants/constants'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import useErrors from '@/hooks/useErrors'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
+import useErrors from '@/hooks/useErrors'
 
 import theme from '@/styles/theme'
 import { defaultIdentity } from '@/types/identity'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, setUserIdentity } = useContext(LaWalletContext)
+  const { identity, setUserIdentity } = useLaWalletContext()
   const router: AppRouterInstance = useRouter()
   const errors = useErrors()
 

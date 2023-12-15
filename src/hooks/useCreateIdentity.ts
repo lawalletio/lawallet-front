@@ -1,4 +1,6 @@
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { regexUserName } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { requestCardActivation } from '@/interceptors/card'
 import {
   IdentityResponse,
   claimIdentity,
@@ -9,10 +11,8 @@ import { buildCardActivationEvent, buildIdentityEvent } from '@/lib/events'
 import { UserIdentity } from '@/types/identity'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useContext, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import useErrors, { IUseErrors } from './useErrors'
-import { requestCardActivation } from '@/interceptors/card'
-import { regexUserName } from '@/constants/constants'
 
 export interface AccountProps {
   nonce: string
@@ -34,8 +34,8 @@ export type CreateIdentityReturns = {
 export type UseIdentityReturns = {
   loading: boolean
   accountInfo: CreateIdentityParams
-  setAccountInfo: Dispatch<SetStateAction<CreateIdentityParams>>
   errors: IUseErrors
+  setAccountInfo: Dispatch<SetStateAction<CreateIdentityParams>>
   handleChangeUsername: (username: string) => void
   handleCreateIdentity: (props: AccountProps) => void
 }
@@ -51,7 +51,7 @@ const defaultAccount = {
 }
 
 export const useCreateIdentity = (): UseIdentityReturns => {
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const { setUserIdentity } = useLaWalletContext()
   const [loading, setLoading] = useState<boolean>(false)
 
   const [accountInfo, setAccountInfo] =
@@ -111,7 +111,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
   const createNostrAccount = async () => {
     setLoading(true)
 
-    const generatedIdentity: UserIdentity = await generateUserIdentity('', '')
+    const generatedIdentity: UserIdentity = await generateUserIdentity()
     if (generatedIdentity) {
       setUserIdentity(generatedIdentity)
       router.push('/dashboard')
@@ -123,10 +123,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     nonce,
     name
   }: AccountProps): Promise<CreateIdentityReturns> => {
-    const generatedIdentity: UserIdentity = await generateUserIdentity(
-      nonce,
-      name
-    )
+    const generatedIdentity: UserIdentity = await generateUserIdentity(name)
 
     try {
       const event: NostrEvent = await buildIdentityEvent(

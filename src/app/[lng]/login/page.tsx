@@ -1,6 +1,6 @@
 'use client'
-import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/context/TranslateContext'
+import { useRouter } from 'next/navigation'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -12,16 +12,16 @@ import {
   Heading,
   Textarea
 } from '@/components/UI'
-import { ChangeEvent, useContext, useEffect, useState } from 'react'
-import { getPublicKey, nip19 } from 'nostr-tools'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
 import { getUsername } from '@/interceptors/identity'
 import { UserIdentity } from '@/types/identity'
-import { CACHE_BACKUP_KEY } from '@/constants/constants'
+import { getPublicKey, nip19 } from 'nostr-tools'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 export default function Page() {
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const { setUserIdentity } = useLaWalletContext()
   const [keyInput, setKeyInput] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -53,8 +53,6 @@ export default function Page() {
       }
 
       const identity: UserIdentity = {
-        nonce: '',
-        card: [],
         username,
         hexpub,
         npub: nip19.npubEncode(hexpub),

@@ -12,16 +12,13 @@ export type IdentityResponse = {
 }
 
 export const generateUserIdentity = async (
-  nonce: string,
-  name: string
+  name?: string
 ): Promise<UserIdentity> => {
   const privateKey = generatePrivateKey()
   const identityPubKey = getPublicKey(privateKey)
 
   const identity: UserIdentity = {
-    nonce,
-    username: name,
-    card: [],
+    username: name ?? '',
     hexpub: identityPubKey,
     npub: nip19.npubEncode(identityPubKey),
     privateKey: privateKey

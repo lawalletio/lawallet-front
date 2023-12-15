@@ -10,7 +10,7 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
@@ -29,7 +29,7 @@ import {
   Text
 } from '@/components/UI'
 
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import theme from '@/styles/theme'
 
 // Harcode data
@@ -61,7 +61,7 @@ export default function Page() {
       props: { hideBalance, currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const convertedBalance: string = useMemo(() => {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)

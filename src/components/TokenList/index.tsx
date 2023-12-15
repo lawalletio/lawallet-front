@@ -1,15 +1,14 @@
 'use client'
 
 import Container from '@/components/Layout/Container'
-import { Flex, Button } from '@/components/UI'
+import { Button, Flex } from '@/components/UI'
 
-import { TokenList } from './style'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { useContext } from 'react'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { CurrenciesList } from '@/types/config'
+import { TokenList } from './style'
 
 export default function Component() {
-  const { userConfig } = useContext(LaWalletContext)
+  const { userConfig } = useLaWalletContext()
 
   return (
     <TokenList>

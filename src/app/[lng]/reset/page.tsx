@@ -5,20 +5,20 @@ import Logo from '@/components/Logo'
 
 import { Feedback, Flex, Heading, Text } from '@/components/UI'
 import { LAWALLET_VERSION } from '@/constants/constants'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import useErrors from '@/hooks/useErrors'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
+import useErrors from '@/hooks/useErrors'
 import { cardResetCaim } from '@/interceptors/card'
 import { generateUserIdentity } from '@/interceptors/identity'
 import { buildCardActivationEvent } from '@/lib/events'
 import theme from '@/styles/theme'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, setUserIdentity } = useContext(LaWalletContext)
+  const { identity, setUserIdentity } = useLaWalletContext()
 
   const router = useRouter()
   const errors = useErrors()
@@ -33,7 +33,7 @@ export default function Page() {
       return
     }
 
-    generateUserIdentity(recoveryNonce, '').then(generatedIdentity => {
+    generateUserIdentity().then(generatedIdentity => {
       buildCardActivationEvent(recoveryNonce, generatedIdentity.privateKey)
         .then((cardEvent: NostrEvent) => {
           cardResetCaim(cardEvent).then(res => {

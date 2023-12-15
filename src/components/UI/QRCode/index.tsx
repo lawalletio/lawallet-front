@@ -1,17 +1,17 @@
 'use client'
 
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import ReactQRCode from 'react-qr-code'
 
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 
 import { copy } from '@/lib/share'
 
 import Text from '../Text'
 
+import { useTranslation } from '@/context/TranslateContext'
 import theme from '@/styles/theme'
 import { QRCode, Toast } from './style'
-import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   value: string
@@ -29,7 +29,7 @@ export default function Component({
   textToCopy
 }: ComponentProps) {
   const [showToast, setShowToast] = useState(true)
-  const { notifications } = useContext(LaWalletContext)
+  const { notifications } = useLaWalletContext()
   const { t } = useTranslation()
 
   const handleCopy = (text: string) => {

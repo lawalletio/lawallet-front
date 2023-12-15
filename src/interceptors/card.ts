@@ -51,8 +51,7 @@ export const cardInfoRequest = async (
     body: JSON.stringify(event)
   })
     .then(res => res.json())
-    .catch(err => {
-      console.log(err)
+    .catch(() => {
       return { error: 'UNEXPECTED_ERROR' }
     })
 }
@@ -65,8 +64,7 @@ export const buildAndBroadcastCardConfig = (
     .then(configEvent => {
       return broadcastEvent(configEvent)
     })
-    .catch(err => {
-      console.log(err)
+    .catch(() => {
       return { error: 'UNEXPECTED_ERROR' }
     })
 }

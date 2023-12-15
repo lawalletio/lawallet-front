@@ -15,7 +15,13 @@ import { Transaction, TransactionDirection } from '@/types/transaction'
 import { differenceInSeconds } from 'date-fns'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { getPublicKey } from 'nostr-tools'
-import { createContext, useEffect, useLayoutEffect, useState } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState
+} from 'react'
 
 interface LaWalletContextType {
   identity: UserIdentity
@@ -188,4 +194,13 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
       {!hydrated ? <SpinnerView /> : children}
     </LaWalletContext.Provider>
   )
+}
+
+export const useLaWalletContext = () => {
+  const context = useContext(LaWalletContext)
+  if (!context) {
+    throw new Error('useLaWalletContext must be used within LaWalletProvider')
+  }
+
+  return context
 }

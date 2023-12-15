@@ -5,23 +5,23 @@ import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import {
+  Avatar,
+  Confetti,
   Divider,
   Flex,
   Heading,
-  Text,
+  Icon,
   LinkButton,
-  Avatar,
-  Confetti,
-  Icon
+  Text
 } from '@/components/UI'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
 import { useTranslation } from '@/context/TranslateContext'
 import { formatAddress, formatToPreference } from '@/lib/formatter'
 
 import { TransferTypes } from '@/types/transaction'
 import { useRouter } from 'next/navigation'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 
 export default function Page() {
   const { lng, t } = useTranslation()
@@ -30,7 +30,7 @@ export default function Page() {
       props: { currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const { transferInfo } = useTransferContext()
 

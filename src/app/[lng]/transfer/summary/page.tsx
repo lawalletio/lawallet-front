@@ -2,28 +2,28 @@
 
 import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
+import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import HeroCard from '@/components/HeroCard'
 import {
+  Avatar,
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
-  Text,
-  LinkButton,
-  Avatar,
   Icon,
-  Feedback
+  LinkButton,
+  Text
 } from '@/components/UI'
 
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { TransferTypes } from '@/types/transaction'
-import { formatAddress, formatToPreference } from '@/lib/formatter'
-import { useTranslation } from '@/context/TranslateContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
+import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+import { formatAddress, formatToPreference } from '@/lib/formatter'
+import { TransferTypes } from '@/types/transaction'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function Page() {
   const { lng, t } = useTranslation()
@@ -37,7 +37,7 @@ export default function Page() {
       props: { currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const convertedAmount: string = useMemo(() => {
     const convertedInt: number = convertCurrency(
