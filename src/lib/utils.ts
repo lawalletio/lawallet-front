@@ -1,4 +1,4 @@
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { getUserPubkey } from '@/interceptors/identity'
 import {
   TransferInformation,
@@ -29,7 +29,7 @@ export const detectTransferType = (data: string): TransferTypes | false => {
   if (isLUD16) {
     const domain: string = upperStr.split('@')[1]
 
-    return domain.toUpperCase() === WALLET_DOMAIN.toUpperCase()
+    return domain.toUpperCase() === config.env.WALLET_DOMAIN.toUpperCase()
       ? TransferTypes.INTERNAL
       : TransferTypes.LUD16
   }
@@ -79,7 +79,8 @@ const removeHttpOrHttps = (str: string) => {
 const isInternalLNURL = (decodedLNURL: string): string => {
   const urlWithoutHttp: string = removeHttpOrHttps(decodedLNURL)
   const [domain, , , username] = urlWithoutHttp.split('/')
-  if (domain === WALLET_DOMAIN && username) return `${username}@${domain}`
+  if (domain === config.env.WALLET_DOMAIN && username)
+    return `${username}@${domain}`
 
   return ''
 }

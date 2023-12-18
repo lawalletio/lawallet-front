@@ -1,4 +1,4 @@
-import { LaWalletPubkeys, RelaysList } from '@/constants/config'
+import config from '@/constants/config'
 import { CardConfigPayload, ConfigTypes } from '@/types/card'
 import { UserIdentity } from '@/types/identity'
 import {
@@ -89,7 +89,7 @@ export const buildCardActivationEvent = async (
   const userPubkey: string = getPublicKey(privateKey)
 
   const delegation = nip26.createDelegation(privateKey, {
-    pubkey: LaWalletPubkeys.cardPubkey,
+    pubkey: config.pubKeys.cardPubkey,
     kind: LaWalletKinds.REGULAR,
     since: Math.floor(Date.now() / 1000) - 36000,
     until: Math.floor(Date.now() / 1000) + 3600 * 24 * 30 * 12
@@ -108,7 +108,7 @@ export const buildCardActivationEvent = async (
   })
 
   event.tags = [
-    ['p', LaWalletPubkeys.cardPubkey],
+    ['p', config.pubKeys.cardPubkey],
     ['t', LaWalletTags.CARD_ACTIVATION_REQUEST]
   ]
 
@@ -130,7 +130,7 @@ export const buildZapRequestEvent = async (
   zapEvent.tags = [
     ['p', userPubkey],
     ['amount', amount.toString()],
-    ['relays', ...RelaysList]
+    ['relays', ...config.relaysList]
   ]
 
   await zapEvent.sign(signer)
@@ -161,7 +161,7 @@ export const buildTxStartEvent = async (
 
   internalEvent.tags = [
     ['t', LaWalletTags.INTERNAL_TRANSACTION_START],
-    ['p', LaWalletPubkeys.ledgerPubkey],
+    ['p', config.pubKeys.ledgerPubkey],
     ['p', transferInfo.receiverPubkey]
   ]
 
@@ -201,7 +201,7 @@ export const buildCardConfigEvent = async (
     JSON.stringify(cardConfig),
     privateKey,
     userPubkey,
-    [LaWalletPubkeys.cardPubkey, userPubkey]
+    [config.pubKeys.cardPubkey, userPubkey]
   )
 
   event.kind = LaWalletKinds.PARAMETRIZED_REPLACEABLE

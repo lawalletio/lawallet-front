@@ -23,7 +23,7 @@ import {
 import { nip26, Event } from 'nostr-tools'
 import { CACHE_TXS_KEY } from '@/constants/constants'
 import { parseContent } from '@/lib/utils'
-import { LaWalletPubkeys } from '@/constants/config'
+import config from '@/constants/config'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -103,7 +103,7 @@ export const useActivity = ({
         limit
       },
       {
-        authors: [LaWalletPubkeys.ledgerPubkey],
+        authors: [config.pubKeys.ledgerPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         '#p': [pubkey],
         '#t': statusTags,
@@ -117,7 +117,7 @@ export const useActivity = ({
 
   const formatStartTransaction = async (event: NDKEvent) => {
     const nostrEvent: NostrEvent = await event.toNostrEvent()
-    const AuthorIsCard: boolean = event.pubkey === LaWalletPubkeys.cardPubkey
+    const AuthorIsCard: boolean = event.pubkey === config.pubKeys.cardPubkey
 
     const DelegatorIsUser: boolean =
       AuthorIsCard && nip26.getDelegator(nostrEvent as Event) === pubkey

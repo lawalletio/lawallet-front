@@ -1,4 +1,4 @@
-import { LAWALLET_ENDPOINT, LaWalletPubkeys } from '@/constants/config'
+import config from '@/constants/config'
 import { NDKContext } from '@/context/NDKContext'
 import {
   TransferInformation,
@@ -51,7 +51,7 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
   const { events } = useSubscription({
     filters: [
       {
-        authors: [LaWalletPubkeys.ledgerPubkey],
+        authors: [config.pubKeys.ledgerPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
         since: startEvent ? startEvent.created_at - 60000 : undefined,
         '#e': startEvent?.id ? [startEvent.id] : []
@@ -65,7 +65,7 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
     const { walletService } = info
 
     requestInvoice(
-      `${LAWALLET_ENDPOINT}/lnurlp/${npub}/callback?amount=${walletService?.maxWithdrawable}`
+      `${config.env.LAWALLET_ENDPOINT}/lnurlp/${npub}/callback?amount=${walletService?.maxWithdrawable}`
     )
       .then(pr => {
         if (pr) {
@@ -195,7 +195,7 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
       if (subkind.includes('ok')) {
         const refundEvent = await ndk.fetchEvent({
           kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
-          authors: [LaWalletPubkeys.urlxPubkey],
+          authors: [config.pubKeys.urlxPubkey],
           '#t': [LaWalletTags.INTERNAL_TRANSACTION_START],
           '#e': [startEvent.id!]
         })

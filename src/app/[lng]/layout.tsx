@@ -9,7 +9,7 @@ import { fontSecondary } from '@/styles/fonts'
 import GlobalStyles from '@/styles/GlobalStyles'
 import { ReactNode } from 'react'
 import { LaWalletProvider } from '@/context/LaWalletContext'
-import { GOOGLE_TAG_ID, RelaysList } from '@/constants/config'
+import config from '@/constants/config'
 import Script from 'next/script'
 import { NDKProvider } from '@/context/NDKContext'
 import { TranslateProvider } from '@/context/TranslateContext'
@@ -57,7 +57,7 @@ const Providers = (props: ProviderProps) => {
         <link rel="shortcut icon" href="/favicon.ico" />
 
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${config.env.GOOGLE_TAG_ID}`}
         />
         <Script id="google-analytics">
           {`
@@ -65,7 +65,7 @@ const Providers = (props: ProviderProps) => {
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
         
-          gtag('config', '${GOOGLE_TAG_ID}');
+          gtag('config', '${config.env.GOOGLE_TAG_ID}');
         `}
         </Script>
       </head>
@@ -74,7 +74,7 @@ const Providers = (props: ProviderProps) => {
         <StyledComponentsRegistry>
           <GlobalStyles />
           <TranslateProvider lng={params.lng}>
-            <NDKProvider explicitRelayUrls={RelaysList}>
+            <NDKProvider explicitRelayUrls={config.relaysList}>
               <LaWalletProvider>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
               </LaWalletProvider>

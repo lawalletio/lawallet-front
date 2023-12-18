@@ -33,7 +33,7 @@ import { useLaWalletContext } from '@/context/LaWalletContext'
 import theme from '@/styles/theme'
 
 // Harcode data
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { useTranslation } from '@/context/TranslateContext'
 import { formatToPreference } from '@/lib/formatter'
 import { useRouter } from 'next/navigation'
@@ -102,7 +102,7 @@ export default function Page() {
               <Flex
                 onClick={() => {
                   if (identity.username)
-                    copy(`${identity.username}@${WALLET_DOMAIN}`)
+                    copy(`${identity.username}@${config.env.WALLET_DOMAIN}`)
                 }}
               >
                 {loading ? (
@@ -110,7 +110,7 @@ export default function Page() {
                 ) : (
                   <Text>
                     {identity.username
-                      ? `${identity.username}@${WALLET_DOMAIN}`
+                      ? `${identity.username}@${config.env.WALLET_DOMAIN}`
                       : t('ANONYMOUS')}
                   </Text>
                 )}

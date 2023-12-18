@@ -33,12 +33,7 @@ import {
   Text
 } from '@/components/UI'
 
-import {
-  LAWALLET_ENDPOINT,
-  LaWalletPubkeys,
-  MAX_INVOICE_AMOUNT,
-  WALLET_DOMAIN
-} from '@/constants/config'
+import config from '@/constants/config'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { requestInvoice } from '@/interceptors/transaction'
@@ -80,7 +75,7 @@ const LightningDeposit = () => {
   const { events } = useSubscription({
     filters: [
       {
-        authors: [LaWalletPubkeys.ledgerPubkey, LaWalletPubkeys.urlxPubkey],
+        authors: [config.pubKeys.ledgerPubkey, config.pubKeys.urlxPubkey],
         kinds: [9735],
         since: invoice.created_at
       }
@@ -93,10 +88,10 @@ const LightningDeposit = () => {
     if (invoice.loading) return
 
     const amountSats: number = numpadData.intAmount['SAT']
-    if (amountSats < 1 || amountSats > MAX_INVOICE_AMOUNT) {
+    if (amountSats < 1 || amountSats > config.MAX_INVOICE_AMOUNT) {
       const convertedMinAmount: number = convertCurrency(1, 'SAT', currency)
       const convertedMaxAmount: number = convertCurrency(
-        MAX_INVOICE_AMOUNT,
+        config.MAX_INVOICE_AMOUNT,
         'SAT',
         currency
       )
@@ -117,7 +112,7 @@ const LightningDeposit = () => {
     )
 
     requestInvoice(
-      `${LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${invoice_mSats}&nostr=${zapRequest}`
+      `${config.env.LAWALLET_ENDPOINT}/lnurlp/${identity.npub}/callback?amount=${invoice_mSats}&nostr=${zapRequest}`
     )
       .then(bolt11 => {
         if (bolt11) {
@@ -186,7 +181,7 @@ const LightningDeposit = () => {
     () =>
       lnurl
         .encode(
-          `https://${WALLET_DOMAIN}/.well-known/lnurlp/${
+          `https://${config.env.WALLET_DOMAIN}/.well-known/lnurlp/${
             identity.username ? identity.username : identity.npub
           }`
         )
@@ -203,7 +198,7 @@ const LightningDeposit = () => {
               size={300}
               borderSize={30}
               value={('lightning:' + LNURLEncoded).toUpperCase()}
-              textToCopy={`${identity.username}@${WALLET_DOMAIN}`}
+              textToCopy={`${identity.username}@${config.env.WALLET_DOMAIN}`}
             />
           </Flex>
           <Flex>
@@ -218,7 +213,7 @@ const LightningDeposit = () => {
                   <Flex>
                     <Text>
                       {identity.username
-                        ? `${identity.username}@${WALLET_DOMAIN}`
+                        ? `${identity.username}@${config.env.WALLET_DOMAIN}`
                         : formatAddress(LNURLEncoded, 20)}
                     </Text>
                   </Flex>
@@ -230,7 +225,7 @@ const LightningDeposit = () => {
                     onClick={() =>
                       handleCopy(
                         identity.username
-                          ? `${identity.username}@${WALLET_DOMAIN}`
+                          ? `${identity.username}@${config.env.WALLET_DOMAIN}`
                           : LNURLEncoded
                       )
                     }

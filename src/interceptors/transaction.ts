@@ -1,4 +1,4 @@
-import { LAWALLET_ENDPOINT, LaWalletPubkeys } from '@/constants/config'
+import config from '@/constants/config'
 import { TransferTypes } from '@/types/transaction'
 
 interface LNServiceResponse {
@@ -34,7 +34,7 @@ export const defaultTransfer: TransferInformation = {
   data: '',
   amount: 0,
   comment: '',
-  receiverPubkey: LaWalletPubkeys.urlxPubkey,
+  receiverPubkey: config.pubKeys.urlxPubkey,
   walletService: null,
   type: false
 }
@@ -54,7 +54,7 @@ export const getWalletService = (url: string): Promise<LNServiceResponse> =>
 export const isInternalInvoice = (
   invoiceHash: string
 ): Promise<CheckInvoiceReturns | null> =>
-  fetch(`${LAWALLET_ENDPOINT}/invoice/${invoiceHash}`)
+  fetch(`${config.env.LAWALLET_ENDPOINT}/invoice/${invoiceHash}`)
     .then(res => {
       if (res.status !== 200) return null
       return res.json()

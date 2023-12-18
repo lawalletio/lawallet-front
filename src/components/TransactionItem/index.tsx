@@ -8,7 +8,7 @@ import {
 
 import { Accordion, AccordionBody, Flex, Text } from '@/components/UI'
 
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
 import { getUsername } from '@/interceptors/identity'
@@ -90,7 +90,10 @@ export default function Component({ transaction }: ComponentProps) {
       }
 
       username.length
-        ? setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+        ? setLudInfo({
+            loading: false,
+            data: `${username}@${config.env.WALLET_DOMAIN}`
+          })
         : setLudInfo({ ...ludInfo, loading: false })
     }
   }

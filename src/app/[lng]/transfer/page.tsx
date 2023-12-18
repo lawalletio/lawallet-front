@@ -18,7 +18,7 @@ import {
   Text
 } from '@/components/UI'
 
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
 import { useTranslation } from '@/context/TranslateContext'
@@ -88,7 +88,7 @@ export default function Page() {
         const username: string = await getUsername(receiverPubkey)
 
         if (username.length) {
-          const formattedLud16: string = `${username}@${WALLET_DOMAIN}`
+          const formattedLud16: string = `${username}@${config.env.WALLET_DOMAIN}`
           if (!lastDest.includes(formattedLud16)) {
             lastDest.push(formattedLud16)
             setLastDestinations(lastDest)

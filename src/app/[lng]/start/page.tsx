@@ -17,7 +17,7 @@ import {
   InputGroupRight,
   Text
 } from '@/components/UI'
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { useCreateIdentity } from '@/hooks/useCreateIdentity'
 import { useTranslation } from '@/context/TranslateContext'
@@ -115,7 +115,7 @@ export default function Page() {
               }
             />
             <InputGroupRight>
-              <Text size="small">@{WALLET_DOMAIN}</Text>
+              <Text size="small">@{config.env.WALLET_DOMAIN}</Text>
             </InputGroupRight>
           </InputGroup>
           <Feedback
