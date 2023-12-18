@@ -46,6 +46,11 @@ export const useTokenBalance = ({
   })
 
   const loadBalance = async () => {
+    setBalance({
+      ...balance,
+      loading: true
+    })
+
     const event: NDKEvent | null = await ndk.fetchEvent({
       authors: [config.pubKeys.ledgerPubkey],
       kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
@@ -65,7 +70,13 @@ export const useTokenBalance = ({
   }
 
   useEffect(() => {
-    if (pubkey.length) {
+    if (!pubkey.length) {
+      setBalance({
+        tokenId: tokenId,
+        amount: 0,
+        loading: true
+      })
+    } else {
       loadBalance()
 
       setTimeout(() => {

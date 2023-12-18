@@ -39,6 +39,8 @@ const loggedRoutes: string[] = [
   'deposit',
   'scan',
   'settings',
+  'settingsrecovery',
+  'settingscards',
   'transactions',
   'card',
   'voucher',
@@ -98,6 +100,7 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    console.log(user.identity.loaded)
     if (user.identity.loaded) setHydrated(true)
   }, [user.identity.loaded])
 
@@ -128,7 +131,7 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
           break
       }
     }
-  }, [pathname, user.identity, hydrated])
+  }, [pathname, hydrated])
 
   const value = {
     user,

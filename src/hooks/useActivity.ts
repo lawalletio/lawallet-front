@@ -40,7 +40,6 @@ export type ActivityType = {
 export interface UseActivityReturn {
   activityInfo: ActivityType
   userTransactions: Transaction[]
-  resetActivity: () => void
 }
 
 export interface UseActivityProps {
@@ -297,12 +296,7 @@ export const useActivity = ({
         localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
 
       if (!storagedData) {
-        setActivityInfo({
-          ...activityInfo,
-          subscription: [],
-          cached: [],
-          loading: false
-        })
+        resetActivity()
         return
       }
 
@@ -368,7 +362,6 @@ export const useActivity = ({
 
   return {
     activityInfo,
-    userTransactions,
-    resetActivity
+    userTransactions
   }
 }
