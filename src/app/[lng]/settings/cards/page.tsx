@@ -5,10 +5,11 @@ import { useTranslation } from '@/context/TranslateContext'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import { MainLoader } from '@/components/Loader/Loader'
-import { Divider, Flex, Text } from '@/components/UI'
+import { Divider, Flex } from '@/components/UI'
 import useCardConfig from '@/hooks/useCardConfig'
-import DebitCard from './components/DebitCard'
 import AddNewCardModal from './components/AddCard'
+import DebitCard from './components/DebitCard'
+import EmptyCards from './components/EmptyCards'
 
 export default function Page() {
   const { cards, toggleCardStatus } = useCardConfig()
@@ -40,7 +41,7 @@ export default function Page() {
               })}
             </Flex>
           ) : (
-            <Text>{t('NO_HAVE_CARDS')}</Text>
+            <EmptyCards />
           )}
           <Divider y={16} />
         </Container>

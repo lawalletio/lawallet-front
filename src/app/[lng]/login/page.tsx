@@ -19,6 +19,7 @@ import { getUsername } from '@/interceptors/identity'
 import { UserIdentity } from '@/types/identity'
 import { getPublicKey, nip19 } from 'nostr-tools'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 export default function Page() {
   const {
@@ -33,7 +34,7 @@ export default function Page() {
 
   const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     errors.resetError()
-    setKeyInput(e.target.value.trim())
+    setKeyInput(e.target.value)
   }
 
   const handleRecoveryAccount = async () => {
@@ -76,6 +77,8 @@ export default function Page() {
   useEffect(() => {
     router.prefetch('/dashboard')
   }, [router])
+
+  useActionOnKeypress('Enter', handleRecoveryAccount, [keyInput])
 
   return (
     <>

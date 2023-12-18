@@ -13,17 +13,17 @@ import {
   NostrEvent
 } from '@nostr-dev-kit/ndk'
 
-import { useSubscription } from './useSubscription'
+import config from '@/constants/config'
+import { CACHE_TXS_KEY } from '@/constants/constants'
 import {
   LaWalletKinds,
   LaWalletTags,
   getMultipleTags,
   getTag
 } from '@/lib/events'
-import { nip26, Event } from 'nostr-tools'
-import { CACHE_TXS_KEY } from '@/constants/constants'
 import { parseContent } from '@/lib/utils'
-import config from '@/constants/config'
+import { Event, nip26 } from 'nostr-tools'
+import { useSubscription } from './useSubscription'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -296,7 +296,7 @@ export const useActivity = ({
         localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
 
       if (!storagedData) {
-        resetActivity()
+        setActivityInfo({ ...defaultActivity, loading: false })
         return
       }
 
@@ -331,8 +331,6 @@ export const useActivity = ({
       (a, b) => b.createdAt - a.createdAt
     )
   }, [activityInfo])
-
-  const resetActivity = () => setActivityInfo(defaultActivity)
 
   useEffect(() => {
     if (walletEvents.length) {

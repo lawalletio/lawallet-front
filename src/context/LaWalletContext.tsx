@@ -100,7 +100,6 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    console.log(user.identity.loaded)
     if (user.identity.loaded) setHydrated(true)
   }, [user.identity.loaded])
 

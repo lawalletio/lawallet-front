@@ -69,7 +69,7 @@ export function TranslateProvider({
   )
 }
 
-export const useTranslate = (
+const useTranslate = (
   usedLng: AvailableLanguages,
   dictionary: DictionaryEntry
 ): IUseTranslation => {
