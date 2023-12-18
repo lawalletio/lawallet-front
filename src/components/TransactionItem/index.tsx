@@ -41,7 +41,7 @@ export default function Component({ transaction }: ComponentProps) {
   const { lng, t } = useTranslation()
   const { status, type } = transaction
   const {
-    userConfig: {
+    configuration: {
       props: { hideBalance, currency }
     },
     converter: { pricesData, convertCurrency }

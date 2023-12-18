@@ -37,7 +37,7 @@ export default function Page() {
   const { transferInfo, setAmountToPay, setComment } = useTransferContext()
   const {
     balance,
-    userConfig: {
+    configuration: {
       props: { currency: userCurrency, hideBalance }
     },
     converter: { pricesData, convertCurrency }

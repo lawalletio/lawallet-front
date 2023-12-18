@@ -27,7 +27,9 @@ import { useRouter } from 'next/navigation'
 export default function Page() {
   // const { lng, t, changeLanguage } = useTranslation()
   const { t } = useTranslation()
-  const { identity, setUserIdentity } = useLaWalletContext()
+  const {
+    user: { identity, setUser }
+  } = useLaWalletContext()
   const router: AppRouterInstance = useRouter()
   const errors = useErrors()
 
@@ -49,7 +51,7 @@ export default function Page() {
 
     if (confirmation) {
       localStorage.removeItem(STORAGE_IDENTITY_KEY)
-      setUserIdentity(defaultIdentity)
+      setUser(defaultIdentity)
       router.push('/login')
     }
   }

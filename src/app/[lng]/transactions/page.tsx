@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { sortedTransactions } = useLaWalletContext()
+  const { userTransactions } = useLaWalletContext()
   const router = useRouter()
 
   return (
@@ -25,7 +25,7 @@ export default function Page() {
         </Text> */}
         <Divider y={8} />
         <Flex direction="column" gap={4}>
-          {sortedTransactions.map(transaction => (
+          {userTransactions.map(transaction => (
             <TransactionItem key={transaction.id} transaction={transaction} />
           ))}
         </Flex>

@@ -39,7 +39,9 @@ const useCardConfig = (): CardConfigReturns => {
   })
 
   const { ndk } = useContext(NDKContext)
-  const { identity } = useLaWalletContext()
+  const {
+    user: { identity }
+  } = useLaWalletContext()
 
   const { events } = useSubscription({
     filters: [

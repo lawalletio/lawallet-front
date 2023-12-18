@@ -33,7 +33,10 @@ import RecipientElement from './components/RecipientElement'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, sortedTransactions } = useLaWalletContext()
+  const {
+    user: { identity },
+    userTransactions
+  } = useLaWalletContext()
   const { prepareTransaction, transferInfo } = useTransferContext()
 
   const [lastDestinations, setLastDestinations] = useState<string[]>([])
@@ -74,7 +77,7 @@ export default function Page() {
   const loadLastDestinations = () => {
     const lastDest: string[] = []
 
-    sortedTransactions.forEach(async tx => {
+    userTransactions.forEach(async tx => {
       if (
         tx.type === TransactionType.INTERNAL &&
         tx.direction === TransactionDirection.OUTGOING
@@ -99,8 +102,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (sortedTransactions.length) loadLastDestinations()
-  }, [sortedTransactions.length])
+    if (userTransactions.length) loadLastDestinations()
+  }, [userTransactions.length])
 
   useEffect(() => {
     router.prefetch('/scan')

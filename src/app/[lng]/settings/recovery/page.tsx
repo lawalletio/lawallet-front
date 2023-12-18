@@ -25,7 +25,9 @@ export default function Page() {
   const { t } = useTranslation()
   const router: AppRouterInstance = useRouter()
 
-  const { identity } = useLaWalletContext()
+  const {
+    user: { identity }
+  } = useLaWalletContext()
   const [switchOne, setSwitchOne] = useState<boolean>(false)
   const [switchTwo, setSwitchTwo] = useState<boolean>(false)
 

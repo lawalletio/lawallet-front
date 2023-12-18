@@ -3,11 +3,13 @@ export interface UserIdentity {
   hexpub: string
   npub: string
   privateKey: string
+  loaded: boolean
 }
 
 export const defaultIdentity: UserIdentity = {
   username: '',
   hexpub: '',
   privateKey: '',
-  npub: ''
+  npub: '',
+  loaded: false
 }

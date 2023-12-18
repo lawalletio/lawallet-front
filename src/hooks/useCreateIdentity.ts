@@ -51,7 +51,9 @@ const defaultAccount: CreateIdentityParams = {
 }
 
 export const useCreateIdentity = (): UseIdentityReturns => {
-  const { setUserIdentity } = useLaWalletContext()
+  const {
+    user: { setUser }
+  } = useLaWalletContext()
   const [loading, setLoading] = useState<boolean>(false)
 
   const [accountInfo, setAccountInfo] =
@@ -113,7 +115,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
 
     const generatedIdentity: UserIdentity = await generateUserIdentity()
     if (generatedIdentity) {
-      setUserIdentity(generatedIdentity)
+      setUser(generatedIdentity)
       router.push('/dashboard')
       setLoading(false)
     }
@@ -175,7 +177,7 @@ export const useCreateIdentity = (): UseIdentityReturns => {
             const { success, identity, message } = new_identity
 
             if (success && identity) {
-              setUserIdentity(identity!)
+              setUser(identity!)
 
               if (props.card) {
                 buildCardActivationEvent(props.card, identity.privateKey)

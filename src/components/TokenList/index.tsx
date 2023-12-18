@@ -8,21 +8,21 @@ import { CurrenciesList } from '@/types/config'
 import { TokenList } from './style'
 
 export default function Component() {
-  const { userConfig } = useLaWalletContext()
+  const { configuration } = useLaWalletContext()
 
   return (
     <TokenList>
       <Container>
         <Flex gap={4} justify="center">
           {CurrenciesList.map(currency => {
-            const selected: boolean = userConfig.props.currency === currency
+            const selected: boolean = configuration.props.currency === currency
 
             return (
               <Button
                 key={currency}
                 variant={selected ? 'bezeled' : 'borderless'}
                 size="small"
-                onClick={() => userConfig.changeCurrency(currency)}
+                onClick={() => configuration.changeCurrency(currency)}
               >
                 {currency}
               </Button>

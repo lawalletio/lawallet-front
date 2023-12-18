@@ -52,9 +52,9 @@ type SheetTypes = 'amount' | 'qr' | 'finished'
 const LightningDeposit = () => {
   const { lng, t } = useTranslation()
   const {
-    identity,
+    user: { identity },
     notifications,
-    userConfig: {
+    configuration: {
       props: { currency }
     },
     converter: { convertCurrency }

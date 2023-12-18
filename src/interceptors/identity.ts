@@ -21,7 +21,8 @@ export const generateUserIdentity = async (
     username: name ?? '',
     hexpub: identityPubKey,
     npub: nip19.npubEncode(identityPubKey),
-    privateKey: privateKey
+    privateKey: privateKey,
+    loaded: true
   }
 
   return identity

@@ -52,10 +52,10 @@ export default function Page() {
 
   const router = useRouter()
   const {
-    identity,
+    user: { identity },
     balance,
-    sortedTransactions,
-    userConfig: {
+    userTransactions,
+    configuration: {
       loading,
       toggleHideBalance,
       props: { hideBalance, currency }
@@ -199,7 +199,7 @@ export default function Page() {
           </>
         ) : null}
 
-        {sortedTransactions.length === 0 ? (
+        {userTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
             <Heading as="h4">{t('EMPTY_TRANSACTIONS_TITLE')}</Heading>
@@ -223,7 +223,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {sortedTransactions.slice(0, 5).map(transaction => (
+              {userTransactions.slice(0, 5).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}

@@ -25,7 +25,10 @@ const AddNewCardModal = () => {
   const { t } = useTranslation()
   const params = useSearchParams()
 
-  const { identity, notifications } = useLaWalletContext()
+  const {
+    user: { identity },
+    notifications
+  } = useLaWalletContext()
 
   const handleResponse = (alertDescription: string, alertType: AlertTypes) => {
     notifications.showAlert({

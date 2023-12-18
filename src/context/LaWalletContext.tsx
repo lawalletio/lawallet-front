@@ -1,6 +1,5 @@
 import SpinnerView from '@/components/Loader/SpinnerView'
 import { Alert } from '@/components/UI'
-import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { useActivity } from '@/hooks/useActivity'
 import useAlert, { UseAlertReturns } from '@/hooks/useAlerts'
 import useConfiguration, { ConfigReturns } from '@/hooks/useConfiguration'
@@ -8,14 +7,11 @@ import useCurrencyConverter, {
   UseConverterReturns
 } from '@/hooks/useCurrencyConverter'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
-import { getUsername } from '@/interceptors/identity'
-import { parseContent } from '@/lib/utils'
+import useUser, { UserReturns } from '@/hooks/useUser'
 import { TokenBalance } from '@/types/balance'
-import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
 import { differenceInSeconds } from 'date-fns'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { getPublicKey } from 'nostr-tools'
 import {
   createContext,
   useContext,
@@ -25,11 +21,10 @@ import {
 } from 'react'
 
 interface LaWalletContextType {
-  identity: UserIdentity
-  setUserIdentity: (new_identity: UserIdentity) => Promise<void>
+  user: UserReturns
   balance: TokenBalance
-  sortedTransactions: Transaction[]
-  userConfig: ConfigReturns
+  userTransactions: Transaction[]
+  configuration: ConfigReturns
   notifications: UseAlertReturns
   converter: UseConverterReturns
 }
@@ -56,65 +51,28 @@ export const LaWalletContext = createContext({} as LaWalletContextType)
 
 export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState<boolean>(false)
-  const [identity, setIdentity] = useState<UserIdentity>(defaultIdentity)
+  const user: UserReturns = useUser()
 
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
   const notifications = useAlert()
 
-  const { activityInfo, sortedTransactions, resetActivity } = useActivity({
-    pubkey: identity.hexpub,
-    enabled: Boolean(identity.hexpub.length)
+  const { activityInfo, userTransactions } = useActivity({
+    pubkey: user.identity.hexpub,
+    enabled: Boolean(user.identity.hexpub.length)
   })
 
-  const userConfig: ConfigReturns = useConfiguration()
+  const configuration: ConfigReturns = useConfiguration()
   const converter = useCurrencyConverter()
 
   const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
+    pubkey: user.identity.hexpub,
     tokenId: 'BTC'
   })
 
-  const preloadIdentity = async () => {
-    const storageIdentity = localStorage.getItem(STORAGE_IDENTITY_KEY)
-
-    if (storageIdentity) {
-      const userIdentity: UserIdentity = parseContent(storageIdentity)
-
-      if (userIdentity.privateKey) {
-        const hexpub: string = getPublicKey(userIdentity.privateKey)
-        const username: string = await getUsername(hexpub)
-
-        if (
-          hexpub === userIdentity.hexpub &&
-          username == userIdentity.username
-        ) {
-          setIdentity(userIdentity)
-        } else {
-          setIdentity({
-            ...userIdentity,
-            hexpub,
-            username
-          })
-        }
-      }
-    }
-
-    setHydrated(true)
-    return
-  }
-
-  const setUserIdentity = async (new_identity: UserIdentity) => {
-    resetActivity()
-
-    setIdentity(new_identity)
-    localStorage.setItem(STORAGE_IDENTITY_KEY, JSON.stringify(new_identity))
-    return
-  }
-
   const notifyReceivedTransaction = () => {
-    const new_transactions: Transaction[] = sortedTransactions.filter(tx => {
+    const new_transactions: Transaction[] = userTransactions.filter(tx => {
       const transactionId: string = tx.id
       return Boolean(!activityInfo.idsLoaded.includes(transactionId))
     })
@@ -140,17 +98,17 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    preloadIdentity()
-  }, [])
+    if (user.identity.loaded) setHydrated(true)
+  }, [user.identity.loaded])
 
   useEffect(() => {
-    if (sortedTransactions.length) notifyReceivedTransaction()
-  }, [sortedTransactions.length])
+    if (userTransactions.length) notifyReceivedTransaction()
+  }, [userTransactions.length])
 
   useLayoutEffect(() => {
     if (hydrated) {
       const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
-      const userLogged: boolean = Boolean(identity.hexpub.length)
+      const userLogged: boolean = Boolean(user.identity.hexpub.length)
       const nonce: string = params.get('i') || ''
       const card: string = params.get('c') || ''
 
@@ -170,14 +128,13 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
           break
       }
     }
-  }, [pathname, identity, hydrated])
+  }, [pathname, user.identity, hydrated])
 
   const value = {
-    identity,
-    setUserIdentity,
+    user,
     balance,
-    sortedTransactions,
-    userConfig,
+    userTransactions,
+    configuration,
     notifications,
     converter
   }

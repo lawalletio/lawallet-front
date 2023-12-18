@@ -4,16 +4,16 @@ import { ThemeProvider } from 'styled-components'
 
 import StyledComponentsRegistry from '@/lib/registry'
 
-import theme from '@/styles/theme'
-import { fontSecondary } from '@/styles/fonts'
-import GlobalStyles from '@/styles/GlobalStyles'
-import { ReactNode } from 'react'
-import { LaWalletProvider } from '@/context/LaWalletContext'
 import config from '@/constants/config'
-import Script from 'next/script'
+import { LaWalletProvider } from '@/context/LaWalletContext'
 import { NDKProvider } from '@/context/NDKContext'
 import { TranslateProvider } from '@/context/TranslateContext'
+import GlobalStyles from '@/styles/GlobalStyles'
+import { fontSecondary } from '@/styles/fonts'
+import theme from '@/styles/theme'
 import { AvailableLanguages, defaultLocale } from '@/translations/types'
+import Script from 'next/script'
+import { ReactNode } from 'react'
 
 interface ProviderProps {
   children: ReactNode

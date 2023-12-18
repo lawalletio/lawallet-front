@@ -33,13 +33,13 @@ export type ActivityType = {
   loading: boolean
   lastCached: number
   cached: Transaction[]
-  suscription: Transaction[]
+  subscription: Transaction[]
   idsLoaded: string[]
 }
 
 export interface UseActivityReturn {
   activityInfo: ActivityType
-  sortedTransactions: Transaction[]
+  userTransactions: Transaction[]
   resetActivity: () => void
 }
 
@@ -74,7 +74,7 @@ const defaultActivity = {
   loading: true,
   lastCached: 0,
   cached: [],
-  suscription: [],
+  subscription: [],
   idsLoaded: []
 }
 
@@ -241,7 +241,7 @@ export const useActivity = ({
     setActivityInfo(prev => {
       return {
         ...prev,
-        idsLoaded: sortedTransactions.map(tx => tx.id.toString()),
+        idsLoaded: userTransactions.map(tx => tx.id.toString()),
         loading: true
       }
     })
@@ -285,7 +285,7 @@ export const useActivity = ({
     setActivityInfo(prev => {
       return {
         ...prev,
-        suscription: userTransactions,
+        subscription: userTransactions,
         loading: false
       }
     })
@@ -299,6 +299,8 @@ export const useActivity = ({
       if (!storagedData) {
         setActivityInfo({
           ...activityInfo,
+          subscription: [],
+          cached: [],
           loading: false
         })
         return
@@ -311,7 +313,7 @@ export const useActivity = ({
         : 0
 
       setActivityInfo({
-        suscription: [],
+        subscription: [],
         idsLoaded: cachedTxs.map(tx => tx.id.toString()),
         cached: cachedTxs,
         lastCached,
@@ -320,8 +322,8 @@ export const useActivity = ({
     }
   }
 
-  const sortedTransactions: Transaction[] = useMemo(() => {
-    const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
+  const userTransactions: Transaction[] = useMemo(() => {
+    const TXsWithoutCached: Transaction[] = activityInfo.subscription.filter(
       tx => {
         const cached = activityInfo.cached.find(
           cachedTX => cachedTX.id === tx.id
@@ -357,16 +359,16 @@ export const useActivity = ({
   }, [pubkey])
 
   useEffect(() => {
-    if (sortedTransactions.length)
+    if (userTransactions.length)
       localStorage.setItem(
         `${CACHE_TXS_KEY}_${pubkey}`,
-        JSON.stringify(sortedTransactions)
+        JSON.stringify(userTransactions)
       )
-  }, [sortedTransactions])
+  }, [userTransactions])
 
   return {
     activityInfo,
-    sortedTransactions,
+    userTransactions,
     resetActivity
   }
 }

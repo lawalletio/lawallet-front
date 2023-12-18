@@ -18,7 +18,9 @@ import { useEffect } from 'react'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, setUserIdentity } = useLaWalletContext()
+  const {
+    user: { identity, setUser }
+  } = useLaWalletContext()
 
   const router = useRouter()
   const errors = useErrors()
@@ -40,7 +42,7 @@ export default function Page() {
             if (res.error) errors.modifyError(res.error)
 
             if (res.name) {
-              setUserIdentity({
+              setUser({
                 ...generatedIdentity,
                 username: res.name
               }).then(() => router.push('/dashboard'))

@@ -26,7 +26,7 @@ import { useMemo } from 'react'
 export default function Page() {
   const { lng, t } = useTranslation()
   const {
-    userConfig: {
+    configuration: {
       props: { currency }
     },
     converter: { pricesData, convertCurrency }
