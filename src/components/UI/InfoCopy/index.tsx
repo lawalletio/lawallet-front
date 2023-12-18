@@ -1,4 +1,4 @@
-import { copy } from '@/lib/share'
+import { copy } from '@/lib/utils/share'
 import { useTranslation } from '@/context/TranslateContext'
 import useAlert from '@/hooks/useAlerts'
 

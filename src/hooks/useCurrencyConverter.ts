@@ -1,4 +1,5 @@
-import { decimalsToUse, roundToDown } from '@/lib/formatter'
+import { parseContent } from '@/lib/utils'
+import { decimalsToUse, roundToDown } from '@/lib/utils/formatter'
 import { AvailableCurrencies } from '@/types/config'
 import { useEffect, useState } from 'react'
 
@@ -80,7 +81,7 @@ const useCurrencyConverter = (): UseConverterReturns => {
       return
     }
 
-    const parsedPrices = JSON.parse(storagedPrices)
+    const parsedPrices = parseContent(storagedPrices)
     setPricesData(parsedPrices)
 
     if (parsedPrices.lastUpdated + UPDATE_PRICES_TIME < Date.now()) {

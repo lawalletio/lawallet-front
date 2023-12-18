@@ -1,6 +1,4 @@
 import { NostrEvent } from '@nostr-dev-kit/ndk'
-import { nip04 } from 'nostr-tools'
-import { nowInSeconds } from './utils'
 import {
   Cipher,
   Decipher,
@@ -9,6 +7,8 @@ import {
   createHash,
   randomBytes
 } from 'crypto'
+import { nip04 } from 'nostr-tools'
+import { nowInSeconds, parseContent } from '.'
 
 /**
  * An interface representing the general structure of the JSON-encoded content of a Multi-NIP-04 event
@@ -342,7 +342,7 @@ export async function parseMultiNip04Event(
     throw new Error('Receiver not in receivers list')
   }
 
-  const rawContent = JSON.parse(event.content)
+  const rawContent = parseContent(event.content)
 
   if (!('mac' in rawContent)) {
     throw new Error('Malformed event content, missing "mac"')

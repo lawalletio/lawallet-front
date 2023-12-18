@@ -25,7 +25,7 @@ import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
 import { useNumpad } from '@/hooks/useNumpad'
-import { decimalsToUse, formatToPreference } from '@/lib/formatter'
+import { decimalsToUse, formatToPreference } from '@/lib/utils/formatter'
 import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
 

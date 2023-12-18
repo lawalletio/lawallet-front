@@ -304,7 +304,7 @@ export const useActivity = ({
         return
       }
 
-      const cachedTxs: Transaction[] = JSON.parse(storagedData)
+      const cachedTxs: Transaction[] = parseContent(storagedData)
 
       const lastCached: number = cachedTxs.length
         ? 1 + cachedTxs[0].events[cachedTxs[0].events.length - 1].created_at

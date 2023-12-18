@@ -35,7 +35,7 @@ import theme from '@/styles/theme'
 // Harcode data
 import config from '@/constants/config'
 import { useTranslation } from '@/context/TranslateContext'
-import { formatToPreference } from '@/lib/formatter'
+import { formatToPreference } from '@/lib/utils/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations
@@ -43,7 +43,7 @@ import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
-import { copy } from '@/lib/share'
+import { copy } from '@/lib/utils/share'
 import Link from 'next/link'
 
 export default function Page() {

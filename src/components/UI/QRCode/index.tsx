@@ -5,7 +5,7 @@ import ReactQRCode from 'react-qr-code'
 
 import { useLaWalletContext } from '@/context/LaWalletContext'
 
-import { copy } from '@/lib/share'
+import { copy } from '@/lib/utils/share'
 
 import Text from '../Text'
 

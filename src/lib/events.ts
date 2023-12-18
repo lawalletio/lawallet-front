@@ -16,7 +16,7 @@ import {
   nip26
 } from 'nostr-tools'
 import { escapingBrackets, nowInSeconds } from './utils'
-import { buildMultiNip04Event } from './nip04'
+import { buildMultiNip04Event } from './utils/nip04'
 import { TransferInformation } from '@/interceptors/transaction'
 
 export enum LaWalletKinds {

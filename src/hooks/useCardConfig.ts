@@ -6,8 +6,8 @@ import {
   cardInfoRequest
 } from '@/interceptors/card'
 import { LaWalletKinds, buildCardInfoRequest, getTag } from '@/lib/events'
-import { parseMultiNip04Event } from '@/lib/nip04'
-import { nowInSeconds } from '@/lib/utils'
+import { parseMultiNip04Event } from '@/lib/utils/nip04'
+import { nowInSeconds, parseContent } from '@/lib/utils'
 import {
   CardConfigPayload,
   CardDataPayload,
@@ -124,9 +124,10 @@ const useCardConfig = (): CardConfigReturns => {
 
         const subkind: string = getTag(nostrEv.tags, 't')
 
-        if (subkind === ConfigTypes.DATA) data = JSON.parse(parsedEncryptedData)
+        if (subkind === ConfigTypes.DATA)
+          data = parseContent(parsedEncryptedData)
         if (subkind === ConfigTypes.CONFIG)
-          config = JSON.parse(parsedEncryptedData)
+          config = parseContent(parsedEncryptedData)
       }
 
       setCards({
@@ -175,7 +176,7 @@ const useCardConfig = (): CardConfigReturns => {
         ...prev,
         loadedAt: nostrEv.created_at + 1,
         [subkind === ConfigTypes.DATA ? 'data' : 'config']:
-          JSON.parse(parsedEncryptedData)
+          parseContent(parsedEncryptedData)
       }
     })
   }

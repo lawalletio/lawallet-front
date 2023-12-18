@@ -1,3 +1,4 @@
+import { parseContent } from '@/lib/utils'
 import { AvailableCurrencies, ConfigProps, defaultConfig } from '@/types/config'
 import { useEffect, useState } from 'react'
 
@@ -35,7 +36,7 @@ const useConfiguration = (): ConfigReturns => {
       return
     }
 
-    const parsedConfig: ConfigProps = JSON.parse(storagedConfig)
+    const parsedConfig: ConfigProps = parseContent(storagedConfig)
     setProps(parsedConfig)
     setLoading(false)
   }

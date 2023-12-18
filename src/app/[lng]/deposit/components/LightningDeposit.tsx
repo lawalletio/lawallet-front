@@ -8,9 +8,9 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useLaWalletContext } from '@/context/LaWalletContext'
 
-import { formatAddress, formatToPreference } from '@/lib/formatter'
-import lnurl from '@/lib/lnurl'
-import { copy } from '@/lib/share'
+import { formatAddress, formatToPreference } from '@/lib/utils/formatter'
+import lnurl from '@/lib/utils/lnurl'
+import { copy } from '@/lib/utils/share'
 
 import { useTranslation } from '@/context/TranslateContext'
 import { useNumpad } from '@/hooks/useNumpad'

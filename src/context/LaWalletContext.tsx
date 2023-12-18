@@ -9,6 +9,7 @@ import useCurrencyConverter, {
 } from '@/hooks/useCurrencyConverter'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { getUsername } from '@/interceptors/identity'
+import { parseContent } from '@/lib/utils'
 import { TokenBalance } from '@/types/balance'
 import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
@@ -79,7 +80,7 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
     const storageIdentity = localStorage.getItem(STORAGE_IDENTITY_KEY)
 
     if (storageIdentity) {
-      const userIdentity: UserIdentity = JSON.parse(storageIdentity)
+      const userIdentity: UserIdentity = parseContent(storageIdentity)
 
       if (userIdentity.privateKey) {
         const hexpub: string = getPublicKey(userIdentity.privateKey)

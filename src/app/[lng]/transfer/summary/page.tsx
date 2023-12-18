@@ -21,7 +21,7 @@ import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
 import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
-import { formatAddress, formatToPreference } from '@/lib/formatter'
+import { formatAddress, formatToPreference } from '@/lib/utils/formatter'
 import { TransferTypes } from '@/types/transaction'
 import { useEffect, useMemo, useState } from 'react'
 

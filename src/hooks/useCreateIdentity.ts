@@ -42,7 +42,7 @@ export type UseIdentityReturns = {
 
 let checkExistUsername: NodeJS.Timeout
 
-const defaultAccount = {
+const defaultAccount: CreateIdentityParams = {
   nonce: '',
   card: '',
   name: '',

@@ -6,7 +6,13 @@ import {
   ReplacementParams,
   defaultLocale
 } from '@/translations/types'
-import { createContext, useContext, useLayoutEffect, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState
+} from 'react'
 
 interface IUseTranslation {
   lng: AvailableLanguages
@@ -40,14 +46,18 @@ export function TranslateProvider({
   const [dictionary, setDictionary] = useState<DictionaryEntry>({})
   const translations = useTranslate(lng, dictionary)
 
+  const loadDefaultLocale = useCallback(
+    () => dynamicLoadMessages(defaultLocale).then(res => setDictionary(res)),
+    []
+  )
+
   useLayoutEffect(() => {
     dynamicLoadMessages(lng)
       .then(res => {
-        res
-          ? setDictionary(res)
-          : dynamicLoadMessages(defaultLocale).then(res => setDictionary(res))
+        res ? setDictionary(res) : loadDefaultLocale()
       })
       .catch(() => {
+        loadDefaultLocale()
         throw new Error('Error loading translation')
       })
   }, [])
