@@ -1,16 +1,14 @@
 import Container from '@/components/Layout/Container'
-import { Divider, Flex, Text } from '@/components/UI'
+import { Flex, Text } from '@/components/UI'
 import { useTranslation } from '@/context/TranslateContext'
-import EmptySvg from './EmptySvg'
 import theme from '@/styles/theme'
+import EmptySvg from './EmptySvg'
 
 const EmptyCards = () => {
   const { t } = useTranslation()
 
   return (
     <Container size="medium">
-      <Divider y={16} />
-
       <Flex
         flex={1}
         direction="column"
