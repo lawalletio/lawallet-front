@@ -170,18 +170,17 @@ export default function Page() {
       <Container size="small">
         <Divider y={16} />
         <Flex gap={8}>
-          <Button onClick={() => router.push('/deposit')}>
-            <Icon>
-              <ReceiveIcon />
-            </Icon>
-            {t('DEPOSIT')}
-          </Button>
-
           <Button onClick={() => router.push('/transfer')} color="secondary">
             <Icon>
               <SendIcon />
             </Icon>
             {t('TRANSFER')}
+          </Button>
+          <Button onClick={() => router.push('/deposit')}>
+            <Icon>
+              <ReceiveIcon />
+            </Icon>
+            {t('DEPOSIT')}
           </Button>
         </Flex>
         <Divider y={16} />
@@ -237,9 +236,7 @@ export default function Page() {
 
       <ButtonCTA>
         <Button color="secondary" onClick={() => router.push('/scan')}>
-          <Icon>
-            <QrCodeIcon />
-          </Icon>
+          <QrCodeIcon />
         </Button>
       </ButtonCTA>
     </>
