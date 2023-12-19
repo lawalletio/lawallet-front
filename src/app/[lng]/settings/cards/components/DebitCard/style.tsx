@@ -17,7 +17,7 @@ export const ConfigCard = styled.div<CardImageProp>`
   opacity: ${props => (props.$isActive ? '1' : 0)};
   width: ${props => (props.$isActive ? 'auto' : 0)};
 
-  padding: 0 20px;
+  padding: 0 24px;
 
   transition-duration: 0.4s;
 `
