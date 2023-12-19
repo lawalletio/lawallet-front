@@ -17,10 +17,12 @@ const EmptyCards = () => {
         gap={16}
       >
         <EmptySvg />
-        <Text isBold={true}>{t('NO_HAVE_CARDS')}</Text>
-        <Text size="small" color={theme.colors.gray50}>
-          {t('NOT_FOUND_CARD')}
-        </Text>
+        <Flex direction="column" gap={4} align="center">
+          <Text isBold={true}>{t('NO_HAVE_CARDS')}</Text>
+          <Text size="small" color={theme.colors.gray50}>
+            {t('NOT_FOUND_CARD')}
+          </Text>
+        </Flex>
       </Flex>
     </Container>
   )

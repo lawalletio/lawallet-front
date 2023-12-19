@@ -145,7 +145,7 @@
   "ERROR_ON_COMMENT": "No puedes poner ese simbolo en el comentario.",
   "COMMENT_MAX_LENGHT": "Puedes escribir un máximo de {{ chars }} caracteres",
   "NO_HAVE_CARDS": "Sin tarjetas",
-  "NOT_FOUND_CARD": "No hemos encontrado tarjetas asociadas a tu cuenta",
+  "NOT_FOUND_CARD": "No hemos encontrado tarjetas asociadas a tu cuenta.",
   "URL_SCANNED_TITLE": "Enlace escaneado",
   "URL_SCANNED_DESC": "Escaneaste el enlace {{ url }} ¿Deseas abrirlo en el navegador?",
   "OPEN_URL": "Abrir enlace",
