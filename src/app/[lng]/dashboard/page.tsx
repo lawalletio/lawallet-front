@@ -14,10 +14,10 @@ import { useEffect, useMemo, useState } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
-import Footer from '@/components/Layout/Footer'
 import Navbar from '@/components/Layout/Navbar'
 import TokenList from '@/components/TokenList'
 import TransactionItem from '@/components/TransactionItem'
+import ButtonCTA from '@/components/ButtonCTA'
 import {
   Avatar,
   BannerAlert,
@@ -235,17 +235,13 @@ export default function Page() {
         <Divider y={64} />
       </Container>
 
-      <Footer>
-        <Flex justify="center">
-          <div>
-            <Button color="secondary" onClick={() => router.push('/scan')}>
-              <Icon>
-                <QrCodeIcon />
-              </Icon>
-            </Button>
-          </div>
-        </Flex>
-      </Footer>
+      <ButtonCTA>
+        <Button color="secondary" onClick={() => router.push('/scan')}>
+          <Icon>
+            <QrCodeIcon />
+          </Icon>
+        </Button>
+      </ButtonCTA>
     </>
   )
 }
