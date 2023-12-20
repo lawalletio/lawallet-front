@@ -17,6 +17,7 @@ import {
 import { NDKEvent, NDKKind } from '@nostr-dev-kit/ndk'
 import { useContext, useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
+import config from '@/constants/config'
 
 export type CardConfigReturns = {
   cards: ICards
@@ -106,6 +107,7 @@ const useCardConfig = (): CardConfigReturns => {
   const loadCardData = async () => {
     const fetchedEvents: Set<NDKEvent> = await ndk.fetchEvents({
       kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE.valueOf() as NDKKind],
+      authors: [config.pubKeys.cardPubkey],
       '#d': [
         `${identity.hexpub}:${ConfigTypes.DATA.valueOf()}`,
         `${identity.hexpub}:${ConfigTypes.CONFIG.valueOf()}`

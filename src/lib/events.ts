@@ -204,11 +204,10 @@ export const buildCardConfigEvent = async (
     [config.pubKeys.cardPubkey, userPubkey]
   )
 
-  event.kind = LaWalletKinds.PARAMETRIZED_REPLACEABLE
+  event.kind = LaWalletKinds.REGULAR
 
   event.tags = event.tags.concat([
-    ['t', ConfigTypes.CONFIG.valueOf()],
-    ['d', `${userPubkey}:${ConfigTypes.CONFIG.valueOf()}`]
+    ['t', `${ConfigTypes.CONFIG.valueOf()}-change`],
   ])
 
   event.id = getEventHash(event as UnsignedEvent)
