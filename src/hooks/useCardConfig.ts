@@ -42,7 +42,7 @@ const useCardConfig = (): CardConfigReturns => {
     user: { identity }
   } = useLaWalletContext()
 
-  const { events } = useSubscription({
+  const { subscription } = useSubscription({
     filters: [
       {
         kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE.valueOf() as NDKKind],
@@ -80,10 +80,9 @@ const useCardConfig = (): CardConfigReturns => {
     buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
-  const processReceivedEvent = async (events: NDKEvent[]) => {
+  const processReceivedEvent = async (event: NDKEvent) => {
     console.info('processReceivedEvent')
-    const latestEvent = events.sort((a, b) => b.created_at! - a.created_at!)[0]
-    const nostrEv = await latestEvent.toNostrEvent()
+    const nostrEv = await event.toNostrEvent()
 
     const parsedEncryptedData = await parseMultiNip04Event(
       nostrEv,
@@ -107,11 +106,10 @@ const useCardConfig = (): CardConfigReturns => {
   }
 
   useEffect(() => {
-    if (!events.length) {
-      return
-    }
-    processReceivedEvent(events)
-  }, [events])
+    subscription?.on('event', data => {
+      processReceivedEvent(data)
+    })
+  }, [subscription])
 
   return { cards, toggleCardStatus }
 }

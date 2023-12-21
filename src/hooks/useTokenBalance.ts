@@ -30,7 +30,7 @@ export const useTokenBalance = ({
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { events: balanceEvents } = useSubscription({
+  const { subscription: balanceSubscription } = useSubscription({
     filters: [
       {
         authors: [config.pubKeys.ledgerPubkey],
@@ -89,20 +89,16 @@ export const useTokenBalance = ({
   }, [pubkey])
 
   useEffect(() => {
-    if (balanceEvents.length) {
-      const latestEvent = balanceEvents.sort(
-        (a, b) => b.created_at! - a.created_at!
-      )[0]
-
+    balanceSubscription?.on('event', event => {
       setBalance({
         tokenId: tokenId,
-        amount: Number(latestEvent.getMatchingTags('amount')[0]?.[1]) / 1000,
-        lastEvent: latestEvent as NostrEvent,
-        createdAt: new Date(latestEvent.created_at!),
+        amount: Number(event.getMatchingTags('amount')[0]?.[1]) / 1000,
+        lastEvent: event as NostrEvent,
+        createdAt: new Date(event.created_at!),
         loading: false
       })
-    }
-  }, [balanceEvents])
+    })
+  }, [balanceSubscription])
 
   return {
     balance
