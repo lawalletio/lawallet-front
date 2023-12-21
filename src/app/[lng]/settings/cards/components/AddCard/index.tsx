@@ -6,7 +6,7 @@ import { AlertTypes } from '@/hooks/useAlerts'
 import { requestCardActivation } from '@/interceptors/card'
 import { buildCardActivationEvent } from '@/lib/events'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export type NewCard = {
@@ -23,6 +23,8 @@ const AddNewCardModal = () => {
   const [newCardInfo, setNewCardInfo] = useState<NewCard>(defaultNewCard)
 
   const { t } = useTranslation()
+  const router = useRouter()
+  const pathname = usePathname()
   const params = useSearchParams()
 
   const {
@@ -30,13 +32,21 @@ const AddNewCardModal = () => {
     notifications
   } = useLaWalletContext()
 
-  const handleResponse = (alertDescription: string, alertType: AlertTypes) => {
+  const resetCardInfo = () => {
+    setNewCardInfo(defaultNewCard)
+    router.replace(pathname)
+  }
+
+  const sendNotification = (
+    alertDescription: string,
+    alertType: AlertTypes
+  ) => {
     notifications.showAlert({
       description: alertDescription,
       type: alertType
     })
 
-    setNewCardInfo(defaultNewCard)
+    resetCardInfo()
   }
 
   const handleActivateCard = () => {
@@ -55,11 +65,11 @@ const AddNewCardModal = () => {
 
           const type: AlertTypes = cardActivated ? 'success' : 'error'
 
-          handleResponse(description, type)
+          sendNotification(description, type)
         })
       })
       .catch(() => {
-        handleResponse('ACTIVATE_ERROR', 'error')
+        sendNotification('ACTIVATE_ERROR', 'error')
       })
   }
 
@@ -84,10 +94,7 @@ const AddNewCardModal = () => {
           <Button onClick={handleActivateCard}>{t('ACTIVATE_CARD')}</Button>
         </Flex>
         <Flex>
-          <Button
-            variant="borderless"
-            onClick={() => setNewCardInfo(defaultNewCard)}
-          >
+          <Button variant="borderless" onClick={resetCardInfo}>
             {t('CANCEL')}
           </Button>
         </Flex>
