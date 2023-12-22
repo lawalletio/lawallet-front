@@ -98,7 +98,7 @@ export default function Page() {
             {t('BACKUP_ACCOUNT')}
           </LinkSetting>
         </Flex>
-        {/* <Divider y={16} />
+        <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
           {t('ABOUT_US')}
         </Text>
@@ -110,7 +110,7 @@ export default function Page() {
           <LinkSetting href="https://discord.gg/QESv76truh" target="_blank">
             Discord
           </LinkSetting>
-        </Flex> */}
+        </Flex>
         <Divider y={16} />
         <Flex justify="center">
           <Text size="small" color={theme.colors.gray50}>
