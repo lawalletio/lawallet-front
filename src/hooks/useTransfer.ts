@@ -57,7 +57,10 @@ const useTransfer = ({ tokenName }: TransferProps): TransferContextType => {
         '#e': startEvent?.id ? [startEvent.id] : []
       }
     ],
-    options: {},
+    options: {
+      groupable: false,
+      groupableDelay: 0
+    },
     enabled: Boolean(startEvent?.id)
   })
 
