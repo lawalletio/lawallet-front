@@ -140,21 +140,25 @@ export default function Page() {
         isOpen={sheetLanguage}
         onClose={() => setSheetLanguage(false)}
       >
-        <Radio
-          text={t('ENGLISH')}
-          checked={lng === 'en'}
-          onClick={() => {
-            if (lng !== 'en') changeLanguage('en')
-          }}
-        />
+        <Container>
+          <Flex direction="column" flex={1}>
+            <Radio
+              text={t('ENGLISH')}
+              checked={lng === 'en'}
+              onClick={() => {
+                if (lng !== 'en') changeLanguage('en')
+              }}
+            />
 
-        <Radio
-          text={t('SPANISH')}
-          checked={lng === 'es'}
-          onClick={() => {
-            if (lng !== 'es') changeLanguage('es')
-          }}
-        />
+            <Radio
+              text={t('SPANISH')}
+              checked={lng === 'es'}
+              onClick={() => {
+                if (lng !== 'es') changeLanguage('es')
+              }}
+            />
+          </Flex>
+        </Container>
       </Sheet>
     </>
   )
