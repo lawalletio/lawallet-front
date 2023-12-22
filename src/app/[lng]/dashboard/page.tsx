@@ -10,32 +10,32 @@ import {
   SendIcon,
   VisibleIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
-import Footer from '@/components/Layout/Footer'
 import Navbar from '@/components/Layout/Navbar'
 import TokenList from '@/components/TokenList'
 import TransactionItem from '@/components/TransactionItem'
+import ButtonCTA from '@/components/ButtonCTA'
 import {
   Avatar,
+  BannerAlert,
   Button,
   Divider,
   Flex,
   Heading,
   Icon,
-  Text,
-  BannerAlert
+  Text
 } from '@/components/UI'
 
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import theme from '@/styles/theme'
 
 // Harcode data
-import { WALLET_DOMAIN } from '@/constants/config'
-import { useTranslation } from '@/hooks/useTranslations'
-import { formatToPreference } from '@/lib/formatter'
+import config from '@/constants/config'
+import { useTranslation } from '@/context/TranslateContext'
+import { formatToPreference } from '@/lib/utils/formatter'
 import { useRouter } from 'next/navigation'
 
 // Animations
@@ -43,29 +43,25 @@ import Animations from '@/components/Animations'
 import BitcoinTrade from '@/components/Animations/bitcoin-trade.json'
 import { BtnLoader } from '@/components/Loader/Loader'
 import { CACHE_BACKUP_KEY } from '@/constants/constants'
-import { copy } from '@/lib/share'
+import { copy } from '@/lib/utils/share'
 import Link from 'next/link'
-import { checkClaimVoucher } from '@/lib/utils'
 
 export default function Page() {
-  const { t } = useTranslation()
-  const [showBanner, setShowBanner] = useState<'voucher' | 'backup' | 'none'>(
-    'none'
-  )
+  const { t, lng } = useTranslation()
+  const [showBanner, setShowBanner] = useState<'backup' | 'none'>('none')
 
   const router = useRouter()
   const {
-    lng,
-    identity,
+    user: { identity },
     balance,
-    sortedTransactions,
-    userConfig: {
+    userTransactions,
+    configuration: {
       loading,
       toggleHideBalance,
       props: { hideBalance, currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const convertedBalance: string = useMemo(() => {
     const amount: number = convertCurrency(balance.amount, 'SAT', currency)
@@ -84,11 +80,7 @@ export default function Page() {
       localStorage.getItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`) || false
     )
 
-    const userClaimVoucher: boolean = checkClaimVoucher(identity.hexpub)
-
-    setShowBanner(
-      !userClaimVoucher ? 'voucher' : !userMadeBackup ? 'backup' : 'none'
-    )
+    setShowBanner(!userMadeBackup ? 'backup' : 'none')
   }, [])
 
   return (
@@ -98,7 +90,9 @@ export default function Page() {
           <Flex align="center" gap={8}>
             <Avatar>
               <Text size="small">
-                {identity.username.substring(0, 2).toUpperCase()}
+                {identity.username
+                  ? identity.username.substring(0, 2).toUpperCase()
+                  : 'AN'}
               </Text>
             </Avatar>
             <Flex direction="column">
@@ -107,14 +101,17 @@ export default function Page() {
               </Text>
               <Flex
                 onClick={() => {
-                  copy(`${identity.username}@${WALLET_DOMAIN}`)
+                  if (identity.username)
+                    copy(`${identity.username}@${config.env.WALLET_DOMAIN}`)
                 }}
               >
                 {loading ? (
                   <Text> -- </Text>
                 ) : (
                   <Text>
-                    {identity.username}@{WALLET_DOMAIN}
+                    {identity.username
+                      ? `${identity.username}@${config.env.WALLET_DOMAIN}`
+                      : t('ANONYMOUS')}
                   </Text>
                 )}
               </Flex>
@@ -173,34 +170,22 @@ export default function Page() {
       <Container size="small">
         <Divider y={16} />
         <Flex gap={8}>
-          <Button onClick={() => router.push('/deposit')}>
-            <Icon>
-              <ReceiveIcon />
-            </Icon>
-            {t('DEPOSIT')}
-          </Button>
-
           <Button onClick={() => router.push('/transfer')} color="secondary">
             <Icon>
               <SendIcon />
             </Icon>
             {t('TRANSFER')}
           </Button>
+          <Button onClick={() => router.push('/deposit')}>
+            <Icon>
+              <ReceiveIcon />
+            </Icon>
+            {t('DEPOSIT')}
+          </Button>
         </Flex>
         <Divider y={16} />
 
-        {showBanner === 'voucher' ? (
-          <>
-            <Link href="/voucher">
-              <BannerAlert
-                title={t('CLAIM_VOUCHER_TITLE')}
-                description={t('CLAIM_VOUCHER_DESC')}
-                color="warning"
-              />
-            </Link>
-            <Divider y={16} />
-          </>
-        ) : showBanner === 'backup' ? (
+        {showBanner === 'backup' ? (
           <>
             <Link href="/settings/recovery">
               <BannerAlert
@@ -213,7 +198,7 @@ export default function Page() {
           </>
         ) : null}
 
-        {sortedTransactions.length === 0 ? (
+        {userTransactions.length === 0 ? (
           <Flex direction="column" justify="center" align="center" flex={1}>
             <Animations data={BitcoinTrade} />
             <Heading as="h4">{t('EMPTY_TRANSACTIONS_TITLE')}</Heading>
@@ -237,7 +222,7 @@ export default function Page() {
             </Flex>
 
             <Flex direction="column" gap={4}>
-              {sortedTransactions.slice(0, 5).map(transaction => (
+              {userTransactions.slice(0, 5).map(transaction => (
                 <TransactionItem
                   key={transaction.id}
                   transaction={transaction}
@@ -249,17 +234,11 @@ export default function Page() {
         <Divider y={64} />
       </Container>
 
-      <Footer>
-        <Flex justify="center">
-          <div>
-            <Button color="secondary" onClick={() => router.push('/scan')}>
-              <Icon>
-                <QrCodeIcon />
-              </Icon>
-            </Button>
-          </div>
-        </Flex>
-      </Footer>
+      <ButtonCTA>
+        <Button color="secondary" onClick={() => router.push('/scan')}>
+          <QrCodeIcon />
+        </Button>
+      </ButtonCTA>
     </>
   )
 }

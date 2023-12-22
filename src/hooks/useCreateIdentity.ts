@@ -1,17 +1,18 @@
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { regexUserName } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { requestCardActivation } from '@/interceptors/card'
 import {
   IdentityResponse,
   claimIdentity,
   existIdentity,
   generateUserIdentity
 } from '@/interceptors/identity'
-import { cardActivationEvent, identityEvent } from '@/lib/events'
+import { buildCardActivationEvent, buildIdentityEvent } from '@/lib/events'
 import { UserIdentity } from '@/types/identity'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useContext, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import useErrors, { IUseErrors } from './useErrors'
-import { requestCardActivation } from '@/interceptors/card'
 
 export interface AccountProps {
   nonce: string
@@ -33,26 +34,30 @@ export type CreateIdentityReturns = {
 export type UseIdentityReturns = {
   loading: boolean
   accountInfo: CreateIdentityParams
-  setAccountInfo: Dispatch<SetStateAction<CreateIdentityParams>>
   errors: IUseErrors
+  setAccountInfo: Dispatch<SetStateAction<CreateIdentityParams>>
   handleChangeUsername: (username: string) => void
   handleCreateIdentity: (props: AccountProps) => void
 }
 
-export const regexUserName: RegExp = /^[A-Za-z0123456789]+$/
 let checkExistUsername: NodeJS.Timeout
 
+const defaultAccount: CreateIdentityParams = {
+  nonce: '',
+  card: '',
+  name: '',
+  isValidNonce: false,
+  loading: true
+}
+
 export const useCreateIdentity = (): UseIdentityReturns => {
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const {
+    user: { setUser }
+  } = useLaWalletContext()
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [accountInfo, setAccountInfo] = useState<CreateIdentityParams>({
-    nonce: '',
-    card: '',
-    name: '',
-    isValidNonce: false,
-    loading: true
-  })
+  const [accountInfo, setAccountInfo] =
+    useState<CreateIdentityParams>(defaultAccount)
 
   const errors = useErrors()
   const router = useRouter()
@@ -105,17 +110,28 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     }
   }
 
+  const createNostrAccount = async () => {
+    setLoading(true)
+
+    const generatedIdentity: UserIdentity = await generateUserIdentity()
+    if (generatedIdentity) {
+      setUser(generatedIdentity)
+      router.push('/dashboard')
+      setLoading(false)
+    }
+  }
+
   const createIdentity = async ({
     nonce,
     name
   }: AccountProps): Promise<CreateIdentityReturns> => {
-    const generatedIdentity: UserIdentity = await generateUserIdentity(
-      nonce,
-      name
-    )
+    const generatedIdentity: UserIdentity = await generateUserIdentity(name)
 
     try {
-      const event: NostrEvent = await identityEvent(nonce, generatedIdentity)
+      const event: NostrEvent = await buildIdentityEvent(
+        nonce,
+        generatedIdentity
+      )
       const createdAccount: IdentityResponse = await claimIdentity(event)
       if (!createdAccount.success)
         return {
@@ -140,7 +156,11 @@ export const useCreateIdentity = (): UseIdentityReturns => {
     if (loading) return
     const { nonce, name } = props
 
-    if (!nonce) return errors.modifyError('INVALID_NONCE')
+    if (!nonce) {
+      createNostrAccount()
+      return
+    }
+
     if (!name.length) return errors.modifyError('EMPTY_USERNAME')
     if (name.length > 15) return errors.modifyError('MAX_LENGTH_USERNAME')
 
@@ -157,10 +177,10 @@ export const useCreateIdentity = (): UseIdentityReturns => {
             const { success, identity, message } = new_identity
 
             if (success && identity) {
-              setUserIdentity(identity!)
+              setUser(identity!)
 
               if (props.card) {
-                cardActivationEvent(props.card, identity.privateKey)
+                buildCardActivationEvent(props.card, identity.privateKey)
                   .then((cardEvent: NostrEvent) => {
                     requestCardActivation(cardEvent).then(() => {
                       router.push('/dashboard')

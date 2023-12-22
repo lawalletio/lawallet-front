@@ -4,16 +4,16 @@ import { ThemeProvider } from 'styled-components'
 
 import StyledComponentsRegistry from '@/lib/registry'
 
-import theme from '@/styles/theme'
-import { fontSecondary } from '@/styles/fonts'
-import GlobalStyles from '@/styles/GlobalStyles'
-import { ReactNode } from 'react'
+import config from '@/constants/config'
 import { LaWalletProvider } from '@/context/LaWalletContext'
-import ProtectRoutes from '@/components/Routes/ProtectRoutes'
-import { AvailableLanguages, defaultLocale } from '@/translations'
-import { GOOGLE_TAG_ID, RelaysList } from '@/constants/config'
-import Script from 'next/script'
 import { NDKProvider } from '@/context/NDKContext'
+import { TranslateProvider } from '@/context/TranslateContext'
+import GlobalStyles from '@/styles/GlobalStyles'
+import { fontSecondary } from '@/styles/fonts'
+import theme from '@/styles/theme'
+import { AvailableLanguages, defaultLocale } from '@/translations/types'
+import Script from 'next/script'
+import { ReactNode } from 'react'
 
 interface ProviderProps {
   children: ReactNode
@@ -57,7 +57,7 @@ const Providers = (props: ProviderProps) => {
         <link rel="shortcut icon" href="/favicon.ico" />
 
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${config.env.GOOGLE_TAG_ID}`}
         />
         <Script id="google-analytics">
           {`
@@ -65,23 +65,22 @@ const Providers = (props: ProviderProps) => {
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
         
-          gtag('config', '${GOOGLE_TAG_ID}');
+          gtag('config', '${config.env.GOOGLE_TAG_ID}');
         `}
         </Script>
       </head>
 
       <body>
-        <NDKProvider explicitRelayUrls={RelaysList}>
-          <StyledComponentsRegistry>
-            <GlobalStyles />
-
-            <LaWalletProvider lng={params.lng}>
-              <ProtectRoutes>
+        <StyledComponentsRegistry>
+          <GlobalStyles />
+          <TranslateProvider lng={params.lng}>
+            <NDKProvider explicitRelayUrls={config.relaysList}>
+              <LaWalletProvider>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </ProtectRoutes>
-            </LaWalletProvider>
-          </StyledComponentsRegistry>
-        </NDKProvider>
+              </LaWalletProvider>
+            </NDKProvider>
+          </TranslateProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   )

@@ -1,17 +1,18 @@
 'use client'
 
 import {
-  CheckIcon,
-  AlertIcon
+  AlertIcon,
+  CheckIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 
 import theme from '@/styles/theme'
 
-import Text from '../Text'
 import Icon from '../Icon'
+import Text from '../Text'
 
+import { useTranslation } from '@/context/TranslateContext'
+import { ReplacementParams } from '@/translations/types'
 import { Alert } from './style'
-import { ReplacementParams, useTranslation } from '@/hooks/useTranslations'
 
 interface AlertProps {
   title: string | undefined

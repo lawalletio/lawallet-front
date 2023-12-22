@@ -2,44 +2,42 @@
 
 import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
+import HeroCard from '@/components/HeroCard'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
-import HeroCard from '@/components/HeroCard'
 import {
+  Avatar,
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
-  Text,
-  LinkButton,
-  Avatar,
   Icon,
-  Feedback
+  LinkButton,
+  Text
 } from '@/components/UI'
 
-import theme from '@/styles/theme'
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { TransferTypes } from '@/types/transaction'
-import { formatAddress, formatToPreference } from '@/lib/formatter'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
+import { useTranslation } from '@/context/TranslateContext'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+import { formatAddress, formatToPreference } from '@/lib/utils/formatter'
+import { TransferTypes } from '@/types/transaction'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const [insufficientBalance, setInsufficientBalance] = useState<boolean>(false)
 
   const { loading, transferInfo, executeTransfer } = useTransferContext()
   const {
-    lng,
-    identity,
+    user: { identity },
     balance,
-    userConfig: {
+    configuration: {
       props: { currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const convertedAmount: string = useMemo(() => {
     const convertedInt: number = convertCurrency(
@@ -57,13 +55,14 @@ export default function Page() {
 
   const [transferUsername, transferDomain] = transferInfo.data.split('@')
 
+  useActionOnKeypress('Enter', () => executeTransfer(identity.privateKey), [
+    identity,
+    transferInfo
+  ])
+
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('VALIDATE_INFO')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('VALIDATE_INFO')} />
 
       <HeroCard>
         <Container>
@@ -167,14 +166,11 @@ export default function Page() {
                 (transferInfo.type !== TransferTypes.LNURLW &&
                   insufficientBalance)
               }
+              loading={loading}
             >
-              {loading ? (
-                <BtnLoader />
-              ) : transferInfo.type === TransferTypes.LNURLW ? (
-                t('CLAIM')
-              ) : (
-                t('TRANSFER')
-              )}
+              {transferInfo.type === TransferTypes.LNURLW
+                ? t('CLAIM')
+                : t('TRANSFER')}
             </Button>
           </Flex>
           <Divider y={32} />

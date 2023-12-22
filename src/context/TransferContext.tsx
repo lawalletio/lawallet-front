@@ -3,8 +3,14 @@ import { createContext, useContext } from 'react'
 
 export const TransferContext = createContext({} as TransferContextType)
 
-export function TransferProvider({ children }: { children: React.ReactNode }) {
-  const transferValue = useTransfer()
+export function TransferProvider({
+  children,
+  tokenName
+}: {
+  children: React.ReactNode
+  tokenName: string
+}) {
+  const transferValue = useTransfer({ tokenName })
 
   return (
     <TransferContext.Provider value={transferValue}>

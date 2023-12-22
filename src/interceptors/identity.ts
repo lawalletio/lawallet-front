@@ -1,4 +1,4 @@
-import { IDENTITY_ENDPOINT } from '@/constants/config'
+import config from '@/constants/config'
 import { UserIdentity } from '@/types/identity'
 import { NostrEvent } from '@nostr-dev-kit/ndk'
 import { generatePrivateKey, getPublicKey, nip19 } from 'nostr-tools'
@@ -12,19 +12,17 @@ export type IdentityResponse = {
 }
 
 export const generateUserIdentity = async (
-  nonce: string,
-  name: string
+  name?: string
 ): Promise<UserIdentity> => {
   const privateKey = generatePrivateKey()
   const identityPubKey = getPublicKey(privateKey)
 
   const identity: UserIdentity = {
-    nonce,
-    username: name,
-    card: [],
+    username: name ?? '',
     hexpub: identityPubKey,
     npub: nip19.npubEncode(identityPubKey),
-    privateKey: privateKey
+    privateKey: privateKey,
+    loaded: true
   }
 
   return identity
@@ -33,7 +31,7 @@ export const generateUserIdentity = async (
 export const validateNonce = async (nonce: string): Promise<boolean> => {
   if (nonce === 'test') return true
 
-  return fetch(`${IDENTITY_ENDPOINT}/api/nonce/${nonce}`)
+  return fetch(`${config.env.IDENTITY_ENDPOINT}/api/nonce/${nonce}`)
     .then(res => res.json())
     .then(response => {
       if (!response || !response.status) return false
@@ -46,7 +44,7 @@ export const validateNonce = async (nonce: string): Promise<boolean> => {
 export const claimIdentity = async (
   event: NostrEvent
 ): Promise<IdentityResponse> => {
-  return fetch(`${IDENTITY_ENDPOINT}/api/identity`, {
+  return fetch(`${config.env.IDENTITY_ENDPOINT}/api/identity`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -73,7 +71,7 @@ export const getUsername = (pubkey: string) => {
   const storagedUsername: string = localStorage.getItem(pubkey) || ''
   if (storagedUsername.length) return storagedUsername
 
-  return fetch(`${IDENTITY_ENDPOINT}/api/pubkey/${pubkey}`)
+  return fetch(`${config.env.IDENTITY_ENDPOINT}/api/pubkey/${pubkey}`)
     .then(res => res.json())
     .then(info => {
       if (!info || !info.username) return ''
@@ -85,7 +83,7 @@ export const getUsername = (pubkey: string) => {
 }
 
 export const getUserPubkey = (username: string) =>
-  fetch(`${IDENTITY_ENDPOINT}/api/lud16/${username}`)
+  fetch(`${config.env.IDENTITY_ENDPOINT}/api/lud16/${username}`)
     .then(res => res.json())
     .then(info => info.accountPubKey ?? '')
     .catch(() => '')
@@ -93,7 +91,7 @@ export const getUserPubkey = (username: string) =>
 export const existIdentity = async (name: string): Promise<boolean> => {
   try {
     const response = await fetch(
-      `${IDENTITY_ENDPOINT}/api/identity?name=${name}`
+      `${config.env.IDENTITY_ENDPOINT}/api/identity?name=${name}`
     )
     return response.status === 200
   } catch {

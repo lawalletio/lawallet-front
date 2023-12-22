@@ -1,4 +1,4 @@
-import { IDENTITY_ENDPOINT } from '@/constants/config'
+import config from '@/constants/config'
 
 type VoucherResponse = {
   ok?: string
@@ -9,7 +9,7 @@ export const requestVoucher = async (
   name: string,
   email: string
 ): Promise<VoucherResponse> => {
-  return fetch(`${IDENTITY_ENDPOINT}/api/voucher/request`, {
+  return fetch(`${config.env.IDENTITY_ENDPOINT}/api/voucher/request`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ export const claimVoucher = async (
   name: string,
   code: string
 ): Promise<VoucherResponse> => {
-  return fetch(`${IDENTITY_ENDPOINT}/api/voucher/claim`, {
+  return fetch(`${config.env.IDENTITY_ENDPOINT}/api/voucher/claim`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -1,23 +1,24 @@
 'use client'
 
 import { useState, useEffect, ReactNode } from 'react'
-
-import Container from '../../Layout/Container'
+import { CrossIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 
 import Flex from '../Flex'
-import Divider from '../Divider'
 import Button from '../Button'
+import Icon from '../Icon'
 
 import { Modal, ModalContent } from './style'
+import Heading from '../Heading'
 
 interface ComponentProps {
   children: ReactNode
   isOpen: boolean
   onClose: () => void
+  title?: string
 }
 
 export default function Component(props: ComponentProps) {
-  const { children, isOpen, onClose } = props
+  const { children, isOpen, onClose, title } = props
 
   const [open, setOpen] = useState(false)
 
@@ -33,19 +34,20 @@ export default function Component(props: ComponentProps) {
   return (
     <Modal $isOpen={open}>
       <ModalContent>
-        <Container size="small">
-          <Divider y={16} />
-          <Flex direction="column" flex={1}>
-            {children}
+        <Flex justify="end" align="center" gap={16}>
+          <Flex flex={1}>
+            <Heading as="h5">{title}</Heading>
           </Flex>
 
-          <Flex>
-            <Button variant="bezeledGray" onClick={handleClose}>
-              Cancelar
+          <div>
+            <Button size="small" variant="bezeledGray" onClick={handleClose}>
+              <Icon>
+                <CrossIcon />
+              </Icon>
             </Button>
-          </Flex>
-          <Divider y={16} />
-        </Container>
+          </div>
+        </Flex>
+        {children}
       </ModalContent>
     </Modal>
   )

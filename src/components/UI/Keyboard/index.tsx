@@ -7,9 +7,13 @@ import { useEffect } from 'react'
 const timeOut: Record<string, NodeJS.Timeout> = {}
 type KeyboardProps = {
   numpadData: IUseNumpad
+  disableKeydown?: boolean
 }
 
-export default function Component({ numpadData }: KeyboardProps) {
+export default function Component({
+  numpadData,
+  disableKeydown = false
+}: KeyboardProps) {
   const { handleNumpad, intAmount, resetAmount, concatNumber, deleteNumber } =
     numpadData
 
@@ -19,9 +23,12 @@ export default function Component({ numpadData }: KeyboardProps) {
   const handleDeleteOnMouseUp = () => clearTimeout(timeOut?.reset)
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress)
-    return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [intAmount])
+    if (!disableKeydown) {
+      document.addEventListener('keydown', handleKeyPress)
+
+      return () => document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [intAmount, disableKeydown])
 
   const handleKeyPress = (e: KeyboardEvent) => {
     const { key } = e

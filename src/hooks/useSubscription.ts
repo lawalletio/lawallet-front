@@ -40,35 +40,22 @@ export const useSubscription = ({
     }
   }, [ndk, enabled, subscription])
 
-  const stopSubscription = () => {
+  const stopSubscription = useCallback(() => {
     if (subscription) {
       subscription.stop()
       subscription.removeAllListeners()
       setSubscription(undefined)
     }
-  }
+  }, [subscription])
 
   useEffect(() => {
     if (enabled && !subscription) {
       if (events.length) setEvents([])
       startSubscription()
-
-      return () => stopSubscription()
     }
+
+    if (!enabled) stopSubscription()
   }, [enabled, subscription])
-
-  const removeSubscription = () => setSubscription(undefined)
-
-  useEffect(() => {
-    ndk.pool.on('relay:connect', startSubscription)
-    ndk.pool.on('relay:disconnect', removeSubscription)
-
-    return () => {
-      ndk.pool.removeListener('relay:connect', startSubscription)
-      ndk.pool.removeListener('relay:disconnect', removeSubscription)
-      ndk.pool.removeAllListeners()
-    }
-  }, [ndk])
 
   return {
     subscription,

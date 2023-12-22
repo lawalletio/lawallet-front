@@ -1,8 +1,8 @@
 'use client'
 
-import { useContext, useEffect, useMemo, useState } from 'react'
 import { SatoshiV2Icon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -10,37 +10,38 @@ import TokenList from '@/components/TokenList'
 import {
   Button,
   Divider,
+  Feedback,
   Flex,
   Heading,
-  Text,
-  LinkButton,
-  Keyboard,
   Icon,
-  Feedback
+  InputWithLabel,
+  Keyboard,
+  Text
 } from '@/components/UI'
-import theme from '@/styles/theme'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { decimalsToUse, formatToPreference } from '@/lib/formatter'
-import { useNumpad } from '@/hooks/useNumpad'
-import { useTranslation } from '@/hooks/useTranslations'
+import { regexComment } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
+import { useTranslation } from '@/context/TranslateContext'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
+import { useNumpad } from '@/hooks/useNumpad'
+import { decimalsToUse, formatToPreference } from '@/lib/utils/formatter'
+import theme from '@/styles/theme'
 import { TransferTypes } from '@/types/transaction'
 
 export default function Page() {
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
 
+  const [commentFocus, setCommentFocus] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
-  const { transferInfo, setAmountToPay } = useTransferContext()
+  const { transferInfo, setAmountToPay, setComment } = useTransferContext()
   const {
     balance,
-    lng,
-    userConfig: {
-      props: { currency: userCurrency }
+    configuration: {
+      props: { currency: userCurrency, hideBalance }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const maxAvailableAmount: number = useMemo(() => {
     const convertedAmount: number = convertCurrency(
@@ -90,6 +91,32 @@ export default function Page() {
     router.push(`/transfer/summary?data=${transferInfo.data}`)
   }
 
+  const handleChangeComment = (text: string) => {
+    if (!text.length) {
+      setComment('')
+      return
+    }
+
+    if (
+      text.length > 255 ||
+      (transferInfo.walletService &&
+        text.length > transferInfo.walletService.commentAllowed)
+    ) {
+      errors.modifyError('COMMENT_MAX_LENGTH', {
+        chars: (transferInfo.walletService?.commentAllowed ?? 255).toString()
+      })
+      return
+    }
+
+    const isValidComment = regexComment.test(text)
+    if (!isValidComment) {
+      errors.modifyError('ERROR_ON_COMMENT')
+      return
+    }
+
+    setComment(text)
+  }
+
   useEffect(() => {
     if (
       transferInfo.amount &&
@@ -103,13 +130,11 @@ export default function Page() {
     }
   }, [pricesData])
 
+  useActionOnKeypress('Enter', handleClick, [numpadData, transferInfo])
+
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('DEFINE_AMOUNT')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('DEFINE_AMOUNT')} />
 
       <Container size="small">
         <Divider y={16} />
@@ -131,13 +156,16 @@ export default function Page() {
             </Heading>
           </Flex>
 
-          <Flex justify="center" align="center" gap={4}>
-            <Heading as="h6" color={theme.colors.gray50}>
-              {userCurrency !== 'SAT' && '$'}
-              {formatToPreference(userCurrency, maxAvailableAmount, lng)}{' '}
-              {t('AVAILABLE')}.
-            </Heading>
-          </Flex>
+          {!hideBalance && (
+            <Flex justify="center" align="center" gap={4}>
+              <Heading as="h6" color={theme.colors.gray50}>
+                {userCurrency !== 'SAT' && '$'}
+                {formatToPreference(userCurrency, maxAvailableAmount, lng)}{' '}
+                {t('AVAILABLE')}.
+              </Heading>
+            </Flex>
+          )}
+
           <TokenList />
 
           {transferInfo.walletService && (
@@ -165,25 +193,36 @@ export default function Page() {
         </Feedback>
 
         <Divider y={24} />
-        <Flex gap={8}>
-          <LinkButton variant="bezeledGray" href="/dashboard">
-            {t('CANCEL')}
-          </LinkButton>
-
-          <Button
-            onClick={handleClick}
-            disabled={
-              loading ||
-              balance.amount === 0 ||
-              numpadData.intAmount['SAT'] === 0
-            }
-          >
-            {loading ? <BtnLoader /> : t('CONTINUE')}
-          </Button>
+        <Flex gap={16} align="end">
+          <Flex direction="column" align="end">
+            {/* POC: integrate message */}
+            <InputWithLabel
+              label={t('MESSAGE')}
+              name="message"
+              placeholder={t('OPTIONAL')}
+              onChange={e => handleChangeComment(e.target.value)}
+              value={transferInfo.comment}
+              onFocus={() => setCommentFocus(true)}
+              onBlur={() => setCommentFocus(false)}
+            />
+          </Flex>
+          <Flex>
+            <Button
+              onClick={handleClick}
+              disabled={
+                loading ||
+                balance.amount === 0 ||
+                numpadData.intAmount['SAT'] === 0
+              }
+              loading={loading}
+            >
+              {t('CONTINUE')}
+            </Button>
+          </Flex>
         </Flex>
         <Divider y={24} />
 
-        <Keyboard numpadData={numpadData} />
+        <Keyboard numpadData={numpadData} disableKeydown={commentFocus} />
 
         <Divider y={32} />
       </Container>

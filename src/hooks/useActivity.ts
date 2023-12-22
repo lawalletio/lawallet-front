@@ -13,12 +13,17 @@ import {
   NostrEvent
 } from '@nostr-dev-kit/ndk'
 
-import { useSubscription } from './useSubscription'
-import keys from '@/constants/keys'
-import { LaWalletKinds, getMultipleTags, getTag } from '@/lib/events'
-import { nip26 } from 'nostr-tools'
-import { Event } from 'nostr-tools'
+import config from '@/constants/config'
 import { CACHE_TXS_KEY } from '@/constants/constants'
+import {
+  LaWalletKinds,
+  LaWalletTags,
+  getMultipleTags,
+  getTag
+} from '@/lib/events'
+import { parseContent } from '@/lib/utils'
+import { Event, nip26 } from 'nostr-tools'
+import { useSubscription } from './useSubscription'
 
 export interface ActivitySubscriptionProps {
   pubkey: string
@@ -28,13 +33,13 @@ export type ActivityType = {
   loading: boolean
   lastCached: number
   cached: Transaction[]
-  suscription: Transaction[]
+  subscription: Transaction[]
   idsLoaded: string[]
 }
 
 export interface UseActivityReturn {
   activityInfo: ActivityType
-  sortedTransactions: Transaction[]
+  userTransactions: Transaction[]
 }
 
 export interface UseActivityProps {
@@ -49,49 +54,43 @@ export const options: NDKSubscriptionOptions = {
 }
 
 const startTags: string[] = [
-  'internal-transaction-start',
-  'inbound-transaction-start'
+  LaWalletTags.INTERNAL_TRANSACTION_START,
+  LaWalletTags.INBOUND_TRANSACTION_START
 ]
 
 const statusTags: string[] = [
-  'internal-transaction-ok',
-  'internal-transaction-error',
-  'outbound-transaction-ok',
-  'outbound-transaction-error',
-  'inbound-transaction-ok',
-  'inbound-transaction-error'
+  LaWalletTags.INTERNAL_TRANSACTION_OK,
+  LaWalletTags.INTERNAL_TRANSACTION_ERROR,
+  LaWalletTags.OUTBOUND_TRANSACTION_OK,
+  LaWalletTags.OUTBOUND_TRANSACTION_ERROR,
+  LaWalletTags.INBOUND_TRANSACTION_OK,
+  LaWalletTags.INBOUND_TRANSACTION_ERROR
 ]
 
 let intervalGenerateTransactions: NodeJS.Timeout
 
-const parseContent = (content: string) => {
-  try {
-    const parsed = JSON.parse(content)
-    return parsed
-  } catch {
-    return {}
-  }
+const defaultActivity = {
+  loading: true,
+  lastCached: 0,
+  cached: [],
+  subscription: [],
+  idsLoaded: []
 }
 
 export const useActivity = ({
   pubkey,
   enabled,
-  limit = 100
+  limit = 1000
 }: UseActivityProps): UseActivityReturn => {
-  const [activityInfo, setActivityInfo] = useState<ActivityType>({
-    loading: true,
-    lastCached: 0,
-    cached: [],
-    suscription: [],
-    idsLoaded: []
-  })
+  const [activityInfo, setActivityInfo] =
+    useState<ActivityType>(defaultActivity)
 
   const { events: walletEvents } = useSubscription({
     filters: [
       {
-        authors: [pubkey, keys.cardPubkey],
+        authors: [pubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
-        '#t': ['internal-transaction-start'],
+        '#t': [LaWalletTags.INTERNAL_TRANSACTION_START],
         since: activityInfo.lastCached,
         limit
       },
@@ -103,9 +102,9 @@ export const useActivity = ({
         limit
       },
       {
-        authors: [keys.ledgerPubkey],
+        authors: [config.pubKeys.ledgerPubkey],
         kinds: [LaWalletKinds.REGULAR as unknown as NDKKind],
-        '#p': [pubkey, keys.cardPubkey],
+        '#p': [pubkey],
         '#t': statusTags,
         since: activityInfo.lastCached,
         limit
@@ -117,7 +116,7 @@ export const useActivity = ({
 
   const formatStartTransaction = async (event: NDKEvent) => {
     const nostrEvent: NostrEvent = await event.toNostrEvent()
-    const AuthorIsCard: boolean = event.pubkey === keys.cardPubkey
+    const AuthorIsCard: boolean = event.pubkey === config.pubKeys.cardPubkey
 
     const DelegatorIsUser: boolean =
       AuthorIsCard && nip26.getDelegator(nostrEvent as Event) === pubkey
@@ -137,7 +136,7 @@ export const useActivity = ({
     const newTransaction: Transaction = {
       id: event.id!,
       status: TransactionStatus.PENDING,
-      memo: eventContent,
+      memo: eventContent.memo ?? '',
       direction,
       type: AuthorIsCard ? TransactionType.CARD : TransactionType.INTERNAL,
       tokens: eventContent.tokens,
@@ -241,7 +240,7 @@ export const useActivity = ({
     setActivityInfo(prev => {
       return {
         ...prev,
-        idsLoaded: sortedTransactions.map(tx => tx.id.toString()),
+        idsLoaded: userTransactions.map(tx => tx.id.toString()),
         loading: true
       }
     })
@@ -285,46 +284,30 @@ export const useActivity = ({
     setActivityInfo(prev => {
       return {
         ...prev,
-        suscription: userTransactions,
+        subscription: userTransactions,
         loading: false
       }
     })
   }
 
-  useEffect(() => {
-    if (walletEvents.length) {
-      if (intervalGenerateTransactions)
-        clearTimeout(intervalGenerateTransactions)
-
-      intervalGenerateTransactions = setTimeout(
-        () => generateTransactions(walletEvents),
-        350
-      )
-    }
-
-    return () => clearTimeout(intervalGenerateTransactions)
-  }, [walletEvents])
-
   const loadCachedTransactions = () => {
     if (pubkey.length) {
       const storagedData: string =
         localStorage.getItem(`${CACHE_TXS_KEY}_${pubkey}`) || ''
+
       if (!storagedData) {
-        setActivityInfo({
-          ...activityInfo,
-          loading: false
-        })
+        setActivityInfo({ ...defaultActivity, loading: false })
         return
       }
 
-      const cachedTxs: Transaction[] = JSON.parse(storagedData)
+      const cachedTxs: Transaction[] = parseContent(storagedData)
 
       const lastCached: number = cachedTxs.length
         ? 1 + cachedTxs[0].events[cachedTxs[0].events.length - 1].created_at
         : 0
 
       setActivityInfo({
-        suscription: [],
+        subscription: [],
         idsLoaded: cachedTxs.map(tx => tx.id.toString()),
         cached: cachedTxs,
         lastCached,
@@ -333,12 +316,8 @@ export const useActivity = ({
     }
   }
 
-  useEffect(() => {
-    loadCachedTransactions()
-  }, [pubkey])
-
-  const sortedTransactions: Transaction[] = useMemo(() => {
-    const TXsWithoutCached: Transaction[] = activityInfo.suscription.filter(
+  const userTransactions: Transaction[] = useMemo(() => {
+    const TXsWithoutCached: Transaction[] = activityInfo.subscription.filter(
       tx => {
         const cached = activityInfo.cached.find(
           cachedTX => cachedTX.id === tx.id
@@ -354,15 +333,33 @@ export const useActivity = ({
   }, [activityInfo])
 
   useEffect(() => {
-    if (sortedTransactions.length)
+    if (walletEvents.length) {
+      if (intervalGenerateTransactions)
+        clearTimeout(intervalGenerateTransactions)
+
+      intervalGenerateTransactions = setTimeout(
+        () => generateTransactions(walletEvents),
+        350
+      )
+    }
+
+    return () => clearTimeout(intervalGenerateTransactions)
+  }, [walletEvents])
+
+  useEffect(() => {
+    loadCachedTransactions()
+  }, [pubkey])
+
+  useEffect(() => {
+    if (userTransactions.length)
       localStorage.setItem(
         `${CACHE_TXS_KEY}_${pubkey}`,
-        JSON.stringify(sortedTransactions)
+        JSON.stringify(userTransactions)
       )
-  }, [sortedTransactions])
+  }, [userTransactions])
 
   return {
     activityInfo,
-    sortedTransactions
+    userTransactions
   }
 }

@@ -1,7 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
+import { useRouter } from 'next/navigation'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -10,32 +10,33 @@ import {
   Divider,
   Feedback,
   Flex,
-  Heading,
+  Icon,
   Input,
   InputGroup,
   InputGroupRight,
   LinkButton,
-  Text,
-  Icon
+  Text
 } from '@/components/UI'
 
+import config from '@/constants/config'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTransferContext } from '@/context/TransferContext'
+import { useTranslation } from '@/context/TranslateContext'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import useErrors from '@/hooks/useErrors'
-import { useTranslation } from '@/hooks/useTranslations'
-import { useContext, useEffect, useState } from 'react'
-import { useTransferContext } from '@/context/TransferContext'
-import { BtnLoader } from '@/components/Loader/Loader'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { TransactionDirection, TransactionType } from '@/types/transaction'
-import RecipientElement from './components/RecipientElement'
-import theme from '@/styles/theme'
 import { getUsername } from '@/interceptors/identity'
-import { WALLET_DOMAIN } from '@/constants/config'
 import { getMultipleTags } from '@/lib/events'
+import theme from '@/styles/theme'
+import { TransactionDirection, TransactionType } from '@/types/transaction'
+import { useEffect, useState } from 'react'
+import RecipientElement from './components/RecipientElement'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { identity, sortedTransactions } = useContext(LaWalletContext)
+  const {
+    user: { identity },
+    userTransactions
+  } = useLaWalletContext()
   const { prepareTransaction, transferInfo } = useTransferContext()
 
   const [lastDestinations, setLastDestinations] = useState<string[]>([])
@@ -76,7 +77,7 @@ export default function Page() {
   const loadLastDestinations = () => {
     const lastDest: string[] = []
 
-    sortedTransactions.forEach(async tx => {
+    userTransactions.forEach(async tx => {
       if (
         tx.type === TransactionType.INTERNAL &&
         tx.direction === TransactionDirection.OUTGOING
@@ -90,7 +91,7 @@ export default function Page() {
         const username: string = await getUsername(receiverPubkey)
 
         if (username.length) {
-          const formattedLud16: string = `${username}@${WALLET_DOMAIN}`
+          const formattedLud16: string = `${username}@${config.env.WALLET_DOMAIN}`
           if (!lastDest.includes(formattedLud16)) {
             lastDest.push(formattedLud16)
             setLastDestinations(lastDest)
@@ -101,8 +102,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (sortedTransactions.length) loadLastDestinations()
-  }, [sortedTransactions.length])
+    if (userTransactions.length) loadLastDestinations()
+  }, [userTransactions.length])
 
   useEffect(() => {
     router.prefetch('/scan')
@@ -110,11 +111,7 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h6">{t('TRANSFER_MONEY')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('TRANSFER_MONEY')} />
 
       <Container size="small">
         <Divider y={16} />
@@ -195,8 +192,9 @@ export default function Page() {
             <Button
               onClick={handleContinue}
               disabled={loading || inputText.length === 0}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('CONTINUE')}
+              {t('CONTINUE')}
             </Button>
           </Flex>
           <Divider y={32} />

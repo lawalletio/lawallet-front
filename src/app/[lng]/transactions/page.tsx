@@ -1,27 +1,22 @@
 'use client'
 
 import Container from '@/components/Layout/Container'
-import Navbar from '@/components/Layout/Navbar'
 import Footer from '@/components/Layout/Footer'
+import Navbar from '@/components/Layout/Navbar'
 import TransactionItem from '@/components/TransactionItem'
-import { Divider, Flex, Heading, Button } from '@/components/UI'
-import { useTranslation } from '@/hooks/useTranslations'
+import { Button, Divider, Flex } from '@/components/UI'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
-import { LaWalletContext } from '@/context/LaWalletContext'
 
 export default function Page() {
   const { t } = useTranslation()
-  const { sortedTransactions } = useContext(LaWalletContext)
+  const { userTransactions } = useLaWalletContext()
   const router = useRouter()
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('ACTIVITY')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('ACTIVITY')} />
 
       <Container size="small">
         {/* <Divider y={12} /> */}
@@ -30,7 +25,7 @@ export default function Page() {
         </Text> */}
         <Divider y={8} />
         <Flex direction="column" gap={4}>
-          {sortedTransactions.map(transaction => (
+          {userTransactions.map(transaction => (
             <TransactionItem key={transaction.id} transaction={transaction} />
           ))}
         </Flex>

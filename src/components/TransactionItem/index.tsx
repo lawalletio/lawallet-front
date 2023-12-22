@@ -2,28 +2,29 @@
 
 import {
   CreditCardIcon,
-  TransferIcon,
-  LightningIcon
+  LightningIcon,
+  TransferIcon
 } from '@bitcoin-design/bitcoin-icons-react/filled'
 
-import { Flex, Text, Accordion, AccordionBody } from '@/components/UI'
+import { Accordion, AccordionBody, Flex, Text } from '@/components/UI'
 
+import config from '@/constants/config'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
+import { getUsername } from '@/interceptors/identity'
+import { getMultipleTags } from '@/lib/events'
+import { dateFormatter, formatToPreference } from '@/lib/utils/formatter'
+import { unescapingText } from '@/lib/utils'
 import theme from '@/styles/theme'
+import { defaultCurrency } from '@/types/config'
 import {
   Transaction,
   TransactionDirection,
   TransactionStatus,
   TransactionType
 } from '@/types/transaction'
-import { useContext, useMemo, useState } from 'react'
-import { LaWalletContext } from '@/context/LaWalletContext'
-import { useTranslation } from '@/hooks/useTranslations'
-import { dateFormatter, formatToPreference } from '@/lib/formatter'
-import { defaultCurrency } from '@/types/config'
-import { getUsername } from '@/interceptors/identity'
-import { WALLET_DOMAIN } from '@/constants/config'
+import { useMemo, useState } from 'react'
 import { BtnLoader } from '../Loader/Loader'
-import { getMultipleTags } from '@/lib/events'
 
 interface ComponentProps {
   transaction: Transaction
@@ -37,15 +38,14 @@ type LudInfoProps = {
 export default function Component({ transaction }: ComponentProps) {
   if (!transaction) return null
 
-  const { t } = useTranslation()
+  const { lng, t } = useTranslation()
   const { status, type } = transaction
   const {
-    lng,
-    userConfig: {
+    configuration: {
       props: { hideBalance, currency }
     },
     converter: { pricesData, convertCurrency }
-  } = useContext(LaWalletContext)
+  } = useLaWalletContext()
 
   const isFromMe = transaction?.direction === 'OUTGOING'
   const satsAmount = transaction.tokens?.BTC / 1000 || 0
@@ -90,7 +90,10 @@ export default function Component({ transaction }: ComponentProps) {
       }
 
       username.length
-        ? setLudInfo({ loading: false, data: `${username}@${WALLET_DOMAIN}` })
+        ? setLudInfo({
+            loading: false,
+            data: `${username}@${config.env.WALLET_DOMAIN}`
+          })
         : setLudInfo({ ...ludInfo, loading: false })
     }
   }
@@ -110,16 +113,16 @@ export default function Component({ transaction }: ComponentProps) {
                 {transaction.status === TransactionStatus.REVERTED
                   ? t('TX_REVERTED')
                   : transaction.status === TransactionStatus.ERROR
-                  ? t('FAILED_TRANSACTION')
-                  : transaction.status === TransactionStatus.PENDING
-                  ? t(
-                      `PENDING_${
-                        !isFromMe ? 'INBOUND' : 'OUTBOUND'
-                      }_TRANSACTION`
-                    )
-                  : isFromMe
-                  ? listTypes[type].label
-                  : t('YOU_RECEIVE')}
+                    ? t('FAILED_TRANSACTION')
+                    : transaction.status === TransactionStatus.PENDING
+                      ? t(
+                          `PENDING_${
+                            !isFromMe ? 'INBOUND' : 'OUTBOUND'
+                          }_TRANSACTION`
+                        )
+                      : isFromMe
+                        ? listTypes[type].label
+                        : t('YOU_RECEIVE')}
               </Text>
             </Flex>
             <Flex direction="column" align="end">
@@ -128,13 +131,13 @@ export default function Component({ transaction }: ComponentProps) {
                   hideBalance
                     ? theme.colors.text
                     : transaction.status === TransactionStatus.ERROR ||
-                      transaction.status === TransactionStatus.REVERTED
-                    ? theme.colors.error
-                    : transaction.status === TransactionStatus.PENDING
-                    ? theme.colors.warning
-                    : isFromMe
-                    ? theme.colors.text
-                    : theme.colors.success
+                        transaction.status === TransactionStatus.REVERTED
+                      ? theme.colors.error
+                      : transaction.status === TransactionStatus.PENDING
+                        ? theme.colors.warning
+                        : isFromMe
+                          ? theme.colors.text
+                          : theme.colors.success
                 }
               >
                 {hideBalance ? (
@@ -196,6 +199,18 @@ export default function Component({ transaction }: ComponentProps) {
                 </Flex>
               </Flex>
             </li>
+
+            {transaction.memo ? (
+              <li>
+                <Flex align="center" justify="space-between">
+                  <Text size="small" color={theme.colors.gray50}>
+                    {t('MESSAGE')}
+                  </Text>
+                  <Text>{unescapingText(transaction.memo)}</Text>
+                </Flex>
+              </li>
+            ) : null}
+
             <li>
               <Flex align="center" justify="space-between">
                 <Text size="small" color={theme.colors.gray50}>

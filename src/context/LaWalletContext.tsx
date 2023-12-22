@@ -1,5 +1,5 @@
+import SpinnerView from '@/components/Loader/SpinnerView'
 import { Alert } from '@/components/UI'
-import { STORAGE_IDENTITY_KEY } from '@/constants/constants'
 import { useActivity } from '@/hooks/useActivity'
 import useAlert, { UseAlertReturns } from '@/hooks/useAlerts'
 import useConfiguration, { ConfigReturns } from '@/hooks/useConfiguration'
@@ -7,89 +7,74 @@ import useCurrencyConverter, {
   UseConverterReturns
 } from '@/hooks/useCurrencyConverter'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
-import { getUsername } from '@/interceptors/identity'
-import { AvailableLanguages } from '@/translations'
+import useUser, { UserReturns } from '@/hooks/useUser'
 import { TokenBalance } from '@/types/balance'
-import { UserIdentity, defaultIdentity } from '@/types/identity'
 import { Transaction, TransactionDirection } from '@/types/transaction'
 import { differenceInSeconds } from 'date-fns'
-import { getPublicKey } from 'nostr-tools'
-import { createContext, useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState
+} from 'react'
 
 interface LaWalletContextType {
-  lng: AvailableLanguages
-  identity: UserIdentity
-  setUserIdentity: (new_identity: UserIdentity) => Promise<void>
+  user: UserReturns
   balance: TokenBalance
-  sortedTransactions: Transaction[]
-  userConfig: ConfigReturns
+  userTransactions: Transaction[]
+  configuration: ConfigReturns
   notifications: UseAlertReturns
   converter: UseConverterReturns
-  hydrated: boolean
 }
+
+const loggedRoutes: string[] = [
+  'dashboard',
+  'transfer',
+  'transferamount',
+  'transferfinish',
+  'transfersummary',
+  'transfererror',
+  'deposit',
+  'scan',
+  'settings',
+  'settingsrecovery',
+  'settingscards',
+  'transactions',
+  'card',
+  'voucher',
+  'voucherfinish'
+]
+
+const unloggedRoutes: string[] = ['', 'start', 'login', 'reset']
 
 export const LaWalletContext = createContext({} as LaWalletContextType)
 
-export function LaWalletProvider({
-  children,
-  lng
-}: {
-  children: React.ReactNode
-  lng: AvailableLanguages
-}) {
+export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState<boolean>(false)
-  const [identity, setIdentity] = useState<UserIdentity>(defaultIdentity)
+  const user: UserReturns = useUser()
 
+  const router = useRouter()
+  const pathname = usePathname()
+  const params = useSearchParams()
   const notifications = useAlert()
 
-  const { activityInfo, sortedTransactions } = useActivity({
-    pubkey: identity.hexpub,
-    enabled: Boolean(identity.hexpub.length),
-    limit: 100
+  const { activityInfo, userTransactions } = useActivity({
+    pubkey: user.identity.hexpub,
+    enabled: Boolean(user.identity.hexpub.length)
   })
 
-  const userConfig: ConfigReturns = useConfiguration()
+  const configuration: ConfigReturns = useConfiguration()
   const converter = useCurrencyConverter()
 
   const { balance } = useTokenBalance({
-    pubkey: identity.hexpub,
+    pubkey: user.identity.hexpub,
     tokenId: 'BTC'
   })
 
-  const preloadIdentity = async () => {
-    const storageIdentity = localStorage.getItem(STORAGE_IDENTITY_KEY)
-    if (storageIdentity) {
-      const userIdentity: UserIdentity = JSON.parse(storageIdentity)
-
-      if (userIdentity.privateKey) {
-        const hexpub: string = getPublicKey(userIdentity.privateKey)
-
-        if (hexpub === userIdentity.hexpub) {
-          setIdentity(userIdentity)
-        } else {
-          const username: string = await getUsername(hexpub)
-          if (username)
-            setIdentity({
-              ...userIdentity,
-              hexpub,
-              username
-            })
-        }
-      }
-    }
-
-    setHydrated(true)
-    return
-  }
-
-  const setUserIdentity = async (new_identity: UserIdentity) => {
-    setIdentity(new_identity)
-    localStorage.setItem(STORAGE_IDENTITY_KEY, JSON.stringify(new_identity))
-    return
-  }
-
   const notifyReceivedTransaction = () => {
-    const new_transactions: Transaction[] = sortedTransactions.filter(tx => {
+    const new_transactions: Transaction[] = userTransactions.filter(tx => {
       const transactionId: string = tx.id
       return Boolean(!activityInfo.idsLoaded.includes(transactionId))
     })
@@ -115,23 +100,45 @@ export function LaWalletProvider({
   }
 
   useEffect(() => {
-    preloadIdentity()
-  }, [])
+    if (user.identity.loaded) setHydrated(true)
+  }, [user.identity.loaded])
 
   useEffect(() => {
-    if (sortedTransactions.length) notifyReceivedTransaction()
-  }, [sortedTransactions.length])
+    if (userTransactions.length) notifyReceivedTransaction()
+  }, [userTransactions.length])
+
+  useLayoutEffect(() => {
+    if (hydrated) {
+      const cleanedPath: string = pathname.replace(/\//g, '').toLowerCase()
+      const userLogged: boolean = Boolean(user.identity.hexpub.length)
+      const nonce: string = params.get('i') || ''
+      const card: string = params.get('c') || ''
+
+      switch (true) {
+        case !userLogged && pathname == '/' && !nonce:
+          router.push('/')
+          break
+
+        case !userLogged && loggedRoutes.includes(cleanedPath):
+          router.push('/')
+          break
+
+        case userLogged && unloggedRoutes.includes(cleanedPath):
+          card
+            ? router.push(`/settings/cards?c=${card}`)
+            : router.push('/dashboard')
+          break
+      }
+    }
+  }, [pathname, hydrated])
 
   const value = {
-    lng,
-    identity,
-    setUserIdentity,
+    user,
     balance,
-    sortedTransactions,
-    userConfig,
+    userTransactions,
+    configuration,
     notifications,
-    converter,
-    hydrated
+    converter
   }
 
   return (
@@ -144,7 +151,16 @@ export function LaWalletProvider({
         params={notifications.alert?.params}
       />
 
-      {children}
+      {!hydrated ? <SpinnerView /> : children}
     </LaWalletContext.Provider>
   )
+}
+
+export const useLaWalletContext = () => {
+  const context = useContext(LaWalletContext)
+  if (!context) {
+    throw new Error('useLaWalletContext must be used within LaWalletProvider')
+  }
+
+  return context
 }

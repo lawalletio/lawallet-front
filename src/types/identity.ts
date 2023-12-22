@@ -1,17 +1,15 @@
 export interface UserIdentity {
-  nonce: string
   username: string
-  card: string[]
   hexpub: string
   npub: string
   privateKey: string
+  loaded: boolean
 }
 
 export const defaultIdentity: UserIdentity = {
-  nonce: '',
   username: '',
-  card: [],
   hexpub: '',
   privateKey: '',
-  npub: ''
+  npub: '',
+  loaded: false
 }

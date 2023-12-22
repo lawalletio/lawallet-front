@@ -2,39 +2,43 @@
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
+import Radio from '@/components/Radio/Radio'
 import {
   Button,
   Divider,
   Feedback,
   Flex,
-  Heading,
+  Icon,
   LinkSetting,
+  Sheet,
   Text
 } from '@/components/UI'
+import { ButtonSetting } from '@/components/UI/ButtonSetting/style'
 import {
   CACHE_BACKUP_KEY,
   LAWALLET_VERSION,
   STORAGE_IDENTITY_KEY
 } from '@/constants/constants'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
 import useErrors from '@/hooks/useErrors'
-import { useTranslation } from '@/hooks/useTranslations'
 
 import theme from '@/styles/theme'
 import { defaultIdentity } from '@/types/identity'
+import { CaretRightIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
+import { useState } from 'react'
 
 export default function Page() {
-  const { t } = useTranslation()
-  const { identity, setUserIdentity } = useContext(LaWalletContext)
+  const { lng, t, changeLanguage } = useTranslation()
+  const {
+    user: { identity, setUser }
+  } = useLaWalletContext()
+
+  const [sheetLanguage, setSheetLanguage] = useState<boolean>(false)
   const router: AppRouterInstance = useRouter()
   const errors = useErrors()
-
-  // const switchLanguage = () => {
-  //   lng === 'es' ? changeLanguage('en') : changeLanguage('es')
-  // }
 
   const logoutSession = () => {
     const cachedBackup = localStorage.getItem(
@@ -49,24 +53,44 @@ export default function Page() {
     const confirmation: boolean = confirm(t('CONFIRM_LOGOUT'))
 
     if (confirmation) {
-      setUserIdentity(defaultIdentity)
       localStorage.removeItem(STORAGE_IDENTITY_KEY)
+      setUser(defaultIdentity)
       router.push('/login')
     }
   }
 
   return (
     <>
-      <Navbar showBackPage={true}>
-        <Flex align="center">
-          <Heading as="h5">{t('SETTINGS')}</Heading>
-        </Flex>
-      </Navbar>
+      <Navbar showBackPage={true} title={t('SETTINGS')} />
 
       <Container size="small">
         <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
-          {t('MY_WALLET')}
+          {t('ACCOUNT')}
+        </Text>
+        <Divider y={8} />
+        <Flex direction="column" gap={4}>
+          <LinkSetting href="/settings/cards">{t('MY_CARDS')}</LinkSetting>
+        </Flex>
+        <Divider y={8} />
+
+        <Flex direction="column" gap={4}>
+          <ButtonSetting onClick={() => setSheetLanguage(!sheetLanguage)}>
+            {t('LANGUAGE')}
+
+            <Flex flex={1} align="end" justify="end">
+              <Text isBold={true}>{lng.toUpperCase()}</Text>
+            </Flex>
+
+            <Icon size="small" color={theme.colors.gray40}>
+              <CaretRightIcon />
+            </Icon>
+          </ButtonSetting>
+        </Flex>
+
+        <Divider y={16} />
+        <Text size="small" color={theme.colors.gray50}>
+          {t('SECURITY')}
         </Text>
         <Divider y={8} />
         <Flex direction="column" gap={4}>
@@ -74,7 +98,7 @@ export default function Page() {
             {t('BACKUP_ACCOUNT')}
           </LinkSetting>
         </Flex>
-        <Divider y={16} />
+        {/* <Divider y={16} />
         <Text size="small" color={theme.colors.gray50}>
           {t('ABOUT_US')}
         </Text>
@@ -86,7 +110,7 @@ export default function Page() {
           <LinkSetting href="https://discord.gg/QESv76truh" target="_blank">
             Discord
           </LinkSetting>
-        </Flex>
+        </Flex> */}
         <Divider y={16} />
         <Flex justify="center">
           <Text size="small" color={theme.colors.gray50}>
@@ -110,6 +134,28 @@ export default function Page() {
         </Flex>
         <Divider y={16} />
       </Container>
+
+      <Sheet
+        title={t('CHANGE_LANGUAGE')}
+        isOpen={sheetLanguage}
+        onClose={() => setSheetLanguage(false)}
+      >
+        <Radio
+          text={t('ENGLISH')}
+          checked={lng === 'en'}
+          onClick={() => {
+            if (lng !== 'en') changeLanguage('en')
+          }}
+        />
+
+        <Radio
+          text={t('SPANISH')}
+          checked={lng === 'es'}
+          onClick={() => {
+            if (lng !== 'es') changeLanguage('es')
+          }}
+        />
+      </Sheet>
     </>
   )
 }

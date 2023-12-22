@@ -11,5 +11,5 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <TransferProvider>{children}</TransferProvider>
+  return <TransferProvider tokenName={'BTC'}>{children}</TransferProvider>
 }

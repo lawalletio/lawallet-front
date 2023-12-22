@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 
-import { BtnLoader } from '@/components/Loader/Loader'
-import StartView from '@/components/StartView/StartView'
+import StartView from '@/app/[lng]/start/components/StartView'
 import {
   Button,
   Divider,
@@ -18,10 +17,10 @@ import {
   InputGroupRight,
   Text
 } from '@/components/UI'
-import { WALLET_DOMAIN } from '@/constants/config'
+import config from '@/constants/config'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { useCreateIdentity } from '@/hooks/useCreateIdentity'
-import { useTranslation } from '@/hooks/useTranslations'
+import { useTranslation } from '@/context/TranslateContext'
 import { validateNonce } from '@/interceptors/identity'
 import { ChangeEvent, useEffect, useState } from 'react'
 
@@ -116,7 +115,7 @@ export default function Page() {
               }
             />
             <InputGroupRight>
-              <Text size="small">@{WALLET_DOMAIN}</Text>
+              <Text size="small">@{config.env.WALLET_DOMAIN}</Text>
             </InputGroupRight>
           </InputGroup>
           <Feedback
@@ -140,8 +139,9 @@ export default function Page() {
             <Button
               onClick={handleConfirm}
               disabled={loading || !accountInfo.nonce.length}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('CONFIRM')}
+              {t('CONFIRM')}
             </Button>
           </Flex>
           <Divider y={32} />

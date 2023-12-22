@@ -1,12 +1,12 @@
+import { ReplacementParams } from '@/translations/types'
 import { useState } from 'react'
-import { ReplacementParams } from './useTranslations'
 
-type AlertType = 'success' | 'warning' | 'error'
+export type AlertTypes = 'success' | 'warning' | 'error'
 
 interface Alert {
   title?: string
   description: string
-  type: AlertType
+  type: AlertTypes
   params?: ReplacementParams
 }
 

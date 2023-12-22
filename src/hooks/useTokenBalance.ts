@@ -1,13 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
 
-import keys from '@/constants/keys'
-const { ledgerPubkey } = keys
-
 import { NDKEvent, NDKKind, NostrEvent } from '@nostr-dev-kit/ndk'
 import { TokenBalance } from '@/types/balance'
 import { NDKContext } from '@/context/NDKContext'
 import { useSubscription } from './useSubscription'
 import { LaWalletKinds } from '@/lib/events'
+import config from '@/constants/config'
 
 export interface UseTokenBalanceReturn {
   balance: TokenBalance
@@ -32,10 +30,10 @@ export const useTokenBalance = ({
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { events: balanceEvents } = useSubscription({
+  const { subscription: balanceSubscription } = useSubscription({
     filters: [
       {
-        authors: [ledgerPubkey],
+        authors: [config.pubKeys.ledgerPubkey],
         kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
         '#d': [`balance:${tokenId}:${pubkey}`]
       }
@@ -48,8 +46,13 @@ export const useTokenBalance = ({
   })
 
   const loadBalance = async () => {
+    setBalance({
+      ...balance,
+      loading: true
+    })
+
     const event: NDKEvent | null = await ndk.fetchEvent({
-      authors: [ledgerPubkey],
+      authors: [config.pubKeys.ledgerPubkey],
       kinds: [LaWalletKinds.PARAMETRIZED_REPLACEABLE as unknown as NDKKind],
       '#d': [`balance:${tokenId}:${pubkey}`]
     })
@@ -67,7 +70,13 @@ export const useTokenBalance = ({
   }
 
   useEffect(() => {
-    if (pubkey.length) {
+    if (!pubkey.length) {
+      setBalance({
+        tokenId: tokenId,
+        amount: 0,
+        loading: true
+      })
+    } else {
       loadBalance()
 
       setTimeout(() => {
@@ -80,20 +89,16 @@ export const useTokenBalance = ({
   }, [pubkey])
 
   useEffect(() => {
-    if (balanceEvents.length) {
-      const latestEvent = balanceEvents.sort(
-        (a, b) => b.created_at! - a.created_at!
-      )[0]
-
+    balanceSubscription?.on('event', event => {
       setBalance({
         tokenId: tokenId,
-        amount: Number(latestEvent.getMatchingTags('amount')[0]?.[1]) / 1000,
-        lastEvent: latestEvent as NostrEvent,
-        createdAt: new Date(latestEvent.created_at!),
+        amount: Number(event.getMatchingTags('amount')[0]?.[1]) / 1000,
+        lastEvent: event as NostrEvent,
+        createdAt: new Date(event.created_at!),
         loading: false
       })
-    }
-  }, [balanceEvents])
+    })
+  }, [balanceSubscription])
 
   return {
     balance

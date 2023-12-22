@@ -9,16 +9,19 @@ interface InputWithLabelProps {
   name: string
   placeholder: string
   type?: 'text' | 'password' | 'number'
-  onChange: (e: any) => void
+  value?: string
+  onChange?: (e: any) => void
+  onFocus?: (e: any) => void
+  onBlur?: (e: any) => void
 }
 
 export default function Component(props: InputWithLabelProps) {
-  const { label, name } = props
+  const { label, name, value = '' } = props
 
   return (
     <Flex direction="column" gap={8}>
       <Label htmlFor={name}>{label}</Label>
-      <Input id={name} {...props} />
+      <Input id={name} value={value} {...props} />
     </Flex>
   )
 }

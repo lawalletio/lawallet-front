@@ -1,5 +1,5 @@
-import { copy } from '@/lib/share'
-import { useTranslation } from '@/hooks/useTranslations'
+import { copy } from '@/lib/utils/share'
+import { useTranslation } from '@/context/TranslateContext'
 import useAlert from '@/hooks/useAlerts'
 
 import Flex from '../Flex'

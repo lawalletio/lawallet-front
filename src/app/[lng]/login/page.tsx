@@ -1,6 +1,6 @@
 'use client'
+import { useTranslation } from '@/context/TranslateContext'
 import { useRouter } from 'next/navigation'
-import { useTranslation } from '@/hooks/useTranslations'
 
 import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
@@ -12,17 +12,19 @@ import {
   Heading,
   Textarea
 } from '@/components/UI'
-import { ChangeEvent, useContext, useEffect, useState } from 'react'
-import { getPublicKey, nip19 } from 'nostr-tools'
-import { LaWalletContext } from '@/context/LaWalletContext'
+import { CACHE_BACKUP_KEY } from '@/constants/constants'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 import useErrors from '@/hooks/useErrors'
 import { getUsername } from '@/interceptors/identity'
 import { UserIdentity } from '@/types/identity'
-import { BtnLoader } from '@/components/Loader/Loader'
-import { CACHE_BACKUP_KEY, CACHE_CLAIM_VOUCHER } from '@/constants/constants'
+import { getPublicKey, nip19 } from 'nostr-tools'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 
 export default function Page() {
-  const { setUserIdentity } = useContext(LaWalletContext)
+  const {
+    user: { setUser }
+  } = useLaWalletContext()
   const [keyInput, setKeyInput] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -54,29 +56,29 @@ export default function Page() {
       }
 
       const identity: UserIdentity = {
-        nonce: '',
-        card: [],
         username,
         hexpub,
         npub: nip19.npubEncode(hexpub),
-        privateKey: keyInput
+        privateKey: keyInput,
+        loaded: true
       }
 
-      setUserIdentity(identity).then(() => {
-        localStorage.setItem(`${CACHE_CLAIM_VOUCHER}_${identity.hexpub}`, '1')
+      setUser(identity).then(() => {
         localStorage.setItem(`${CACHE_BACKUP_KEY}_${identity.hexpub}`, '1')
         router.push('/dashboard')
       })
-
-      setLoading(false)
     } catch (err) {
       errors.modifyError('UNEXPECTED_RECEOVERY_ERROR')
     }
+
+    setLoading(false)
   }
 
   useEffect(() => {
     router.prefetch('/dashboard')
   }, [router])
+
+  useActionOnKeypress('Enter', handleRecoveryAccount, [keyInput])
 
   return (
     <>
@@ -107,8 +109,9 @@ export default function Page() {
             <Button
               onClick={handleRecoveryAccount}
               disabled={!keyInput.length || loading}
+              loading={loading}
             >
-              {loading ? <BtnLoader /> : t('LOGIN')}
+              {t('LOGIN')}
             </Button>
           </Flex>
           <Divider y={32} />

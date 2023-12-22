@@ -1,4 +1,4 @@
-import { decimalsToUse } from '@/lib/formatter'
+import { decimalsToUse } from '@/lib/utils/formatter'
 import { AvailableCurrencies, CurrenciesList } from '@/types/config'
 import { useEffect, useState } from 'react'
 import useCurrencyConverter from './useCurrencyConverter'
