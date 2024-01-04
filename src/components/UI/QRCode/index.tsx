@@ -36,7 +36,7 @@ export default function Component({
     copy(text).then(res => {
       setShowToast(false)
       notifications.showAlert({
-        description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
+        description: res ? t('SUCCESS_COPY') : t('ERROR_COPY'),
         type: res ? 'success' : 'error'
       })
     })

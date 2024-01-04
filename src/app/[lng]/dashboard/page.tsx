@@ -142,13 +142,17 @@ export default function Page() {
           <Divider y={8} />
           <Flex justify="center" align="center" gap={4}>
             <Flex justify="center" align="center" gap={4}>
-              {currency === 'SAT' ? (
-                <Icon size="small">
-                  <SatoshiV2Icon />
-                </Icon>
-              ) : (
-                <Text>$</Text>
-              )}
+              {!hideBalance ? (
+                <>
+                  {currency === 'SAT' ? (
+                    <Icon size="small">
+                      <SatoshiV2Icon />
+                    </Icon>
+                  ) : (
+                    <Text>$</Text>
+                  )}
+                </>
+              ) : null}
 
               <Heading>
                 {loading || balance.loading ? (

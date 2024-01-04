@@ -9,9 +9,6 @@ import theme from '@/styles/theme'
 
 import Icon from '../Icon'
 import Text from '../Text'
-
-import { useTranslation } from '@/context/TranslateContext'
-import { ReplacementParams } from '@/translations/types'
 import { Alert } from './style'
 
 interface AlertProps {
@@ -19,12 +16,10 @@ interface AlertProps {
   description: string | undefined
   type: 'success' | 'warning' | 'error' | undefined
   isOpen: boolean
-  params?: ReplacementParams
 }
 
 export default function Component(props: AlertProps) {
-  const { title, description, type, isOpen = false, params = {} } = props
-  const { t } = useTranslation()
+  const { title, description, type, isOpen = false } = props
 
   const isSuccess = type === 'success'
 
@@ -39,10 +34,10 @@ export default function Component(props: AlertProps) {
         <div>
           {title && (
             <Text size="small" isBold>
-              {t(title, params)}
+              {title}
             </Text>
           )}
-          {description && <Text size="small">{t(description, params)}</Text>}
+          {description && <Text size="small">{description}</Text>}
         </div>
         <div className="progress"></div>
       </div>

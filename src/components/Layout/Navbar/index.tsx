@@ -12,12 +12,13 @@ import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   children?: ReactNode
-  showBackPage?: boolean
   title?: string
+  showBackPage?: boolean
+  overrideBack?: string
 }
 
 export default function Component(props: ComponentProps) {
-  const { children, showBackPage = false, title } = props
+  const { children, showBackPage = false, title, overrideBack = '' } = props
 
   const router = useRouter()
   const { t } = useTranslation()
@@ -31,7 +32,11 @@ export default function Component(props: ComponentProps) {
           {onlyChildren && (
             <Left>
               {showBackPage && (
-                <BackButton onClick={() => router.back()}>
+                <BackButton
+                  onClick={() => {
+                    overrideBack ? router.push(overrideBack) : router.back()
+                  }}
+                >
                   <Icon size="small">
                     <CaretLeftIcon />
                   </Icon>

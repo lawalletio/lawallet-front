@@ -155,7 +155,7 @@ export default function Page() {
   const handleCopy = (text: string) => {
     copy(text).then(res => {
       notifications.showAlert({
-        description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
+        description: res ? t('SUCCESS_COPY') : t('ERROR_COPY'),
         type: res ? 'success' : 'error'
       })
     })

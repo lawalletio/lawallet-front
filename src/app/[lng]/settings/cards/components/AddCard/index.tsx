@@ -60,8 +60,8 @@ const AddNewCardModal = () => {
       .then((cardEvent: NostrEvent) => {
         requestCardActivation(cardEvent).then(cardActivated => {
           const description: string = cardActivated
-            ? 'ACTIVATE_SUCCESS'
-            : 'ACTIVATE_ERROR'
+            ? t('ACTIVATE_SUCCESS')
+            : t('ACTIVATE_ERROR')
 
           const type: AlertTypes = cardActivated ? 'success' : 'error'
 
@@ -69,7 +69,7 @@ const AddNewCardModal = () => {
         })
       })
       .catch(() => {
-        sendNotification('ACTIVATE_ERROR', 'error')
+        sendNotification(t('ACTIVATE_ERROR'), 'error')
       })
   }
 
