@@ -174,17 +174,17 @@ export default function Page() {
       <Container size="small">
         <Divider y={16} />
         <Flex gap={8}>
-          <Button onClick={() => router.push('/transfer')} color="secondary">
-            <Icon>
-              <SendIcon />
-            </Icon>
-            {t('TRANSFER')}
-          </Button>
           <Button onClick={() => router.push('/deposit')}>
             <Icon>
               <ReceiveIcon />
             </Icon>
             {t('DEPOSIT')}
+          </Button>
+          <Button onClick={() => router.push('/transfer')} color="secondary">
+            <Icon>
+              <SendIcon />
+            </Icon>
+            {t('TRANSFER')}
           </Button>
         </Flex>
         <Divider y={16} />
