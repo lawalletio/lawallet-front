@@ -46,13 +46,13 @@ const QrScanner = (props: QrScannerProps) => {
 
   const video = React.createRef<HTMLVideoElement>()
 
-  const test = async () => {
-    const test = await NimiqQrScanner.listCameras(true)
-    alert(JSON.stringify(test))
-  }
+  // const test = async () => {
+  //   const test = await NimiqQrScanner.listCameras(true)
+  //   alert(JSON.stringify(test))
+  // }
 
   React.useEffect(() => {
-    test()
+    // test()
     if (video.current) {
       // create scanner bound to video html element
       const target = video.current
