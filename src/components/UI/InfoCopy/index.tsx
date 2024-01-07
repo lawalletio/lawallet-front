@@ -25,7 +25,7 @@ export default function Component(props: ComponentProps) {
   const handleCopy = () => {
     copy(value).then(res => {
       showAlert({
-        description: res ? 'SUCCESS_COPY' : 'ERROR_COPY',
+        description: res ? t('SUCCESS_COPY') : t('ERROR_COPY'),
         type: res ? 'success' : 'error'
       })
 

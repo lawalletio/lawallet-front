@@ -39,7 +39,11 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true} title={t('BACKUP_ACCOUNT')} />
+      <Navbar
+        title={t('BACKUP_ACCOUNT')}
+        showBackPage={true}
+        overrideBack={'/settings'}
+      />
 
       {showRecovery ? (
         <>

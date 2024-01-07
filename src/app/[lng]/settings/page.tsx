@@ -61,7 +61,11 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true} title={t('SETTINGS')} />
+      <Navbar
+        showBackPage={true}
+        title={t('SETTINGS')}
+        overrideBack="/dashboard"
+      />
 
       <Container size="small">
         <Divider y={16} />

@@ -17,7 +17,11 @@ export default function Page() {
 
   return (
     <>
-      <Navbar showBackPage={true} title={t('MY_CARDS')} />
+      <Navbar
+        title={t('MY_CARDS')}
+        showBackPage={true}
+        overrideBack={'/settings'}
+      />
 
       <Container size="small">
         <Divider y={16} />

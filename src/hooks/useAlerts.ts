@@ -1,4 +1,3 @@
-import { ReplacementParams } from '@/translations/types'
 import { useState } from 'react'
 
 export type AlertTypes = 'success' | 'warning' | 'error'
@@ -7,7 +6,6 @@ interface Alert {
   title?: string
   description: string
   type: AlertTypes
-  params?: ReplacementParams
 }
 
 export interface UseAlertReturns {
@@ -18,12 +16,11 @@ export interface UseAlertReturns {
 const useAlert = (): UseAlertReturns => {
   const [alert, setAlert] = useState<Alert | null>(null)
 
-  const showAlert = ({ title, description, type, params }: Alert) => {
+  const showAlert = ({ title, description, type }: Alert) => {
     setAlert({
       title,
       description,
-      type,
-      params
+      type
     })
 
     setTimeout(() => {

@@ -142,13 +142,17 @@ export default function Page() {
           <Divider y={8} />
           <Flex justify="center" align="center" gap={4}>
             <Flex justify="center" align="center" gap={4}>
-              {currency === 'SAT' ? (
-                <Icon size="small">
-                  <SatoshiV2Icon />
-                </Icon>
-              ) : (
-                <Text>$</Text>
-              )}
+              {!hideBalance ? (
+                <>
+                  {currency === 'SAT' ? (
+                    <Icon size="small">
+                      <SatoshiV2Icon />
+                    </Icon>
+                  ) : (
+                    <Text>$</Text>
+                  )}
+                </>
+              ) : null}
 
               <Heading>
                 {loading || balance.loading ? (
@@ -170,17 +174,17 @@ export default function Page() {
       <Container size="small">
         <Divider y={16} />
         <Flex gap={8}>
-          <Button onClick={() => router.push('/transfer')} color="secondary">
-            <Icon>
-              <SendIcon />
-            </Icon>
-            {t('TRANSFER')}
-          </Button>
           <Button onClick={() => router.push('/deposit')}>
             <Icon>
               <ReceiveIcon />
             </Icon>
             {t('DEPOSIT')}
+          </Button>
+          <Button onClick={() => router.push('/transfer')} color="secondary">
+            <Icon>
+              <SendIcon />
+            </Icon>
+            {t('TRANSFER')}
           </Button>
         </Flex>
         <Divider y={16} />

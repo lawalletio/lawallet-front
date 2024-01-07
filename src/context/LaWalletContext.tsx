@@ -19,6 +19,7 @@ import {
   useLayoutEffect,
   useState
 } from 'react'
+import { useTranslation } from './TranslateContext'
 
 interface LaWalletContextType {
   user: UserReturns
@@ -60,6 +61,8 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
   const params = useSearchParams()
   const notifications = useAlert()
 
+  const { t } = useTranslation()
+
   const { activityInfo, userTransactions } = useActivity({
     pubkey: user.identity.hexpub,
     enabled: Boolean(user.identity.hexpub.length)
@@ -90,11 +93,10 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
 
       if (secondsSinceCreated < 15)
         notifications.showAlert({
-          description: 'TRANSACTION_RECEIVED',
-          type: 'success',
-          params: {
+          description: t('TRANSACTION_RECEIVED', {
             sats: (new_transactions[0].tokens.BTC / 1000).toString()
-          }
+          }),
+          type: 'success'
         })
     }
   }
@@ -148,7 +150,6 @@ export function LaWalletProvider({ children }: { children: React.ReactNode }) {
         description={notifications.alert?.description}
         type={notifications.alert?.type}
         isOpen={!!notifications.alert}
-        params={notifications.alert?.params}
       />
 
       {!hydrated ? <SpinnerView /> : children}
