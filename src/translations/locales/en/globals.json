@@ -59,6 +59,7 @@
   "GO_HOME": "Go to the home",
   "SHARE": "Share",
   "EMPTY_USERNAME": "Enter a username",
+  "MIN_LENGTH_USERNAME": "Username must be at least 3 characters",
   "MAX_LENGTH_USERNAME": "Username cannot exceed 15 characters",
   "INVALID_USERNAME": "You can only use alphanumeric characters",
   "NAME_ALREADY_TAKEN": "The chosen name is already in use",

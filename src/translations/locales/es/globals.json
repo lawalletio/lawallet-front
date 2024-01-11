@@ -59,6 +59,7 @@
   "GO_HOME": "Ir al inicio",
   "SHARE": "Compartir",
   "EMPTY_USERNAME": "Escribe un nombre de usuario",
+  "MIN_LENGTH_USERNAME": "El nombre de usuario debe tener al menos 3 caracteres",
   "MAX_LENGTH_USERNAME": "El nombre de usuario no puede superar los 15 caracteres",
   "INVALID_USERNAME": "Solo puedes utilizar caracteres alfanuméricos",
   "NAME_ALREADY_TAKEN": "El nombre que elegiste ya está en uso",
