@@ -1,8 +1,9 @@
 import { Avatar, Flex, Text } from '@/components/UI'
+import { splitHandle } from '@/lib/utils'
 import React from 'react'
 
 const RecipientElement = ({ lud16 }: { lud16: string }) => {
-  const [username, domain] = lud16.split('@')
+  const [username, domain] = splitHandle(lud16)
   return (
     <Flex align="center" gap={8}>
       <Avatar>
