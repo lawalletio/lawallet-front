@@ -63,8 +63,6 @@ export default function Component(props: ComponentProps) {
       value: `https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`,
       visible: true
     })
-
-    console.log(`https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`)
   }
 
   const handleCloseActions = () => {
