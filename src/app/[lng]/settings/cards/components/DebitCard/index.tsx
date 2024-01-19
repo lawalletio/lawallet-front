@@ -17,6 +17,8 @@ import { CardImage, ConfigCard } from './style'
 import Pause from '@/components/Icons/Pause'
 import Play from '@/components/Icons/Play'
 import { CardPayload, CardStatus, Design } from '@/types/card'
+import { buildCardTransferDonationEvent } from '@/lib/events'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 
 interface ComponentProps {
   card: {
@@ -31,20 +33,47 @@ export default function Component(props: ComponentProps) {
   const { card, toggleCardStatus } = props
   const [handleSelected, setHandleSelected] = useState(false)
 
+  const { user: { identity } } = useLaWalletContext()
+
   // ActionSheet
   const [showConfiguration, setShowConfiguration] = useState(false)
   const [showTransfer, setShowTransfer] = useState(false)
-  const [showQrCode, setShowQrCode] = useState(false)
+  const [qrInfo, setQrInfo] = useState({
+    value: '',
+    visible: false
+  })
 
-  const handleTransferCard = () => {
+  const handleShowTransfer = () => {
     setShowConfiguration(false)
     setShowTransfer(true)
+  }
+
+  const handleDonateCard = async () => {
+    const transferDonationEvent = await buildCardTransferDonationEvent(
+      card.uuid,
+      identity.privateKey
+    )
+    
+    const encodedDonationEvent: string = btoa(JSON.stringify(transferDonationEvent))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+
+    setQrInfo({
+      value: `https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`,
+      visible: true
+    })
+
+    console.log(`https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`)
   }
 
   const handleCloseActions = () => {
     setShowConfiguration(false)
     setShowTransfer(false)
-    setShowQrCode(false)
+    setQrInfo({
+      value: '',
+      visible: false
+    })
   }
 
   return (
@@ -113,7 +142,7 @@ export default function Component(props: ComponentProps) {
         >
           Configuracion
         </LinkButton>
-        <Button variant="bezeledGray" onClick={() => handleTransferCard()}>
+        <Button variant="bezeledGray" onClick={() => handleShowTransfer()}>
           Transferir
         </Button>
       </ActionSheet>
@@ -124,21 +153,21 @@ export default function Component(props: ComponentProps) {
         onClose={handleCloseActions}
         title={'Transferir'}
         description={
-          showQrCode
+          qrInfo.visible
             ? `Escanea el codigo QR para transferir la tarjeta ${card.data.design.name}.`
             : `Esta seguro de querer transferir la tarjeta ${card.data.design.name}?`
         }
       >
-        {showQrCode ? (
+        {qrInfo.visible ? (
           <Flex direction="column" align="center">
-            <QRCode size={250} value="algo" showCopy={false} />
+            <QRCode size={250} value={qrInfo.value} showCopy={false} />
             <Divider y={12} />
           </Flex>
         ) : (
           <Button
             color="secondary"
             variant="bezeledGray"
-            onClick={() => setShowQrCode(true)}
+            onClick={handleDonateCard}
           >
             Confirmar
           </Button>

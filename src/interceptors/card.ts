@@ -59,12 +59,12 @@ export const cardInfoRequest = async (
 export const buildAndBroadcastCardConfig = (
   config: CardConfigPayload,
   privateKey: string
-) => {
-  buildCardConfigEvent(config, privateKey)
+): Promise<boolean> => {
+  return buildCardConfigEvent(config, privateKey)
     .then(configEvent => {
       return broadcastEvent(configEvent)
     })
     .catch(() => {
-      return { error: 'UNEXPECTED_ERROR' }
+      return false
     })
 }
