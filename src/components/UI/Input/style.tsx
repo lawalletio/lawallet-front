@@ -24,8 +24,8 @@ export const Input = styled.input<InputCustomProps>`
       props.$showValidate
         ? theme.colors.gray20
         : props.$isSuccess
-        ? theme.colors.success
-        : theme.colors.error};
+          ? theme.colors.success
+          : theme.colors.error};
 
   color: ${theme.colors.text};
   font-size: 0.8em;
@@ -70,7 +70,7 @@ export const InputButton = styled.div`
 export const InputGroup = styled.div`
   display: flex;
   width: 100%;
-  align-items: center;
+  align-items: end;
   justify-content: center;
 
   input {
@@ -156,8 +156,8 @@ export const Textarea = styled.textarea<InputCustomProps>`
       props.$showValidate
         ? theme.colors.gray20
         : props.$isSuccess
-        ? theme.colors.success
-        : theme.colors.error};
+          ? theme.colors.success
+          : theme.colors.error};
 
   color: ${theme.colors.text};
   font-size: 0.8em;
