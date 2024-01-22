@@ -19,6 +19,7 @@ import Play from '@/components/Icons/Play'
 import { CardPayload, CardStatus, Design } from '@/types/card'
 import { buildCardTransferDonationEvent } from '@/lib/events'
 import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   card: {
@@ -31,9 +32,12 @@ interface ComponentProps {
 
 export default function Component(props: ComponentProps) {
   const { card, toggleCardStatus } = props
+  const { t } = useTranslation()
   const [handleSelected, setHandleSelected] = useState(false)
 
-  const { user: { identity } } = useLaWalletContext()
+  const {
+    user: { identity }
+  } = useLaWalletContext()
 
   // ActionSheet
   const [showConfiguration, setShowConfiguration] = useState(false)
@@ -53,11 +57,13 @@ export default function Component(props: ComponentProps) {
       card.uuid,
       identity.privateKey
     )
-    
-    const encodedDonationEvent: string = btoa(JSON.stringify(transferDonationEvent))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
+
+    const encodedDonationEvent: string = btoa(
+      JSON.stringify(transferDonationEvent)
+    )
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
 
     setQrInfo({
       value: `https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`,
@@ -131,17 +137,17 @@ export default function Component(props: ComponentProps) {
       <ActionSheet
         isOpen={showConfiguration}
         onClose={handleCloseActions}
-        title={card?.data?.design?.name || ''}
-        description={card?.data?.design?.description || ''}
+        title={card.config?.name || ''}
+        description={card.config?.description || ''}
       >
         <LinkButton
           variant="bezeledGray"
           href={`/settings/cards/${card?.uuid}`}
         >
-          Configuracion
+          {t('SETTINGS')}
         </LinkButton>
         <Button variant="bezeledGray" onClick={() => handleShowTransfer()}>
-          Transferir
+          {t('TRANSFER')}
         </Button>
       </ActionSheet>
 
@@ -149,11 +155,15 @@ export default function Component(props: ComponentProps) {
       <ActionSheet
         isOpen={!showConfiguration && showTransfer}
         onClose={handleCloseActions}
-        title={'Transferir'}
+        title={t('TRANSFER')}
         description={
           qrInfo.visible
-            ? `Escanea el codigo QR para transferir la tarjeta ${card.data.design.name}.`
-            : `Esta seguro de querer transferir la tarjeta ${card.data.design.name}?`
+            ? t('SCAN_CODE_FOR_TRANSFER_CARD', {
+                name: card.config?.name ?? ''
+              })
+            : t('CONFIRM_TRANSFER_CARD', {
+                name: card.config?.name ?? ''
+              })
         }
       >
         {qrInfo.visible ? (
@@ -167,7 +177,7 @@ export default function Component(props: ComponentProps) {
             variant="bezeledGray"
             onClick={handleDonateCard}
           >
-            Confirmar
+            {t('CONFIRM')}
           </Button>
         )}
       </ActionSheet>

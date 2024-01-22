@@ -157,5 +157,9 @@
   "SAVE": "Guardar",
   "NAME": "Nombre",
   "MAX_AMOUNT": "Monto máximo",
-  "LIMITS": "Limites"
+  "LIMITS": "Limites",
+  "SCAN_CODE_FOR_TRANSFER_CARD": "Escanea el codigo QR para transferir la tarjeta {{ name }}",
+  "CONFIRM_TRANSFER_CARD": "¿Estás seguro de querer transferir la tarjeta {{ name }}?",
+  "DAILY": "Diario",
+  "UNIQUE": "Único"
 }

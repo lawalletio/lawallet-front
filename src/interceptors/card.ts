@@ -64,7 +64,8 @@ export const buildAndBroadcastCardConfig = (
     .then(configEvent => {
       return broadcastEvent(configEvent)
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       return false
     })
 }

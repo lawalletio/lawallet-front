@@ -7,6 +7,7 @@ import { parseContent } from '@/lib/utils'
 import {
   CardConfigPayload,
   CardDataPayload,
+  CardPayload,
   CardStatus,
   ConfigTypes
 } from '@/types/card'
@@ -23,6 +24,7 @@ export type CardConfigReturns = {
   cardsConfig: CardConfigPayload,
   loadInfo: CardLoadingType;
   toggleCardStatus: (uuid: string) => void
+  updateCardConfig: (uuid: string, config: CardPayload) => void
 }
 
 type CardLoadingType = {
@@ -81,6 +83,20 @@ const useCardConfig = (): CardConfigReturns => {
     buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
+  const updateCardConfig = (uuid: string, config: CardPayload) => {
+    if (!cardsConfig.cards?.[uuid]) return;
+
+    const new_card_config = {
+      ...cardsConfig,
+      cards: {
+        ...cardsConfig.cards,
+        [uuid.toString()]: config
+      }
+    }
+
+    buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
+  }
+
   const processReceivedEvent = async (event: NDKEvent) => {
     console.info('processReceivedEvent')
     const nostrEv = await event.toNostrEvent()
@@ -110,7 +126,7 @@ const useCardConfig = (): CardConfigReturns => {
     })
   }, [subscription])
 
-  return { cardsData, cardsConfig, loadInfo, toggleCardStatus }
+  return { cardsData, cardsConfig, loadInfo, toggleCardStatus, updateCardConfig }
 }
 
 export default useCardConfig

@@ -4,30 +4,110 @@ import Navbar from '@/components/Layout/Navbar'
 import { MainLoader } from '@/components/Loader/Loader'
 import {
   Button,
+  ButtonGroup,
   Divider,
   Flex,
-  InputGroup,
-  InputGroupRight,
   InputWithLabel,
-  Text
+  Label
 } from '@/components/UI'
-import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
 import useCardConfig from '@/hooks/useCardConfig'
-import { formatToPreference } from '@/lib/utils/formatter'
+import { CardPayload, CardStatus, Limit } from '@/types/card'
 import { useParams, useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  EventHandler,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
+import LimitInput from '../components/LimitInput/LimitInput'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+
+const defaultTXLimit: Limit = {
+  name: 'Transactional limit',
+  description: 'Spending limit per transaction',
+  token: 'BTC',
+  amount: BigInt(100000000000).toString(),
+  delta: 0
+}
+
+const defaultDailyLimit: Limit = {
+  name: 'Daily limit',
+  description: 'Spending limit per day',
+  token: 'BTC',
+  amount: BigInt(1000000000).toString(),
+  delta: 86400
+}
+
+type LimtisConfigOptions = 'tx' | 'daily'
 
 const page = () => {
-  const { t, lng } = useTranslation()
+  const { t } = useTranslation()
+  const [showLimit, setShowLimit] = useState<LimtisConfigOptions>('tx')
+  const { configuration, converter } = useLaWalletContext()
 
-  const { converter, configuration } = useLaWalletContext()
-  const { cardsData, cardsConfig, loadInfo } = useCardConfig()
+  const [newConfig, setNewConfig] = useState<CardPayload>({
+    name: '',
+    description: '',
+    status: CardStatus.ENABLED,
+    limits: [defaultTXLimit, defaultDailyLimit]
+  })
+
+  const { cardsData, cardsConfig, loadInfo, updateCardConfig } = useCardConfig()
 
   const router = useRouter()
   const params = useParams()
 
   const uuid: string = useMemo(() => params.uuid as string, [])
+
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    const name: string = e.target.value
+
+    setNewConfig({
+      ...newConfig,
+      name
+    })
+  }
+
+  const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
+    const newAmount = Number(e.target.value)
+    const newLimits: Limit[] = newConfig.limits.slice()
+    newLimits[showLimit === 'tx' ? 0 : 1].amount = BigInt(
+      converter.convertCurrency(
+        newAmount * 1000,
+        configuration.props.currency,
+        'SAT'
+      )
+    ).toString()
+
+    setNewConfig({
+      ...newConfig,
+      limits: newLimits
+    })
+  }
+
+  useEffect(() => {
+    if (!cardsConfig.cards?.[uuid] || !cardsData?.[uuid]) return
+    const { name, description, status, limits } = cardsConfig.cards[uuid]
+
+    const txLimit = limits.find((limit: Limit) => {
+      if (limit.delta === defaultTXLimit.delta) return limit
+    })
+
+    const dailyLimit = limits.find((limit: Limit) => {
+      if (limit.delta === defaultDailyLimit.delta) return limit
+    })
+
+    setNewConfig({
+      name,
+      description,
+      status,
+      limits: [txLimit ?? defaultTXLimit, dailyLimit ?? defaultDailyLimit]
+    })
+  }, [cardsConfig.cards])
+
   if (!loadInfo.loading && !cardsData?.[uuid]) return null
 
   return (
@@ -44,34 +124,35 @@ const page = () => {
         <Container>
           <Divider y={24} />
           <InputWithLabel
+            onChange={handleChangeName}
             name="card-name"
             label={t('NAME')}
             placeholder={t('NAME')}
-            value={cardsData[uuid].design.name}
+            value={newConfig.name}
           />
 
           <Divider y={24} />
 
-          <InputGroup>
-            <InputWithLabel
-              name="max-amount"
-              label={t('MAX_AMOUNT')}
-              placeholder="0"
-              value={formatToPreference(
-                configuration.props.currency,
-                converter.convertCurrency(
-                  Number(cardsConfig.cards?.[uuid].limits[0].amount) / 1000,
-                  'SAT',
-                  configuration.props.currency
-                ),
-                lng
-              )}
-            />
+          <Label htmlFor="max-amount">{t('LIMITS')}</Label>
 
-            <InputGroupRight>
-              <Text size="small">{configuration.props.currency}</Text>
-            </InputGroupRight>
-          </InputGroup>
+          <Flex direction="row" align="end">
+            <ButtonGroup>
+              <Button onClick={() => setShowLimit('tx')} size="small">
+                {t('UNIQUE')}
+              </Button>
+
+              <Button onClick={() => setShowLimit('daily')} size="small">
+                {t('DAILY')}
+              </Button>
+            </ButtonGroup>
+          </Flex>
+
+          <LimitInput
+            onChange={handleChangeLimit}
+            amount={
+              Number(newConfig.limits[showLimit === 'tx' ? 0 : 1].amount) / 1000
+            }
+          />
 
           <Divider y={24} />
         </Container>
@@ -87,7 +168,9 @@ const page = () => {
             >
               {t('CANCEL')}
             </Button>
-            <Button onClick={() => null}>{t('SAVE')}</Button>
+            <Button onClick={() => updateCardConfig(uuid, newConfig)}>
+              {t('SAVE')}
+            </Button>
           </Flex>
           <Divider y={32} />
         </Container>
