@@ -162,5 +162,6 @@
   "CONFIRM_TRANSFER_CARD": "Are you sure you want to transfer the card {{ name }}?",
   "DAILY": "Daily",
   "UNIQUE": "Unique",
-  "TOGGLE_STATUS_CARD_SUCCESS": "You changed the status of your card"
+  "TOGGLE_STATUS_CARD_SUCCESS": "You changed the status of your card",
+  "DESCRIPTION": "Description"
 }

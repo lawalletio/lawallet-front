@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Divider,
   Flex,
+  Heading,
   InputWithLabel,
   Label
 } from '@/components/UI'
@@ -90,6 +91,15 @@ const page = () => {
     })
   }
 
+  const handleChangeDesc = (e: ChangeEvent<HTMLInputElement>) => {
+    const description: string = e.target.value
+
+    setNewConfig({
+      ...newConfig,
+      description
+    })
+  }
+
   const handleSaveConfig = async () => {
     const updated: boolean = await updateCardConfig(uuid, newConfig)
     if (updated) router.push('/settings/cards')
@@ -130,6 +140,7 @@ const page = () => {
       ) : (
         <Container>
           <Divider y={24} />
+
           <InputWithLabel
             onChange={handleChangeName}
             name="card-name"
@@ -138,11 +149,21 @@ const page = () => {
             value={newConfig.name}
           />
 
+          <Divider y={12} />
+
+          <InputWithLabel
+            onChange={handleChangeDesc}
+            name="card-desc"
+            label={t('DESCRIPTION')}
+            placeholder={t('DESCRIPTION')}
+            value={newConfig.description}
+          />
+
           <Divider y={24} />
 
-          <Label htmlFor="max-amount">{t('LIMITS')}</Label>
+          <Flex justify="space-between" align="center">
+            <Heading as="h5">{t('LIMITS')}</Heading>
 
-          <Flex direction="row" align="end">
             <ButtonGroup>
               <Button
                 variant={showLimit === 'tx' ? 'filled' : 'borderless'}
@@ -161,6 +182,8 @@ const page = () => {
               </Button>
             </ButtonGroup>
           </Flex>
+
+          <Divider y={24} />
 
           <LimitInput
             onChange={handleChangeLimit}
