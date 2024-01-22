@@ -161,5 +161,6 @@
   "SCAN_CODE_FOR_TRANSFER_CARD": "Escanea el codigo QR para transferir la tarjeta {{ name }}",
   "CONFIRM_TRANSFER_CARD": "¿Estás seguro de querer transferir la tarjeta {{ name }}?",
   "DAILY": "Diario",
-  "UNIQUE": "Único"
+  "UNIQUE": "Único",
+  "TOGGLE_STATUS_CARD_SUCCESS": "Cambiaste el estado de tu tarjeta"
 }

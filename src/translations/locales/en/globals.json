@@ -161,5 +161,6 @@
   "SCAN_CODE_FOR_TRANSFER_CARD": "Scan the QR code to transfer the card {{ name }}",
   "CONFIRM_TRANSFER_CARD": "Are you sure you want to transfer the card {{ name }}?",
   "DAILY": "Daily",
-  "UNIQUE": "Unique"
+  "UNIQUE": "Unique",
+  "TOGGLE_STATUS_CARD_SUCCESS": "You changed the status of your card"
 }

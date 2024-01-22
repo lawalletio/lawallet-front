@@ -10,10 +10,22 @@ import useCardConfig from '@/hooks/useCardConfig'
 import AddNewCardModal from './components/AddCard'
 import DebitCard from './components/DebitCard'
 import EmptyCards from './components/EmptyCards'
+import { useLaWalletContext } from '@/context/LaWalletContext'
 
 export default function Page() {
+  const { notifications } = useLaWalletContext()
   const { cardsData, cardsConfig, loadInfo, toggleCardStatus } = useCardConfig()
   const { t } = useTranslation()
+
+  const handleToggleStatus = async (uuid: string) => {
+    const toggled: boolean = await toggleCardStatus(uuid)
+    if (toggled)
+      notifications.showAlert({
+        title: '',
+        description: t('TOGGLE_STATUS_CARD_SUCCESS'),
+        type: 'success'
+      })
+  }
 
   return (
     <>
@@ -37,7 +49,7 @@ export default function Page() {
                     data: value,
                     config: cardsConfig.cards?.[key]
                   }}
-                  toggleCardStatus={toggleCardStatus}
+                  toggleCardStatus={handleToggleStatus}
                   key={key}
                 />
               )
