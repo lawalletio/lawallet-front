@@ -90,7 +90,11 @@ const useCardConfig = (): CardConfigReturns => {
       ...cardsConfig,
       cards: {
         ...cardsConfig.cards,
-        [uuid.toString()]: config
+        [uuid.toString()]: {
+          ...config,
+          name: config.name ?? cardsData[uuid].design.name,
+          description: config.description ?? cardsData[uuid].design.description
+        }
       }
     }
 

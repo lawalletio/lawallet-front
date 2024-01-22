@@ -137,8 +137,8 @@ export default function Component(props: ComponentProps) {
       <ActionSheet
         isOpen={showConfiguration}
         onClose={handleCloseActions}
-        title={card.config?.name || ''}
-        description={card.config?.description || ''}
+        title={card.config?.name || card.data.design.name}
+        description={card.config?.description || card.data.design.name}
       >
         <LinkButton
           variant="bezeledGray"
@@ -159,10 +159,10 @@ export default function Component(props: ComponentProps) {
         description={
           qrInfo.visible
             ? t('SCAN_CODE_FOR_TRANSFER_CARD', {
-                name: card.config?.name ?? ''
+                name: card.config?.name ?? card.data.design.name
               })
             : t('CONFIRM_TRANSFER_CARD', {
-                name: card.config?.name ?? ''
+                name: card.config?.name ?? card.data.design.name
               })
         }
       >

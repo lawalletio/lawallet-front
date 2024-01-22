@@ -64,8 +64,8 @@ const page = () => {
   const uuid: string = useMemo(() => params.uuid as string, [])
 
   const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.replaceAll('.', '')
-    const newAmount = parseInt(inputValue)
+    const inputValue = e.target.value.replaceAll(',', '').replaceAll('.', '')
+    const newAmount = !inputValue ? 0 : parseInt(inputValue)
 
     const newLimits: Limit[] = newConfig.limits.slice()
     newLimits[showLimit === 'tx' ? 0 : 1].amount = BigInt(
