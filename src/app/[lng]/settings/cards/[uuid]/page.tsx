@@ -62,15 +62,6 @@ const page = () => {
 
   const uuid: string = useMemo(() => params.uuid as string, [])
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    const name: string = e.target.value
-
-    setNewConfig({
-      ...newConfig,
-      name
-    })
-  }
-
   const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value.replaceAll('.', '')
     const newAmount = parseInt(inputValue)
@@ -88,6 +79,20 @@ const page = () => {
       ...newConfig,
       limits: newLimits
     })
+  }
+
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    const name: string = e.target.value
+
+    setNewConfig({
+      ...newConfig,
+      name
+    })
+  }
+
+  const handleSaveConfig = async () => {
+    const updated: boolean = await updateCardConfig(uuid, newConfig)
+    if (updated) router.push('/settings/cards')
   }
 
   useEffect(() => {
@@ -170,14 +175,7 @@ const page = () => {
             >
               {t('CANCEL')}
             </Button>
-            <Button
-              onClick={async () => {
-                const updated: boolean = await updateCardConfig(uuid, newConfig)
-                if (updated) router.push('/settings/cards')
-              }}
-            >
-              {t('SAVE')}
-            </Button>
+            <Button onClick={handleSaveConfig}>{t('SAVE')}</Button>
           </Flex>
           <Divider y={32} />
         </Container>
