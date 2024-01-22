@@ -19,21 +19,21 @@ import { useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
 
 export type CardConfigReturns = {
-  cards: ICards
+  cardsData: CardDataPayload,
+  cardsConfig: CardConfigPayload,
+  loadInfo: CardLoadingType;
   toggleCardStatus: (uuid: string) => void
 }
 
-export type ICards = {
-  data: CardDataPayload
-  config: CardConfigPayload
+type CardLoadingType = {
   loadedAt: number
   loading: boolean
 }
 
 const useCardConfig = (): CardConfigReturns => {
-  const [cards, setCards] = useState<ICards>({
-    data: {},
-    config: {} as CardConfigPayload,
+  const [cardsData, setCardsData] = useState<CardDataPayload>({})
+  const [cardsConfig, setCardsConfig] = useState<CardConfigPayload>({} as CardConfigPayload)
+  const [loadInfo, setLoadInfo] = useState<CardLoadingType>({
     loadedAt: 0,
     loading: true
   })
@@ -51,7 +51,7 @@ const useCardConfig = (): CardConfigReturns => {
           `${identity.hexpub}:${ConfigTypes.CONFIG.valueOf()}`
         ],
         authors: [config.pubKeys.cardPubkey],
-        since: cards.loadedAt
+        since: loadInfo.loadedAt
       }
     ],
     options: {
@@ -62,15 +62,16 @@ const useCardConfig = (): CardConfigReturns => {
   })
 
   const toggleCardStatus = (uuid: string) => {
-    console.info('START TOGGLE!')
+    if (!cardsConfig.cards?.[uuid]) return;
+
     const new_card_config = {
-      ...cards.config,
+      ...cardsConfig,
       cards: {
-        ...cards.config.cards,
+        ...cardsConfig.cards,
         [uuid.toString()]: {
-          ...cards.config.cards?.[uuid],
+          ...cardsConfig.cards[uuid],
           status:
-            cards.config.cards?.[uuid]?.status === CardStatus.ENABLED
+            cardsConfig.cards[uuid].status === CardStatus.ENABLED
               ? CardStatus.DISABLED
               : CardStatus.ENABLED
         }
@@ -84,25 +85,23 @@ const useCardConfig = (): CardConfigReturns => {
     console.info('processReceivedEvent')
     const nostrEv = await event.toNostrEvent()
 
-    const parsedEncryptedData = await parseMultiNip04Event(
+    const decryptedData = await parseMultiNip04Event(
       nostrEv,
       identity.privateKey,
       identity.hexpub
     )
 
+    const parsedDecryptedData = parseContent(decryptedData)
+
     const subkind: string = getTag(nostrEv.tags, 't')
 
-    console.info('parsedEncryptedData:')
-    console.dir(parsedEncryptedData)
-    setCards(prev => {
-      return {
-        ...prev,
-        loadedAt: nostrEv.created_at + 1,
-        [subkind === ConfigTypes.DATA ? 'data' : 'config']:
-          parseContent(parsedEncryptedData),
-        loading: false
-      }
-    })
+    if (subkind === ConfigTypes.DATA) {
+      setCardsData(parsedDecryptedData)
+    } else if (subkind === ConfigTypes.CONFIG) {
+      setCardsConfig(parsedDecryptedData)
+    }
+
+    if (loadInfo.loading) setLoadInfo({ loadedAt: nostrEv.created_at + 1, loading: false})
   }
 
   useEffect(() => {
@@ -111,7 +110,7 @@ const useCardConfig = (): CardConfigReturns => {
     })
   }, [subscription])
 
-  return { cards, toggleCardStatus }
+  return { cardsData, cardsConfig, loadInfo, toggleCardStatus }
 }
 
 export default useCardConfig

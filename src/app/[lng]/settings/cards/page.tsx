@@ -12,7 +12,7 @@ import DebitCard from './components/DebitCard'
 import EmptyCards from './components/EmptyCards'
 
 export default function Page() {
-  const { cards, toggleCardStatus } = useCardConfig()
+  const { cardsData, cardsConfig, loadInfo, toggleCardStatus } = useCardConfig()
   const { t } = useTranslation()
 
   return (
@@ -25,17 +25,17 @@ export default function Page() {
 
       <Container size="small">
         <Divider y={16} />
-        {cards.loading ? (
+        {loadInfo.loading ? (
           <MainLoader />
-        ) : Object.keys(cards.data).length ? (
+        ) : Object.keys(cardsData).length ? (
           <Flex direction="column" align="center" gap={16}>
-            {Object.entries(cards.data).map(([key, value]) => {
+            {Object.entries(cardsData).map(([key, value]) => {
               return (
                 <DebitCard
                   card={{
                     uuid: key,
                     data: value,
-                    config: cards.config.cards?.[key]
+                    config: cardsConfig.cards?.[key]
                   }}
                   toggleCardStatus={toggleCardStatus}
                   key={key}

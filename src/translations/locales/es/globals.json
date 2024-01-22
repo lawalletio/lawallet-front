@@ -153,5 +153,9 @@
   "URL_SCANNED_TITLE": "Enlace escaneado",
   "URL_SCANNED_DESC": "Escaneaste el enlace {{ url }} ¿Deseas abrirlo en el navegador?",
   "OPEN_URL": "Abrir enlace",
-  "BACK": "Volver"
+  "BACK": "Volver",
+  "SAVE": "Guardar",
+  "NAME": "Nombre",
+  "MAX_AMOUNT": "Monto máximo",
+  "LIMITS": "Limites"
 }
