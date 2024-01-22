@@ -72,7 +72,9 @@ const page = () => {
   }
 
   const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
-    const newAmount = Number(e.target.value)
+    const inputValue = e.target.value.replaceAll('.', '')
+    const newAmount = parseInt(inputValue)
+
     const newLimits: Limit[] = newConfig.limits.slice()
     newLimits[showLimit === 'tx' ? 0 : 1].amount = BigInt(
       converter.convertCurrency(
@@ -168,7 +170,12 @@ const page = () => {
             >
               {t('CANCEL')}
             </Button>
-            <Button onClick={() => updateCardConfig(uuid, newConfig)}>
+            <Button
+              onClick={async () => {
+                const updated: boolean = await updateCardConfig(uuid, newConfig)
+                if (updated) router.push('/settings/cards')
+              }}
+            >
               {t('SAVE')}
             </Button>
           </Flex>

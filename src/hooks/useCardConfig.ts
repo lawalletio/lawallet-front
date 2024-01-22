@@ -23,8 +23,8 @@ export type CardConfigReturns = {
   cardsData: CardDataPayload,
   cardsConfig: CardConfigPayload,
   loadInfo: CardLoadingType;
-  toggleCardStatus: (uuid: string) => void
-  updateCardConfig: (uuid: string, config: CardPayload) => void
+  toggleCardStatus: (uuid: string) => Promise<boolean>
+  updateCardConfig: (uuid: string, config: CardPayload) => Promise<boolean>
 }
 
 type CardLoadingType = {
@@ -63,8 +63,8 @@ const useCardConfig = (): CardConfigReturns => {
     enabled: true
   })
 
-  const toggleCardStatus = (uuid: string) => {
-    if (!cardsConfig.cards?.[uuid]) return;
+  const toggleCardStatus = async (uuid: string): Promise<boolean> => {
+    if (!cardsConfig.cards?.[uuid]) return false;
 
     const new_card_config = {
       ...cardsConfig,
@@ -80,11 +80,11 @@ const useCardConfig = (): CardConfigReturns => {
       }
     }
 
-    buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
+    return buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
-  const updateCardConfig = (uuid: string, config: CardPayload) => {
-    if (!cardsConfig.cards?.[uuid]) return;
+  const updateCardConfig = async (uuid: string, config: CardPayload): Promise<boolean> => {
+    if (!cardsConfig.cards?.[uuid]) return false;
 
     const new_card_config = {
       ...cardsConfig,
@@ -94,11 +94,10 @@ const useCardConfig = (): CardConfigReturns => {
       }
     }
 
-    buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
+    return buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
   const processReceivedEvent = async (event: NDKEvent) => {
-    console.info('processReceivedEvent')
     const nostrEv = await event.toNostrEvent()
 
     const decryptedData = await parseMultiNip04Event(

@@ -20,9 +20,15 @@ const LimitInput = ({ amount, onChange }) => {
         name="max-amount"
         label={t('MAX_AMOUNT')}
         placeholder="0"
-        value={converter
-          .convertCurrency(amount, 'SAT', configuration.props.currency)
-          .toString()}
+        value={formatToPreference(
+          configuration.props.currency,
+          converter.convertCurrency(
+            amount,
+            'SAT',
+            configuration.props.currency
+          ),
+          lng
+        )}
       />
 
       <InputGroupRight>
