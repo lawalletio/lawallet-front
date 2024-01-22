@@ -144,11 +144,19 @@ const page = () => {
 
           <Flex direction="row" align="end">
             <ButtonGroup>
-              <Button onClick={() => setShowLimit('tx')} size="small">
+              <Button
+                variant={showLimit === 'tx' ? 'filled' : 'borderless'}
+                onClick={() => setShowLimit('tx')}
+                size="small"
+              >
                 {t('UNIQUE')}
               </Button>
 
-              <Button onClick={() => setShowLimit('daily')} size="small">
+              <Button
+                variant={showLimit === 'daily' ? 'filled' : 'borderless'}
+                onClick={() => setShowLimit('daily')}
+                size="small"
+              >
                 {t('DAILY')}
               </Button>
             </ButtonGroup>
