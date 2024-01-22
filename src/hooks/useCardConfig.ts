@@ -126,16 +126,10 @@ const useCardConfig = (): CardConfigReturns => {
   }, [subscription])
 
   useEffect(() => {
-    if (loadInfo.loading) {
-      const debouncedLoading = setTimeout(() => {
-        if (loadInfo.loading) setLoadInfo({...loadInfo, loading: false })
+      setTimeout(() => {
+        if (loadInfo.loading) setLoadInfo((prev) => { return {...prev, loading: false } })
       }, 2500);
-    
-      return () => {
-        clearTimeout(debouncedLoading)
-      }
-    }
-  }, [loadInfo.loading])
+  }, [])
   
 
   return { cardsData, cardsConfig, loadInfo, toggleCardStatus, updateCardConfig }
