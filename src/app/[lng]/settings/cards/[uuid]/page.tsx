@@ -138,7 +138,7 @@ const page = () => {
       {loadInfo.loading ? (
         <MainLoader />
       ) : (
-        <Container>
+        <Container size="small">
           <Divider y={24} />
 
           <InputWithLabel
