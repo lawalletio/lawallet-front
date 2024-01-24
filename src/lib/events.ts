@@ -13,6 +13,7 @@ import {
   getEventHash,
   getPublicKey,
   getSignature,
+  nip04,
   nip26
 } from 'nostr-tools'
 import { escapingBrackets, nowInSeconds } from './utils'
@@ -209,6 +210,63 @@ export const buildCardConfigEvent = async (
   event.tags = event.tags.concat([
     ['t', `${ConfigTypes.CONFIG.valueOf()}-change`],
   ])
+
+  event.id = getEventHash(event as UnsignedEvent)
+  event.sig = getSignature(event as UnsignedEvent, privateKey)
+
+  return event
+}
+
+export const buildCardTransferDonationEvent = async (uuid: string, privateKey: string) => {
+  const userPubkey: string = getPublicKey(privateKey)
+
+  const content = await nip04.encrypt(privateKey, config.pubKeys.cardPubkey, uuid)
+
+  const event: NostrEvent = {
+    kind: LaWalletKinds.EPHEMERAL,
+    pubkey: userPubkey,
+    content,
+    created_at: nowInSeconds(),
+    tags: [
+      ['t', 'card-transfer-donation'],
+      ['p', config.pubKeys.cardPubkey]
+    ]
+  }
+
+  event.id = getEventHash(event as UnsignedEvent)
+  event.sig = getSignature(event as UnsignedEvent, privateKey)
+
+  //return btoa(JSON.stringify(event).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''))
+  return event;
+}
+
+export const buildCardTransferAcceptEvent = async (giverPubkey: string, donationEvent: NostrEvent, privateKey: string) => {
+  const userPubkey: string = getPublicKey(privateKey)
+
+  const delegation = nip26.createDelegation(privateKey, {
+    pubkey: config.pubKeys.cardPubkey,
+    kind: LaWalletKinds.REGULAR,
+    since: Math.floor(Date.now() / 1000) - 36000,
+    until: Math.floor(Date.now() / 1000) + 3600 * 24 * 30 * 12
+  })
+
+  const event: NostrEvent = {
+    kind: LaWalletKinds.EPHEMERAL,
+    pubkey: userPubkey,
+    content: JSON.stringify({
+      delegation: {
+        conditions: delegation.cond,
+        token: delegation.sig
+      },
+      donationEvent
+    }),
+    created_at: nowInSeconds(),
+    tags: [
+      ['t', 'card-transfer-acceptance'],
+      ['p', config.pubKeys.cardPubkey],
+      ['p', giverPubkey]
+    ]
+  }
 
   event.id = getEventHash(event as UnsignedEvent)
   event.sig = getSignature(event as UnsignedEvent, privateKey)

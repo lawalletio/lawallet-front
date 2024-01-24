@@ -7,6 +7,7 @@ import { parseContent } from '@/lib/utils'
 import {
   CardConfigPayload,
   CardDataPayload,
+  CardPayload,
   CardStatus,
   ConfigTypes
 } from '@/types/card'
@@ -19,21 +20,22 @@ import { useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
 
 export type CardConfigReturns = {
-  cards: ICards
-  toggleCardStatus: (uuid: string) => void
+  cardsData: CardDataPayload,
+  cardsConfig: CardConfigPayload,
+  loadInfo: CardLoadingType;
+  toggleCardStatus: (uuid: string) => Promise<boolean>
+  updateCardConfig: (uuid: string, config: CardPayload) => Promise<boolean>
 }
 
-export type ICards = {
-  data: CardDataPayload
-  config: CardConfigPayload
+type CardLoadingType = {
   loadedAt: number
   loading: boolean
 }
 
 const useCardConfig = (): CardConfigReturns => {
-  const [cards, setCards] = useState<ICards>({
-    data: {},
-    config: {} as CardConfigPayload,
+  const [cardsData, setCardsData] = useState<CardDataPayload>({})
+  const [cardsConfig, setCardsConfig] = useState<CardConfigPayload>({} as CardConfigPayload)
+  const [loadInfo, setLoadInfo] = useState<CardLoadingType>({
     loadedAt: 0,
     loading: true
   })
@@ -51,7 +53,7 @@ const useCardConfig = (): CardConfigReturns => {
           `${identity.hexpub}:${ConfigTypes.CONFIG.valueOf()}`
         ],
         authors: [config.pubKeys.cardPubkey],
-        since: cards.loadedAt
+        since: loadInfo.loadedAt
       }
     ],
     options: {
@@ -61,48 +63,64 @@ const useCardConfig = (): CardConfigReturns => {
     enabled: true
   })
 
-  const toggleCardStatus = (uuid: string) => {
-    console.info('START TOGGLE!')
+  const toggleCardStatus = async (uuid: string): Promise<boolean> => {
+    if (!cardsConfig.cards?.[uuid]) return false;
+
     const new_card_config = {
-      ...cards.config,
+      ...cardsConfig,
       cards: {
-        ...cards.config.cards,
+        ...cardsConfig.cards,
         [uuid.toString()]: {
-          ...cards.config.cards?.[uuid],
+          ...cardsConfig.cards[uuid],
           status:
-            cards.config.cards?.[uuid]?.status === CardStatus.ENABLED
+            cardsConfig.cards[uuid].status === CardStatus.ENABLED
               ? CardStatus.DISABLED
               : CardStatus.ENABLED
         }
       }
     }
 
-    buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
+    return buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
+  }
+
+  const updateCardConfig = async (uuid: string, config: CardPayload): Promise<boolean> => {
+    if (!cardsConfig.cards?.[uuid]) return false;
+
+    const new_card_config = {
+      ...cardsConfig,
+      cards: {
+        ...cardsConfig.cards,
+        [uuid.toString()]: {
+          ...config,
+          name: config.name ?? cardsData[uuid].design.name,
+          description: config.description ?? cardsData[uuid].design.description
+        }
+      }
+    }
+
+    return buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
   const processReceivedEvent = async (event: NDKEvent) => {
-    console.info('processReceivedEvent')
     const nostrEv = await event.toNostrEvent()
 
-    const parsedEncryptedData = await parseMultiNip04Event(
+    const decryptedData = await parseMultiNip04Event(
       nostrEv,
       identity.privateKey,
       identity.hexpub
     )
 
+    const parsedDecryptedData = parseContent(decryptedData)
+
     const subkind: string = getTag(nostrEv.tags, 't')
 
-    console.info('parsedEncryptedData:')
-    console.dir(parsedEncryptedData)
-    setCards(prev => {
-      return {
-        ...prev,
-        loadedAt: nostrEv.created_at + 1,
-        [subkind === ConfigTypes.DATA ? 'data' : 'config']:
-          parseContent(parsedEncryptedData),
-        loading: false
-      }
-    })
+    if (subkind === ConfigTypes.DATA) {
+      setCardsData(parsedDecryptedData)
+    } else if (subkind === ConfigTypes.CONFIG) {
+      setCardsConfig(parsedDecryptedData)
+    }
+
+    if (loadInfo.loading) setLoadInfo({ loadedAt: nostrEv.created_at + 1, loading: false})
   }
 
   useEffect(() => {
@@ -111,7 +129,14 @@ const useCardConfig = (): CardConfigReturns => {
     })
   }, [subscription])
 
-  return { cards, toggleCardStatus }
+  useEffect(() => {
+      setTimeout(() => {
+        if (loadInfo.loading) setLoadInfo((prev) => { return {...prev, loading: false } })
+      }, 2500);
+  }, [])
+  
+
+  return { cardsData, cardsConfig, loadInfo, toggleCardStatus, updateCardConfig }
 }
 
 export default useCardConfig

@@ -17,6 +17,9 @@ import { CardImage, ConfigCard } from './style'
 import Pause from '@/components/Icons/Pause'
 import Play from '@/components/Icons/Play'
 import { CardPayload, CardStatus, Design } from '@/types/card'
+import { buildCardTransferDonationEvent } from '@/lib/events'
+import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useTranslation } from '@/context/TranslateContext'
 
 interface ComponentProps {
   card: {
@@ -29,22 +32,52 @@ interface ComponentProps {
 
 export default function Component(props: ComponentProps) {
   const { card, toggleCardStatus } = props
+  const { t } = useTranslation()
   const [handleSelected, setHandleSelected] = useState(false)
+
+  const {
+    user: { identity }
+  } = useLaWalletContext()
 
   // ActionSheet
   const [showConfiguration, setShowConfiguration] = useState(false)
   const [showTransfer, setShowTransfer] = useState(false)
-  const [showQrCode, setShowQrCode] = useState(false)
+  const [qrInfo, setQrInfo] = useState({
+    value: '',
+    visible: false
+  })
 
-  const handleTransferCard = () => {
+  const handleShowTransfer = () => {
     setShowConfiguration(false)
     setShowTransfer(true)
+  }
+
+  const handleDonateCard = async () => {
+    const transferDonationEvent = await buildCardTransferDonationEvent(
+      card.uuid,
+      identity.privateKey
+    )
+
+    const encodedDonationEvent: string = btoa(
+      JSON.stringify(transferDonationEvent)
+    )
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+
+    setQrInfo({
+      value: `https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`,
+      visible: true
+    })
   }
 
   const handleCloseActions = () => {
     setShowConfiguration(false)
     setShowTransfer(false)
-    setShowQrCode(false)
+    setQrInfo({
+      value: '',
+      visible: false
+    })
   }
 
   return (
@@ -104,17 +137,17 @@ export default function Component(props: ComponentProps) {
       <ActionSheet
         isOpen={showConfiguration}
         onClose={handleCloseActions}
-        title={card?.data?.design?.name || ''}
-        description={card?.data?.design?.description || ''}
+        title={card.config?.name || card.data.design.name}
+        description={card.config?.description || card.data.design.name}
       >
         <LinkButton
           variant="bezeledGray"
           href={`/settings/cards/${card?.uuid}`}
         >
-          Configuracion
+          {t('SETTINGS')}
         </LinkButton>
-        <Button variant="bezeledGray" onClick={() => handleTransferCard()}>
-          Transferir
+        <Button variant="bezeledGray" onClick={() => handleShowTransfer()}>
+          {t('TRANSFER')}
         </Button>
       </ActionSheet>
 
@@ -122,25 +155,29 @@ export default function Component(props: ComponentProps) {
       <ActionSheet
         isOpen={!showConfiguration && showTransfer}
         onClose={handleCloseActions}
-        title={'Transferir'}
+        title={t('TRANSFER')}
         description={
-          showQrCode
-            ? `Escanea el codigo QR para transferir la tarjeta ${card.data.design.name}.`
-            : `Esta seguro de querer transferir la tarjeta ${card.data.design.name}?`
+          qrInfo.visible
+            ? t('SCAN_CODE_FOR_TRANSFER_CARD', {
+                name: card.config?.name ?? card.data.design.name
+              })
+            : t('CONFIRM_TRANSFER_CARD', {
+                name: card.config?.name ?? card.data.design.name
+              })
         }
       >
-        {showQrCode ? (
+        {qrInfo.visible ? (
           <Flex direction="column" align="center">
-            <QRCode size={250} value="algo" showCopy={false} />
+            <QRCode size={250} value={qrInfo.value} showCopy={false} />
             <Divider y={12} />
           </Flex>
         ) : (
           <Button
             color="secondary"
             variant="bezeledGray"
-            onClick={() => setShowQrCode(true)}
+            onClick={handleDonateCard}
           >
-            Confirmar
+            {t('CONFIRM')}
           </Button>
         )}
       </ActionSheet>

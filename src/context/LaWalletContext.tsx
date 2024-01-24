@@ -42,6 +42,7 @@ const loggedRoutes: string[] = [
   'settings',
   'settingsrecovery',
   'settingscards',
+  'settingscardsdonation',
   'transactions',
   'card',
   'voucher',

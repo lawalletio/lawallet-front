@@ -153,5 +153,15 @@
   "URL_SCANNED_TITLE": "Enlace escaneado",
   "URL_SCANNED_DESC": "Escaneaste el enlace {{ url }} ¿Deseas abrirlo en el navegador?",
   "OPEN_URL": "Abrir enlace",
-  "BACK": "Volver"
+  "BACK": "Volver",
+  "SAVE": "Guardar",
+  "NAME": "Nombre",
+  "MAX_AMOUNT": "Monto máximo",
+  "LIMITS": "Limites",
+  "SCAN_CODE_FOR_TRANSFER_CARD": "Escanea el codigo QR para transferir la tarjeta {{ name }}",
+  "CONFIRM_TRANSFER_CARD": "¿Estás seguro de querer transferir la tarjeta {{ name }}?",
+  "DAILY": "Diario",
+  "UNIQUE": "Único",
+  "TOGGLE_STATUS_CARD_SUCCESS": "Cambiaste el estado de tu tarjeta",
+  "DESCRIPTION": "Descripción"
 }
