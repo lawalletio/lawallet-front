@@ -6,8 +6,6 @@ import { Button, Divider, Flex, Text } from '@/components/UI'
 import { LAWALLET_VERSION } from '@/constants/constants'
 import { useTranslation } from '@/context/TranslateContext'
 
-// import { useCreateIdentity } from '@/hooks/useCreateIdentity'
-
 import theme from '@/styles/theme'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -15,8 +13,6 @@ import { useEffect } from 'react'
 export default function Page() {
   const { t } = useTranslation()
   const router = useRouter()
-
-  // const { handleCreateIdentity, loading } = useCreateIdentity()
 
   useEffect(() => {
     router.prefetch('/login')
@@ -33,19 +29,6 @@ export default function Page() {
       </Flex>
 
       <Flex direction="column">
-        {/* <Divider y={16} />
-
-        <Flex>
-          <Button
-            onClick={() =>
-              handleCreateIdentity({ name: '', card: '', nonce: '' })
-            }
-            loading={loading}
-          >
-            {t('CREATE_ACCOUNT')}
-          </Button>
-        </Flex> */}
-
         <Divider y={16} />
 
         <Flex>
