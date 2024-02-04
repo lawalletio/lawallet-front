@@ -35,6 +35,8 @@ export default function Page() {
         overrideBack={'/settings'}
       />
 
+      {JSON.stringify(cardsConfig)}
+
       <Container size="small">
         <Divider y={16} />
         {loadInfo.loading ? (

@@ -1,30 +1,28 @@
 'use client'
-import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import { MainLoader } from '@/components/Loader/Loader'
 import {
   Button,
-  ButtonGroup,
   Divider,
+  Feedback,
   Flex,
   Heading,
   InputWithLabel,
-  Label
+  Label,
+  Text,
+  ToggleSwitch
 } from '@/components/UI'
 import { useTranslation } from '@/context/TranslateContext'
-import useCardConfig from '@/hooks/useCardConfig'
-import { CardPayload, CardStatus, Limit } from '@/types/card'
 import { useParams, useRouter } from 'next/navigation'
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  EventHandler,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import LimitInput from '../components/LimitInput/LimitInput'
+import useErrors from '@/hooks/useErrors'
+import { regexComment, regexUserName } from '@/constants/constants'
+import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
+import { CardPayload, CardStatus, Limit } from '@/types/card'
 import { useLaWalletContext } from '@/context/LaWalletContext'
+import useCardConfig from '@/hooks/useCardConfig'
+import Container from '@/components/Layout/Container'
 
 const defaultTXLimit: Limit = {
   name: 'Transactional limit',
@@ -42,47 +40,54 @@ const defaultDailyLimit: Limit = {
   delta: 86400
 }
 
-type LimtisConfigOptions = 'tx' | 'daily'
+type LimitsConfigOptions = 'tx' | 'daily'
+
+const NAME_MAX_LENGTH = 20
+const DESC_MAX_LENGTH = 64
 
 const page = () => {
   const { t } = useTranslation()
-  const [showLimit, setShowLimit] = useState<LimtisConfigOptions>('tx')
-  const { configuration, converter } = useLaWalletContext()
+  const {
+    user: { identity }
+  } = useLaWalletContext()
 
-  const [newConfig, setNewConfig] = useState<CardPayload>({
-    name: '',
-    description: '',
-    status: CardStatus.ENABLED,
-    limits: [defaultTXLimit, defaultDailyLimit]
-  })
-
-  const { cardsData, cardsConfig, loadInfo, updateCardConfig } = useCardConfig()
-
+  const errors = useErrors()
   const router = useRouter()
   const params = useParams()
 
   const uuid: string = useMemo(() => params.uuid as string, [])
 
-  const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.replaceAll(',', '').replaceAll('.', '')
-    const newAmount = !inputValue ? 0 : parseInt(inputValue)
+  const { cardsData, cardsConfig, loadInfo, updateCardConfig } = useCardConfig()
 
-    const newLimits: Limit[] = newConfig.limits.slice()
-    newLimits[showLimit === 'tx' ? 0 : 1].amount = BigInt(
-      converter.convertCurrency(
-        newAmount * 1000,
-        configuration.props.currency,
-        'SAT'
-      )
-    ).toString()
+  const [newConfig, setNewConfig] = useState<CardPayload>({
+    name: '',
+    description: '',
+    status: CardStatus.ENABLED,
+    limits: []
+  })
+
+  const selectedLimit: LimitsConfigOptions = useMemo(() => {
+    if (!newConfig.limits.length) return 'tx'
+
+    const limitDelta: number = newConfig.limits[0].delta
+    return limitDelta === defaultTXLimit.delta ? 'tx' : 'daily'
+  }, [newConfig.limits])
+
+  const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputAmount: number = !e.target.value ? 0 : parseFloat(e.target.value)
 
     setNewConfig({
       ...newConfig,
-      limits: newLimits
+      limits: [
+        selectedLimit === 'tx'
+          ? { ...defaultTXLimit, amount: BigInt(inputAmount).toString() }
+          : { ...defaultDailyLimit, amount: BigInt(inputAmount).toString() }
+      ]
     })
   }
 
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    errors.resetError()
     const name: string = e.target.value
 
     setNewConfig({
@@ -92,6 +97,7 @@ const page = () => {
   }
 
   const handleChangeDesc = (e: ChangeEvent<HTMLInputElement>) => {
+    errors.resetError()
     const description: string = e.target.value
 
     setNewConfig({
@@ -101,6 +107,21 @@ const page = () => {
   }
 
   const handleSaveConfig = async () => {
+    if (!newConfig.name.length) return errors.modifyError('EMPTY_NAME')
+    if (newConfig.name.length > NAME_MAX_LENGTH)
+      return errors.modifyError('MAX_LENGTH_NAME', {
+        length: `${NAME_MAX_LENGTH}`
+      })
+    if (!regexUserName.test(newConfig.name))
+      return errors.modifyError('INVALID_USERNAME')
+
+    if (newConfig.description.length > DESC_MAX_LENGTH)
+      return errors.modifyError('MAX_LENGTH_DESC', {
+        length: `${DESC_MAX_LENGTH}`
+      })
+    if (!regexComment.test(newConfig.description))
+      return errors.modifyError('INVALID_USERNAME')
+
     const updated: boolean = await updateCardConfig(uuid, newConfig)
     if (updated) router.push('/settings/cards')
   }
@@ -117,13 +138,17 @@ const page = () => {
       if (limit.delta === defaultDailyLimit.delta) return limit
     })
 
-    setNewConfig({
+    const preloadConfig: CardPayload = {
       name,
       description,
       status,
-      limits: [txLimit ?? defaultTXLimit, dailyLimit ?? defaultDailyLimit]
-    })
+      limits: txLimit ? [txLimit] : dailyLimit ? [dailyLimit] : [defaultTXLimit]
+    }
+
+    setNewConfig(preloadConfig)
   }, [cardsConfig.cards])
+
+  useActionOnKeypress('Enter', handleSaveConfig, [newConfig])
 
   if (!loadInfo.loading && !cardsData?.[uuid]) return null
 
@@ -143,6 +168,12 @@ const page = () => {
 
           <InputWithLabel
             onChange={handleChangeName}
+            isError={
+              errors.isExactError('EMPTY_NAME') ||
+              errors.isExactError('MAX_LENGTH_NAME', {
+                length: `${NAME_MAX_LENGTH}`
+              })
+            }
             name="card-name"
             label={t('NAME')}
             placeholder={t('NAME')}
@@ -153,43 +184,66 @@ const page = () => {
 
           <InputWithLabel
             onChange={handleChangeDesc}
+            isError={errors.isExactError('MAX_LENGTH_DESC', {
+              length: `${DESC_MAX_LENGTH}`
+            })}
             name="card-desc"
             label={t('DESCRIPTION')}
             placeholder={t('DESCRIPTION')}
             value={newConfig.description}
           />
 
+          <Divider y={12} />
+
+          <Flex align="center">
+            <Feedback
+              show={errors.errorInfo.visible}
+              status={errors.errorInfo.visible ? 'error' : undefined}
+            >
+              {errors.errorInfo.text}
+            </Feedback>
+          </Flex>
+
           <Divider y={24} />
 
+          <Heading as="h5">{t('LIMITS')}</Heading>
+
+          <Divider y={12} />
+
           <Flex justify="space-between" align="center">
-            <Heading as="h5">{t('LIMITS')}</Heading>
+            <Text isBold={true}>{t('LIMIT_TYPE')}</Text>
 
-            <ButtonGroup>
-              <Button
-                variant={showLimit === 'tx' ? 'filled' : 'borderless'}
-                onClick={() => setShowLimit('tx')}
-                size="small"
-              >
-                {t('UNIQUE')}
-              </Button>
-
-              <Button
-                variant={showLimit === 'daily' ? 'filled' : 'borderless'}
-                onClick={() => setShowLimit('daily')}
-                size="small"
-              >
-                {t('DAILY')}
-              </Button>
-            </ButtonGroup>
+            <Flex align="center" flex={0} gap={8}>
+              <Label htmlFor="type-limit">{t('TX_LIMIT')}</Label>
+              <ToggleSwitch
+                enabled={selectedLimit === 'daily'}
+                onChange={bool => {
+                  setNewConfig({
+                    ...newConfig,
+                    limits: [
+                      !bool
+                        ? {
+                            ...defaultTXLimit,
+                            amount: newConfig.limits[0].amount
+                          }
+                        : {
+                            ...defaultDailyLimit,
+                            amount: newConfig.limits[0].amount
+                          }
+                    ]
+                  })
+                }}
+              />
+              <Label htmlFor="type-limit">{t('DAILY_LIMIT')}</Label>
+            </Flex>
           </Flex>
 
           <Divider y={24} />
 
           <LimitInput
             onChange={handleChangeLimit}
-            amount={
-              Number(newConfig.limits[showLimit === 'tx' ? 0 : 1].amount) / 1000
-            }
+            amount={newConfig.limits.length ? newConfig.limits[0].amount : 0}
+            currency={'SAT'}
           />
 
           <Divider y={24} />

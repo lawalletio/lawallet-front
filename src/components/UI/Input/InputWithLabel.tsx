@@ -10,6 +10,7 @@ interface InputWithLabelProps {
   placeholder: string
   type?: 'text' | 'password' | 'number'
   value?: string
+  isError?: boolean
   onChange?: (e: any) => void
   onFocus?: (e: any) => void
   onBlur?: (e: any) => void

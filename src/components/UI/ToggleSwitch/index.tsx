@@ -1,20 +1,21 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import Text from '../Text'
 
 import { ToggleSwitch } from './style'
 
 interface ComponentProps {
-  label: string
+  label?: string
+  enabled?: boolean
   onChange: (e: boolean) => void
 }
 
 export default function Component(props: ComponentProps) {
-  const { label, onChange } = props
+  const { label, onChange, enabled } = props
 
-  const [active, setActive] = useState(false)
+  const [active, setActive] = useState(enabled)
 
   const id = useId()
 
@@ -23,10 +24,14 @@ export default function Component(props: ComponentProps) {
     onChange(!active)
   }
 
+  useEffect(() => {
+    if (enabled !== active) setActive(enabled)
+  }, [enabled])
+
   return (
     <ToggleSwitch>
-      <Text>{label}</Text>
-      <input type="checkbox" id={id} />
+      {label ? <Text>{label}</Text> : null}
+      <input type="checkbox" id={id} checked={enabled} />
       <label htmlFor={id} onClick={handleChange}>
         Toggle
       </label>

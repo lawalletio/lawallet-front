@@ -4,35 +4,25 @@ import {
   InputWithLabel,
   Text
 } from '@/components/UI'
-import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
-import { formatToPreference } from '@/lib/utils/formatter'
 import React from 'react'
 
-const LimitInput = ({ amount, onChange }) => {
-  const { t, lng } = useTranslation()
-  const { configuration, converter } = useLaWalletContext()
+const LimitInput = ({ amount, currency, onChange }) => {
+  const { t } = useTranslation()
 
   return (
     <InputGroup>
       <InputWithLabel
         onChange={onChange}
+        type="number"
         name="max-amount"
         label={t('MAX_AMOUNT')}
         placeholder="0"
-        value={formatToPreference(
-          configuration.props.currency,
-          converter.convertCurrency(
-            amount,
-            'SAT',
-            configuration.props.currency
-          ),
-          lng
-        )}
+        value={amount}
       />
 
       <InputGroupRight>
-        <Text size="small">{configuration.props.currency}</Text>
+        <Text size="small">{currency}</Text>
       </InputGroupRight>
     </InputGroup>
   )
