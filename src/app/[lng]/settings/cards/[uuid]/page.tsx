@@ -20,9 +20,11 @@ import useErrors from '@/hooks/useErrors'
 import { regexComment, regexUserName } from '@/constants/constants'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { CardPayload, CardStatus, Limit } from '@/types/card'
-import { useLaWalletContext } from '@/context/LaWalletContext'
 import useCardConfig from '@/hooks/useCardConfig'
 import Container from '@/components/Layout/Container'
+import { roundToDown } from '@/lib/utils/formatter'
+
+const regexNumbers: RegExp = /^[0123456789]+$/
 
 const defaultTXLimit: Limit = {
   name: 'Transactional limit',
@@ -47,9 +49,6 @@ const DESC_MAX_LENGTH = 64
 
 const page = () => {
   const { t } = useTranslation()
-  const {
-    user: { identity }
-  } = useLaWalletContext()
 
   const errors = useErrors()
   const router = useRouter()
@@ -74,14 +73,22 @@ const page = () => {
   }, [newConfig.limits])
 
   const handleChangeLimit = (e: ChangeEvent<HTMLInputElement>) => {
+    errors.resetError()
+    const targetValue = e.target.value ?? 0
+    if (targetValue.length && !regexNumbers.test(targetValue)) {
+      errors.modifyError('solo numeros')
+      return
+    }
+
     const inputAmount: number = !e.target.value ? 0 : parseFloat(e.target.value)
+    const mSats: number = inputAmount * 1000
 
     setNewConfig({
       ...newConfig,
       limits: [
         selectedLimit === 'tx'
-          ? { ...defaultTXLimit, amount: BigInt(inputAmount).toString() }
-          : { ...defaultDailyLimit, amount: BigInt(inputAmount).toString() }
+          ? { ...defaultTXLimit, amount: BigInt(mSats).toString() }
+          : { ...defaultDailyLimit, amount: BigInt(mSats).toString() }
       ]
     })
   }
@@ -193,17 +200,6 @@ const page = () => {
             value={newConfig.description}
           />
 
-          <Divider y={12} />
-
-          <Flex align="center">
-            <Feedback
-              show={errors.errorInfo.visible}
-              status={errors.errorInfo.visible ? 'error' : undefined}
-            >
-              {errors.errorInfo.text}
-            </Feedback>
-          </Flex>
-
           <Divider y={24} />
 
           <Heading as="h5">{t('LIMITS')}</Heading>
@@ -242,7 +238,11 @@ const page = () => {
 
           <LimitInput
             onChange={handleChangeLimit}
-            amount={newConfig.limits.length ? newConfig.limits[0].amount : 0}
+            amount={
+              newConfig.limits.length
+                ? roundToDown(Number(newConfig.limits[0].amount) / 1000, 0)
+                : 0
+            }
             currency={'SAT'}
           />
 
@@ -252,6 +252,17 @@ const page = () => {
 
       <Flex>
         <Container size="small">
+          <Divider y={12} />
+
+          <Flex flex={1} align="center" justify="center">
+            <Feedback
+              show={errors.errorInfo.visible}
+              status={errors.errorInfo.visible ? 'error' : undefined}
+            >
+              {errors.errorInfo.text}
+            </Feedback>
+          </Flex>
+
           <Divider y={16} />
           <Flex gap={8}>
             <Button

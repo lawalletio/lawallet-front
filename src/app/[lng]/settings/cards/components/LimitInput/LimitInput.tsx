@@ -5,9 +5,17 @@ import {
   Text
 } from '@/components/UI'
 import { useTranslation } from '@/context/TranslateContext'
-import React from 'react'
+import React, { ReactEventHandler } from 'react'
 
-const LimitInput = ({ amount, currency, onChange }) => {
+const LimitInput = ({
+  amount,
+  currency,
+  onChange
+}: {
+  amount: number
+  currency: string
+  onChange: ReactEventHandler
+}) => {
   const { t } = useTranslation()
 
   return (
@@ -18,7 +26,7 @@ const LimitInput = ({ amount, currency, onChange }) => {
         name="max-amount"
         label={t('MAX_AMOUNT')}
         placeholder="0"
-        value={amount}
+        value={amount.toString()}
       />
 
       <InputGroupRight>

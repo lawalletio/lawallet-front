@@ -165,5 +165,6 @@
   "DAILY_LIMIT": "Diario",
   "TX_LIMIT": "Único",
   "TOGGLE_STATUS_CARD_SUCCESS": "Cambiaste el estado de tu tarjeta",
-  "DESCRIPTION": "Descripción"
+  "DESCRIPTION": "Descripción",
+  "ONLY_NUMBERS_ALLOWED": "Solo se permiten números del 0 al 9"
 }
