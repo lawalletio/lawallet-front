@@ -22,7 +22,8 @@ import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { CardPayload, CardStatus, Limit } from '@/types/card'
 import useCardConfig from '@/hooks/useCardConfig'
 import Container from '@/components/Layout/Container'
-import { roundToDown } from '@/lib/utils/formatter'
+import { formatToPreference, roundToDown } from '@/lib/utils/formatter'
+import theme from '@/styles/theme'
 
 const regexNumbers: RegExp = /^[0123456789]+$/
 
@@ -48,7 +49,7 @@ const NAME_MAX_LENGTH = 20
 const DESC_MAX_LENGTH = 64
 
 const page = () => {
-  const { t } = useTranslation()
+  const { t, lng } = useTranslation()
 
   const errors = useErrors()
   const router = useRouter()
@@ -245,6 +246,29 @@ const page = () => {
             }
             currency={'SAT'}
           />
+
+          <Divider y={8} />
+
+          <Flex flex={1} justify="center">
+            <Text color={theme.colors.warning}>
+              {newConfig.limits.length && Number(newConfig.limits[0].amount) > 0
+                ? t(
+                    selectedLimit === 'tx'
+                      ? 'LIMIT_CARD_PER_TX'
+                      : 'LIMIT_CARD_PER_DAY',
+                    {
+                      sats: newConfig.limits.length
+                        ? formatToPreference(
+                            'SAT',
+                            Number(newConfig.limits[0].amount) / 1000,
+                            lng
+                          ).toString()
+                        : '0'
+                    }
+                  )
+                : t('NO_LIMIT_SET')}
+            </Text>
+          </Flex>
 
           <Divider y={24} />
         </Container>

@@ -166,5 +166,8 @@
   "TX_LIMIT": "Único",
   "TOGGLE_STATUS_CARD_SUCCESS": "Cambiaste el estado de tu tarjeta",
   "DESCRIPTION": "Descripción",
-  "ONLY_NUMBERS_ALLOWED": "Solo se permiten números del 0 al 9"
+  "ONLY_NUMBERS_ALLOWED": "Solo se permiten números del 0 al 9",
+  "LIMIT_CARD_PER_TX": "Tu tarjeta tendrá un límite de {{ sats }} SAT en un único pago",
+  "LIMIT_CARD_PER_DAY": "Tu tarjeta tendrá un límite de {{ sats }} SAT por día",
+  "NO_LIMIT_SET": "Tu tarjeta no tendrá ningún limite en los pagos"
 }
