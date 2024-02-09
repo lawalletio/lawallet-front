@@ -252,20 +252,13 @@ const page = () => {
           <Flex flex={1} justify="center">
             <Text color={theme.colors.warning}>
               {newConfig.limits.length && Number(newConfig.limits[0].amount) > 0
-                ? t(
-                    selectedLimit === 'tx'
-                      ? 'LIMIT_CARD_PER_TX'
-                      : 'LIMIT_CARD_PER_DAY',
-                    {
-                      sats: newConfig.limits.length
-                        ? formatToPreference(
-                            'SAT',
-                            Number(newConfig.limits[0].amount) / 1000,
-                            lng
-                          ).toString()
-                        : '0'
-                    }
-                  )
+                ? t(`LIMIT_CARD_PER_${selectedLimit === 'tx' ? 'TX' : 'DAY'}`, {
+                    sats: formatToPreference(
+                      'SAT',
+                      Number(newConfig.limits[0].amount) / 1000,
+                      lng
+                    ).toString()
+                  })
                 : t('NO_LIMIT_SET')}
             </Text>
           </Flex>
