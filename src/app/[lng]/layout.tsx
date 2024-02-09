@@ -9,7 +9,7 @@ import { LaWalletProvider } from '@/context/LaWalletContext'
 import { NDKProvider } from '@/context/NDKContext'
 import { TranslateProvider } from '@/context/TranslateContext'
 import GlobalStyles from '@/styles/GlobalStyles'
-import { fontSecondary } from '@/styles/fonts'
+import { fontPrimary, fontSecondary } from '@/styles/fonts'
 import theme from '@/styles/theme'
 import { AvailableLanguages, defaultLocale } from '@/translations/types'
 import Script from 'next/script'
@@ -30,7 +30,7 @@ const Providers = (props: ProviderProps) => {
   return (
     <html
       lang={params.lng ?? defaultLocale}
-      className={fontSecondary.className}
+      className={`${fontPrimary.variable} ${fontSecondary.variable}`}
     >
       <head>
         <title>{APP_NAME}</title>
