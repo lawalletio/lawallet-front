@@ -20,9 +20,9 @@ import { useEffect, useState } from 'react'
 import { useSubscription } from './useSubscription'
 
 export type CardConfigReturns = {
-  cardsData: CardDataPayload,
-  cardsConfig: CardConfigPayload,
-  loadInfo: CardLoadingType;
+  cardsData: CardDataPayload
+  cardsConfig: CardConfigPayload
+  loadInfo: CardLoadingType
   toggleCardStatus: (uuid: string) => Promise<boolean>
   updateCardConfig: (uuid: string, config: CardPayload) => Promise<boolean>
 }
@@ -34,7 +34,9 @@ type CardLoadingType = {
 
 const useCardConfig = (): CardConfigReturns => {
   const [cardsData, setCardsData] = useState<CardDataPayload>({})
-  const [cardsConfig, setCardsConfig] = useState<CardConfigPayload>({} as CardConfigPayload)
+  const [cardsConfig, setCardsConfig] = useState<CardConfigPayload>(
+    {} as CardConfigPayload
+  )
   const [loadInfo, setLoadInfo] = useState<CardLoadingType>({
     loadedAt: 0,
     loading: true
@@ -64,7 +66,7 @@ const useCardConfig = (): CardConfigReturns => {
   })
 
   const toggleCardStatus = async (uuid: string): Promise<boolean> => {
-    if (!cardsConfig.cards?.[uuid]) return false;
+    if (!cardsConfig.cards?.[uuid]) return false
 
     const new_card_config = {
       ...cardsConfig,
@@ -83,8 +85,11 @@ const useCardConfig = (): CardConfigReturns => {
     return buildAndBroadcastCardConfig(new_card_config, identity.privateKey)
   }
 
-  const updateCardConfig = async (uuid: string, config: CardPayload): Promise<boolean> => {
-    if (!cardsConfig.cards?.[uuid]) return false;
+  const updateCardConfig = async (
+    uuid: string,
+    config: CardPayload
+  ): Promise<boolean> => {
+    if (!cardsConfig.cards?.[uuid]) return false
 
     const new_card_config = {
       ...cardsConfig,
@@ -120,7 +125,8 @@ const useCardConfig = (): CardConfigReturns => {
       setCardsConfig(parsedDecryptedData)
     }
 
-    if (loadInfo.loading) setLoadInfo({ loadedAt: nostrEv.created_at + 1, loading: false})
+    if (loadInfo.loading)
+      setLoadInfo({ loadedAt: nostrEv.created_at + 1, loading: false })
   }
 
   useEffect(() => {
@@ -130,13 +136,21 @@ const useCardConfig = (): CardConfigReturns => {
   }, [subscription])
 
   useEffect(() => {
-      setTimeout(() => {
-        if (loadInfo.loading) setLoadInfo((prev) => { return {...prev, loading: false } })
-      }, 2500);
+    setTimeout(() => {
+      if (loadInfo.loading)
+        setLoadInfo(prev => {
+          return { ...prev, loading: false }
+        })
+    }, 2500)
   }, [])
-  
 
-  return { cardsData, cardsConfig, loadInfo, toggleCardStatus, updateCardConfig }
+  return {
+    cardsData,
+    cardsConfig,
+    loadInfo,
+    toggleCardStatus,
+    updateCardConfig
+  }
 }
 
 export default useCardConfig

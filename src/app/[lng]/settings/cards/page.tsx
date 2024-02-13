@@ -11,11 +11,19 @@ import AddNewCardModal from './components/AddCard'
 import DebitCard from './components/DebitCard'
 import EmptyCards from './components/EmptyCards'
 import { useLaWalletContext } from '@/context/LaWalletContext'
+import { useEffect, useState } from 'react'
+import { buildCardTransferDonationEvent } from '@/lib/events'
 
 export default function Page() {
-  const { notifications } = useLaWalletContext()
+  const {
+    user: { identity },
+    notifications
+  } = useLaWalletContext()
+
   const { cardsData, cardsConfig, loadInfo, toggleCardStatus } = useCardConfig()
   const { t } = useTranslation()
+
+  const [cardToDonate, setCardToDonate] = useState<string>('')
 
   const handleToggleStatus = async (uuid: string) => {
     const toggled: boolean = await toggleCardStatus(uuid)
@@ -26,6 +34,43 @@ export default function Page() {
         type: 'success'
       })
   }
+
+  const handleDonateCard = async (uuid: string) => {
+    try {
+      const transferDonationEvent = await buildCardTransferDonationEvent(
+        uuid,
+        identity.privateKey
+      )
+
+      const encodedDonationEvent: string = btoa(
+        JSON.stringify(transferDonationEvent)
+      )
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '')
+
+      setCardToDonate(uuid)
+
+      return encodedDonationEvent
+    } catch {
+      return
+    }
+  }
+
+  useEffect(() => {
+    if (cardToDonate) {
+      const existCard = cardsData[cardToDonate]
+      if (!existCard) {
+        notifications.showAlert({
+          title: '',
+          description: t('DONATION_CARD_SUCCESS'),
+          type: 'success'
+        })
+
+        setCardToDonate('')
+      }
+    }
+  }, [cardsData, cardToDonate])
 
   return (
     <>
@@ -50,6 +95,7 @@ export default function Page() {
                     config: cardsConfig.cards?.[key]
                   }}
                   toggleCardStatus={handleToggleStatus}
+                  base64DonationCardEvent={handleDonateCard}
                   key={key}
                 />
               )

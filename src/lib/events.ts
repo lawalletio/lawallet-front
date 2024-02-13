@@ -208,7 +208,7 @@ export const buildCardConfigEvent = async (
   event.kind = LaWalletKinds.REGULAR
 
   event.tags = event.tags.concat([
-    ['t', `${ConfigTypes.CONFIG.valueOf()}-change`],
+    ['t', `${ConfigTypes.CONFIG.valueOf()}-change`]
   ])
 
   event.id = getEventHash(event as UnsignedEvent)
@@ -217,10 +217,19 @@ export const buildCardConfigEvent = async (
   return event
 }
 
-export const buildCardTransferDonationEvent = async (uuid: string, privateKey: string) => {
+export const buildCardTransferDonationEvent = async (
+  uuid: string,
+  privateKey: string
+) => {
   const userPubkey: string = getPublicKey(privateKey)
 
-  const content = await nip04.encrypt(privateKey, config.pubKeys.cardPubkey, uuid)
+  const content = await nip04.encrypt(
+    privateKey,
+    config.pubKeys.cardPubkey,
+    uuid
+  )
+
+  const expiry: number = nowInSeconds() + 3600
 
   const event: NostrEvent = {
     kind: LaWalletKinds.EPHEMERAL,
@@ -229,7 +238,8 @@ export const buildCardTransferDonationEvent = async (uuid: string, privateKey: s
     created_at: nowInSeconds(),
     tags: [
       ['t', 'card-transfer-donation'],
-      ['p', config.pubKeys.cardPubkey]
+      ['p', config.pubKeys.cardPubkey],
+      ['expiry', expiry.toString()]
     ]
   }
 
@@ -237,10 +247,14 @@ export const buildCardTransferDonationEvent = async (uuid: string, privateKey: s
   event.sig = getSignature(event as UnsignedEvent, privateKey)
 
   //return btoa(JSON.stringify(event).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''))
-  return event;
+  return event
 }
 
-export const buildCardTransferAcceptEvent = async (giverPubkey: string, donationEvent: NostrEvent, privateKey: string) => {
+export const buildCardTransferAcceptEvent = async (
+  giverPubkey: string,
+  donationEvent: NostrEvent,
+  privateKey: string
+) => {
   const userPubkey: string = getPublicKey(privateKey)
 
   const delegation = nip26.createDelegation(privateKey, {

@@ -86,7 +86,7 @@ const AddNewCardModal = () => {
     <Modal
       title={t('NEW_CARD')}
       isOpen={Boolean(newCardInfo.card.length)}
-      onClose={() => null}
+      onClose={() => router.push('/settings/cards')}
     >
       <Text>{t('DETECT_NEW_CARD')}</Text>
       <Flex direction="column" gap={4}>

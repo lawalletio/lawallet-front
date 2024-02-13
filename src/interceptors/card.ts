@@ -15,7 +15,10 @@ export const requestCardActivation = async (
     body: JSON.stringify(event)
   })
     .then(res => res.status >= 200 && res.status < 300)
-    .catch(() => false)
+    .catch(err => {
+      console.log(err)
+      return false
+    })
 }
 
 export const cardResetCaim = async (
@@ -64,7 +67,7 @@ export const buildAndBroadcastCardConfig = (
     .then(configEvent => {
       return broadcastEvent(configEvent)
     })
-    .catch((err) => {
+    .catch(err => {
       console.log(err)
       return false
     })

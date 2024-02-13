@@ -1,25 +1,24 @@
-import { useState } from 'react'
 import { GearIcon } from '@bitcoin-design/bitcoin-icons-react/filled'
+import { useState } from 'react'
 
 import Card from '@/components/Card'
 
 import {
-  Button,
-  Flex,
-  Modal,
   ActionSheet,
+  Button,
+  Divider,
+  Flex,
   LinkButton,
   QRCode,
-  Divider
+  Text
 } from '@/components/UI'
 import { CardImage, ConfigCard } from './style'
 
+import Countdown from '@/components/Countdown/Countdown'
 import Pause from '@/components/Icons/Pause'
 import Play from '@/components/Icons/Play'
-import { CardPayload, CardStatus, Design } from '@/types/card'
-import { buildCardTransferDonationEvent } from '@/lib/events'
-import { useLaWalletContext } from '@/context/LaWalletContext'
 import { useTranslation } from '@/context/TranslateContext'
+import { CardPayload, CardStatus, Design } from '@/types/card'
 
 interface ComponentProps {
   card: {
@@ -28,16 +27,13 @@ interface ComponentProps {
     config: CardPayload | undefined
   }
   toggleCardStatus: (uuid: string) => void
+  base64DonationCardEvent: (uuid: string) => Promise<string | undefined>
 }
 
 export default function Component(props: ComponentProps) {
-  const { card, toggleCardStatus } = props
+  const { card, toggleCardStatus, base64DonationCardEvent } = props
   const { t } = useTranslation()
   const [handleSelected, setHandleSelected] = useState(false)
-
-  const {
-    user: { identity }
-  } = useLaWalletContext()
 
   // ActionSheet
   const [showConfiguration, setShowConfiguration] = useState(false)
@@ -53,20 +49,16 @@ export default function Component(props: ComponentProps) {
   }
 
   const handleDonateCard = async () => {
-    const transferDonationEvent = await buildCardTransferDonationEvent(
-      card.uuid,
-      identity.privateKey
-    )
+    const encodedDonationEvent: string | undefined =
+      await base64DonationCardEvent(card.uuid)
+    if (!encodedDonationEvent) return
 
-    const encodedDonationEvent: string = btoa(
-      JSON.stringify(transferDonationEvent)
-    )
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '')
+    const absoluteURL = window.location
+      ? window.location.origin
+      : 'https://app.lawallet.ar'
 
     setQrInfo({
-      value: `https://app.lawallet.ar/settings/cards/donation?event=${encodedDonationEvent}`,
+      value: `${absoluteURL}/settings/cards/donation?event=${encodedDonationEvent}`,
       visible: true
     })
   }
@@ -170,6 +162,8 @@ export default function Component(props: ComponentProps) {
           <Flex direction="column" align="center">
             <QRCode size={250} value={qrInfo.value} showCopy={false} />
             <Divider y={12} />
+            <Text>{t('TIME_LEFT')}</Text>
+            <Countdown seconds={180} />
           </Flex>
         ) : (
           <Button
