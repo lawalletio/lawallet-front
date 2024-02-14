@@ -162,8 +162,15 @@ export default function Component(props: ComponentProps) {
           <Flex direction="column" align="center">
             <QRCode size={250} value={qrInfo.value} showCopy={false} />
             <Divider y={12} />
-            <Text>{t('TIME_LEFT')}</Text>
-            <Countdown seconds={180} />
+            <Flex
+              flex={1}
+              direction="column"
+              justify="space-between"
+              align="center"
+            >
+              <Text size="small">{t('TIME_LEFT')}</Text>
+              <Countdown seconds={180} />
+            </Flex>
           </Flex>
         ) : (
           <Button

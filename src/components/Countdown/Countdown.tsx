@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Text } from '../UI'
 
 const formatTime = (time: number): number | string => {
   let minutes: number | string = Math.floor(time / 60)
@@ -31,5 +32,5 @@ export default function Countdown({ seconds }: { seconds: number }) {
     }
   }, [countdown])
 
-  return <span>{formatTime(countdown)}</span>
+  return <Text>{formatTime(countdown)}</Text>
 }
