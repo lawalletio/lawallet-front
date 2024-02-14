@@ -15,7 +15,10 @@ export const requestCardActivation = async (
     body: JSON.stringify(event)
   })
     .then(res => res.status >= 200 && res.status < 300)
-    .catch(() => false)
+    .catch(err => {
+      console.log(err)
+      return false
+    })
 }
 
 export const cardResetCaim = async (
@@ -59,12 +62,13 @@ export const cardInfoRequest = async (
 export const buildAndBroadcastCardConfig = (
   config: CardConfigPayload,
   privateKey: string
-) => {
-  buildCardConfigEvent(config, privateKey)
+): Promise<boolean> => {
+  return buildCardConfigEvent(config, privateKey)
     .then(configEvent => {
       return broadcastEvent(configEvent)
     })
-    .catch(() => {
-      return { error: 'UNEXPECTED_ERROR' }
+    .catch(err => {
+      console.log(err)
+      return false
     })
 }

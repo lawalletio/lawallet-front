@@ -14,7 +14,7 @@ interface ComponentProps {
 }
 
 export default function Component(props: ComponentProps) {
-  const { children, href, target = '_self' } = props
+  const { children, href, target } = props
 
   return (
     <LinkSetting>

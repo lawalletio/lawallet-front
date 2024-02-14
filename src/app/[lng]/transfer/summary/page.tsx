@@ -24,6 +24,7 @@ import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
 import { formatAddress, formatToPreference } from '@/lib/utils/formatter'
 import { TransferTypes } from '@/types/transaction'
 import { useEffect, useMemo, useState } from 'react'
+import { splitHandle } from '@/lib/utils'
 
 export default function Page() {
   const { lng, t } = useTranslation()
@@ -53,7 +54,7 @@ export default function Page() {
     if (balance.amount < transferInfo.amount) setInsufficientBalance(true)
   }, [transferInfo.amount])
 
-  const [transferUsername, transferDomain] = transferInfo.data.split('@')
+  const [transferUsername, transferDomain] = splitHandle(transferInfo.data)
 
   useActionOnKeypress('Enter', () => executeTransfer(identity.privateKey), [
     identity,

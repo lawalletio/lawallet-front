@@ -22,6 +22,7 @@ import { formatAddress, formatToPreference } from '@/lib/utils/formatter'
 import { TransferTypes } from '@/types/transaction'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import { splitHandle } from '@/lib/utils'
 
 export default function Page() {
   const { lng, t } = useTranslation()
@@ -45,7 +46,7 @@ export default function Page() {
   }, [pricesData])
 
   const router = useRouter()
-  const [transferUsername, transferDomain] = transferInfo.data.split('@')
+  const [transferUsername, transferDomain] = splitHandle(transferInfo.data)
   if (!transferInfo.data) router.push('/dashboard')
 
   return (

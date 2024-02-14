@@ -15,7 +15,7 @@ export type Limit = {
   name: string
   description: string
   token: string
-  amount: bigint
+  amount: bigint | string
   delta: number
 }
 export type CardPayload = {
