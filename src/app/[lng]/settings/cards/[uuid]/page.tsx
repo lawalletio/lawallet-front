@@ -1,4 +1,5 @@
 'use client'
+import Container from '@/components/Layout/Container'
 import Navbar from '@/components/Layout/Navbar'
 import { MainLoader } from '@/components/Loader/Loader'
 import {
@@ -12,18 +13,17 @@ import {
   Text,
   ToggleSwitch
 } from '@/components/UI'
+import { regexComment } from '@/constants/constants'
 import { useTranslation } from '@/context/TranslateContext'
-import { useParams, useRouter } from 'next/navigation'
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
-import LimitInput from '../components/LimitInput/LimitInput'
-import useErrors from '@/hooks/useErrors'
-import { regexComment, regexUserName } from '@/constants/constants'
 import { useActionOnKeypress } from '@/hooks/useActionOnKeypress'
-import { CardPayload, CardStatus, Limit } from '@/types/card'
 import useCardConfig from '@/hooks/useCardConfig'
-import Container from '@/components/Layout/Container'
+import useErrors from '@/hooks/useErrors'
 import { formatToPreference, roundToDown } from '@/lib/utils/formatter'
 import theme from '@/styles/theme'
+import { CardPayload, CardStatus, Limit } from '@/types/card'
+import { useParams, useRouter } from 'next/navigation'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import LimitInput from '../components/LimitInput/LimitInput'
 
 const regexNumbers: RegExp = /^[0123456789]+$/
 
@@ -45,7 +45,7 @@ const defaultDailyLimit: Limit = {
 
 type LimitsConfigOptions = 'tx' | 'daily'
 
-const NAME_MAX_LENGTH = 20
+const NAME_MAX_LENGTH = 32
 const DESC_MAX_LENGTH = 64
 
 const page = () => {
@@ -120,7 +120,7 @@ const page = () => {
       return errors.modifyError('MAX_LENGTH_NAME', {
         length: `${NAME_MAX_LENGTH}`
       })
-    if (!regexUserName.test(newConfig.name))
+    if (!regexComment.test(newConfig.name))
       return errors.modifyError('INVALID_USERNAME')
 
     if (newConfig.description.length > DESC_MAX_LENGTH)
